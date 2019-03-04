@@ -1,0 +1,29 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1551505692945.000,
+    "dirty" : false,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "89B821D6",
+    "lastKnownWriteTime" : 7163375865238268003,
+    "last_content_update" : 1551505692945,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "cacheKey" : "C5760C3E",
+        "caption" : "fish_raw_longform",
+        "contentUrl" : "grid_resource/gridviewer.html?env=&obj=fish_raw_longform&cache_key=C5760C3E",
+        "displayedObservations" : "93206",
+        "environment" : "",
+        "object" : "fish_raw_longform",
+        "preview" : "0",
+        "totalObservations" : "93206",
+        "variables" : "27"
+    },
+    "relative_order" : 6,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_dataframe"
+}

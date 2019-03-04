@@ -1,0 +1,29 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1551508436701.000,
+    "dirty" : false,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "E16F915D",
+    "lastKnownWriteTime" : 13229804949012596,
+    "last_content_update" : 1551508436701,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "cacheKey" : "8E4218DA",
+        "caption" : "fish_averages",
+        "contentUrl" : "grid_resource/gridviewer.html?env=&obj=fish_averages&cache_key=8E4218DA",
+        "displayedObservations" : 24624,
+        "environment" : "",
+        "object" : "fish_averages",
+        "preview" : 0,
+        "totalObservations" : 24624,
+        "variables" : 4
+    },
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_dataframe"
+}
