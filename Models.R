@@ -36,16 +36,48 @@ benthic_raw <- benthic_raw[benthic_raw$site == "muskN" | benthic_raw$site == "pe
                             benthic_raw$site == "white" | benthic_raw$site == "grand", ]
 benthic_raw$site <- as.factor(benthic_raw$site)
 
+# Remove RLF as an observer because in 2014 there were two observers
+benthic_raw$observer <- as.character(benthic_raw$observer)
+benthic_raw <- benthic_raw[benthic_raw$observer != "RLF", ]
+benthic_raw$observer <- as.factor(benthic_raw$observer)
+
+# Only retain observations where survey == main
+benthic_raw$survey <- as.character(benthic_raw$survey)
+benthic_raw <- benthic_raw[benthic_raw$survey == "main", ]
+benthic_raw$survey <- as.factor(benthic_raw$survey)
+
 # Create new column called "Site_Year" that combines the year and site as ####_Sitename
 benthic_raw <- transform(benthic_raw, Site_Year = paste(benthic_raw$year, benthic_raw$site, sep="_"))
 
 # Create new column in all datasets called Taxa, so if dataframes are combined, I know which dataset the information came from
 benthic_raw$Taxa <- "Coral"
 
+
+# Create a new dataframe with the number (n) of transects for each Site_Year
+coral_sample_size <- tally(group_by(benthic_raw, benthic_raw$Site_Year))
+
+# Rename column in sample_size_coral dataframe to use as a key to merge this information with the raw data
+colnames(coral_sample_size)[colnames(coral_sample_size) == "benthic_raw$Site_Year"] <- "Site_Year"
+benthic_raw <- merge(benthic_raw, coral_sample_size, by = "Site_Year", all = T)
+
+# Create a new function called imin that returns the minimum of 2 values
+imin <- function(x, y){
+  if (x > y){
+    return(y)
+  }
+  return(x)
+}
+
+# Randomly select 3 transects for each Site_Year
+# If there are <3 transects sampled, the number that were sampled will remain constant
+benthic_raw_three <- benthic_raw %>% group_by(benthic_raw$Site_Year) %>% sample_n(imin(3, benthic_raw$n))
+# Double-check: coral_sample_size should have 215 obs. (different Site_Year's), so benthic_raw_three should have 645 obs.
+
+
 # Put dataset into long form (i.e. so species codes are in a single column rather than having one column for each species code)
 # key = "title of new column", value = "numbers being moved around because of the key", 
 # ":" specifies which columns should be included in key
-benthic_raw_longform <- benthic_raw %>%
+benthic_raw_longform <- benthic_raw_three %>%
   gather(key = "Taxonomic_Group", value = "Count", acpa:sosp)
 
 # Double-check
@@ -98,7 +130,7 @@ names(coral_richness) <- c("Site", "Year", "Coral_Richness")
 sponge_raw <- read.csv("sponge.csv", header = T)
 
 # Only select rows and columns for which there are values entered (sponge_raw has extraneous rows and columns)
-sponge_raw <- sponge_raw[1:575,1:65]
+sponge_raw <- sponge_raw[1:617,1:65]
 
 # Sometimes site names were entered using different capitalization. 
 # Correct these entry mistakes by making names consistent
@@ -112,6 +144,11 @@ sponge_raw <- sponge_raw[sponge_raw$Site == "muskN" | sponge_raw$Site == "pelica
                            sponge_raw$Site == "bigelow" | sponge_raw$Site == "monkey" | sponge_raw$Site == "iguana" |
                            sponge_raw$Site == "white" | sponge_raw$Site == "grand", ]
 sponge_raw$Site <- as.factor(sponge_raw$Site)
+
+# Remove October 2017 post-hurricane survey information
+sponge_raw$Notes <- as.character(sponge_raw$Notes)
+sponge_raw <- sponge_raw[sponge_raw$Notes != "post-hurricane survey", ]
+sponge_raw$Notes <- as.factor(sponge_raw$Notes)
 
 # Some "ghost" factors are being retained for transect and observer
 # Remove these ghost factors
@@ -131,10 +168,24 @@ sponge_raw <- transform(sponge_raw, Site_Year = paste(sponge_raw$Year, sponge_ra
 # Create new column in all datasets called Taxa, so if dataframes are combined, I know which dataset the information came from
 sponge_raw$Taxa <- "Sponge"
 
+
+# Create a new dataframe with the number (n) of transects for each Site_Year
+sponge_sample_size <- tally(group_by(sponge_raw, sponge_raw$Site_Year))
+
+# Rename column in sample_size_sponge dataframe to use as a key to merge this information with the raw data
+colnames(sponge_sample_size)[colnames(sponge_sample_size) == "sponge_raw$Site_Year"] <- "Site_Year"
+sponge_raw <- merge(sponge_raw, sponge_sample_size, by = "Site_Year", all = T)
+
+# Randomly select 3 transects for each Site_Year
+# If there are <3 transects sampled, the number that were sampled will remain constant (using imin function created above)
+sponge_raw_three <- sponge_raw %>% group_by(sponge_raw$Site_Year) %>% sample_n(imin(3, sponge_raw$n))
+# Double-check: sponge_sample_size should have 164 obs. (different Site_Year's), so sponge_raw_three should have 492 obs.
+
+
 # Put dataset into long form (i.e. so species codes are in a single column rather than having one column for each species code)
 # key = "title of new column", value = "numbers being moved around because of the key", 
 # ":" specifies which columns should be included in key
-sponge_raw_longform <- sponge_raw %>%
+sponge_raw_longform <- sponge_raw_three %>%
   gather(key = "Taxonomic_Group", value = "Count", Agelas.clathrodes..Agelas.citrina.or.Clathria.faviformis:Black..spiny..purple.exudate.but.not.slimy)
 
 # Double-check
@@ -146,6 +197,9 @@ sponge_raw_longform$Taxonomic_Group <- as.factor(sponge_raw_longform$Taxonomic_G
 
 # Can also make Year a factor instead of an integer
 sponge_raw_longform$Year <- as.factor(sponge_raw_longform$Year)
+
+# ***When transect length is 20 m, multiply counts by 3/2
+#tlength_short <- sponge_raw[sponge_raw$Transect.Length..m. == "20", ]
 
 # Summary Information
 str(sponge_raw_longform)
@@ -185,7 +239,7 @@ names(sponge_richness) <- c("Site", "Year", "Sponge_Richness")
 # # After closer inspection, 1993_crab, 2014_pelican, 2017_pelican, and 2017_bigelow are missing
 # 
 # # Create new subset for all the times where transect length is not 30 m
-# not30 <-sponge_raw[sponge_raw$Transect.Length..m. != "30", 1:7]
+#not30 <-sponge_raw[sponge_raw$Transect.Length..m. != "30", 1:7]
 
 
 
@@ -216,10 +270,24 @@ fish_raw <- transform(fish_raw, Site_Year = paste(fish_raw$year, fish_raw$site, 
 # Create new column in all datasets called Taxa, so if dataframes are combined, I know which dataset the information came from
 fish_raw$Taxa <- "Fish"
 
+
+# Create a new dataframe with the number (n) of transects for each Site_Year
+fish_sample_size <- tally(group_by(fish_raw, fish_raw$Site_Year))
+
+# Rename column in sample_size_fish dataframe to use as a key to merge this information with the raw data
+colnames(fish_sample_size)[colnames(fish_sample_size) == "fish_raw$Site_Year"] <- "Site_Year"
+fish_raw <- merge(fish_raw, fish_sample_size, by = "Site_Year", all = T)
+
+# Randomly select 3 transects for each Site_Year
+# If there are <3 transects sampled, the number that were sampled will remain constant (using imin function created above)
+fish_raw_three <- fish_raw %>% group_by(fish_raw$Site_Year) %>% sample_n(imin(3, fish_raw$n))
+# Double-check: fish_sample_size should have 216 obs. (different Site_Year's), so benthic_raw_three should have 648 obs.
+
+
 # Put fish_raw into long form (i.e. so species codes are in a single column rather than having one column for each species code)
 # key = "title of new column", value = "numbers being moved around because of the key", 
 # ":" specifies which columns should be included in key
-fish_raw_longform <- fish_raw %>% gather(key = "KEY", value = "Count", popaa:kysea)
+fish_raw_longform <- fish_raw_three %>% gather(key = "KEY", value = "Count", popaa:kysea)
 
 # Because the species codes end with j or a to distinguish adult and juveniles,
 # Split new KEY column into species_code and age_class columns
