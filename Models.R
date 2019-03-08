@@ -72,6 +72,10 @@ imin <- function(x, y){
 # If there are <3 transects sampled, the number that were sampled will remain constant
 benthic_raw_three <- benthic_raw %>% group_by(benthic_raw$Site_Year) %>% sample_n(imin(3, benthic_raw$n))
 # Double-check: coral_sample_size should have 215 obs. (different Site_Year's), so benthic_raw_three should have 645 obs.
+#***Make sure that, even though this is random, this code is replicable (sample_n is used for all 3 groups so check for the others too)
+
+# Now we need to ungroup the data to avoid confusing errors later
+benthic_raw_three <- ungroup(benthic_raw_three)
 
 
 # Put dataset into long form (i.e. so species codes are in a single column rather than having one column for each species code)
@@ -181,6 +185,9 @@ sponge_raw <- merge(sponge_raw, sponge_sample_size, by = "Site_Year", all = T)
 sponge_raw_three <- sponge_raw %>% group_by(sponge_raw$Site_Year) %>% sample_n(imin(3, sponge_raw$n))
 # Double-check: sponge_sample_size should have 164 obs. (different Site_Year's), so sponge_raw_three should have 492 obs.
 
+# Now we need to ungroup the data to avoid confusing errors later
+sponge_raw_three <- ungroup(sponge_raw_three)
+
 
 # Put dataset into long form (i.e. so species codes are in a single column rather than having one column for each species code)
 # key = "title of new column", value = "numbers being moved around because of the key", 
@@ -282,6 +289,9 @@ fish_raw <- merge(fish_raw, fish_sample_size, by = "Site_Year", all = T)
 # If there are <3 transects sampled, the number that were sampled will remain constant (using imin function created above)
 fish_raw_three <- fish_raw %>% group_by(fish_raw$Site_Year) %>% sample_n(imin(3, fish_raw$n))
 # Double-check: fish_sample_size should have 216 obs. (different Site_Year's), so benthic_raw_three should have 648 obs.
+
+# Now we need to ungroup the data to avoid confusing errors later
+fish_raw_three <- ungroup(fish_raw_three)
 
 
 # Put fish_raw into long form (i.e. so species codes are in a single column rather than having one column for each species code)
