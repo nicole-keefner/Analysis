@@ -591,3 +591,109 @@ ggplot(parameters, aes(x = Coral_Richness, y = Combined_Richness)) +
   scale_color_gradient(low="lightblue", high="darkblue") +
   facet_wrap(~ Site)
 
+
+
+
+
+
+
+
+
+## Make plots for x = % cover
+ggplot(parameters, aes(x = Percent_Coral_Cover, y = Coral_Richness)) + 
+  geom_line(size = 0.8) +
+  geom_point(aes(color = Year), size = 2.8) +
+  scale_x_continuous(name ="Coral Cover (%)") +
+  scale_y_continuous(name ="Coral Richness") +
+  scale_color_gradient(low="lightblue", high="darkblue") +
+  facet_wrap(~ Site)
+
+ggplot(parameters, aes(x = Percent_Coral_Cover, y = Sponge_Richness)) + 
+  geom_line(size = 1.1) +
+  geom_point(aes(color = Year), size = 2.8) +
+  scale_x_continuous(name ="Coral Cover (%)") +
+  scale_y_continuous(name ="Sponge Richness") +
+  scale_color_gradient(low="lightblue", high="darkblue") +
+  facet_wrap(~ Site)
+
+ggplot(parameters, aes(x = Percent_Coral_Cover, y = Fish_Richness)) + 
+  geom_line(size = 1.1) +
+  geom_point(aes(color = Year), size = 2.8) +
+  scale_x_continuous(name ="Coral Cover (%)") +
+  scale_y_continuous(name ="Fish Richness") +
+  scale_color_gradient(low="lightblue", high="darkblue") +
+  facet_wrap(~ Site)
+
+ggplot(parameters, aes(x = Percent_Coral_Cover, y = Combined_Richness)) + 
+  geom_line(size = 1.1) +
+  geom_point(aes(color = Year), size = 2.8) +
+  scale_x_continuous(name ="Coral Cover (%)") +
+  scale_y_continuous(name ="Combined Richness") +
+  scale_color_gradient(low="lightblue", high="darkblue") +
+  facet_wrap(~ Site)
+
+
+
+
+# Make plots for x = rugosity
+ggplot(parameters, aes(x = Rugosity, y = Coral_Richness)) + 
+  geom_line(size = 1.1) +
+  geom_point(aes(color = Year), size = 2.8) +
+  scale_x_continuous(name ="Rugosity") +
+  scale_y_continuous(name ="Coral Richness") +
+  scale_color_gradient(low="lightblue", high="darkblue") +
+  facet_wrap(~ Site)
+
+ggplot(parameters, aes(x = Rugosity, y = Sponge_Richness)) + 
+  geom_line(size = 1.1) +
+  geom_point(aes(color = Year), size = 2.8) +
+  scale_x_continuous(name ="Rugosity") +
+  scale_y_continuous(name ="Sponge Richness") +
+  scale_color_gradient(low="lightblue", high="darkblue") +
+  facet_wrap(~ Site)
+
+ggplot(parameters, aes(x = Rugosity, y = Fish_Richness)) + 
+  geom_line(size = 1.1) +
+  geom_point(aes(color = Year), size = 2.8) +
+  scale_x_continuous(name ="Rugosity") +
+  scale_y_continuous(name ="Fish Richness") +
+  scale_color_gradient(low="lightblue", high="darkblue") +
+  facet_wrap(~ Site)
+
+ggplot(parameters, aes(x = Rugosity, y = Combined_Richness)) + 
+  geom_line(size = 1.1) +
+  geom_point(aes(color = Year), size = 2.8) +
+  scale_x_continuous(name ="Rugosity") +
+  scale_y_continuous(name ="Combined Richness") +
+  scale_color_gradient(low="lightblue", high="darkblue") +
+  facet_wrap(~ Site)
+
+
+# Make plots for x = coral richness
+ggplot(parameters, aes(x = Coral_Richness, y = Sponge_Richness)) + 
+  geom_line(size = 1.1) +
+  geom_point(aes(color = Year), size = 2.8) +
+  scale_x_continuous(name ="Coral Richness") +
+  scale_y_continuous(name ="Sponge Richness") +
+  scale_color_gradient(low="lightblue", high="darkblue") +
+  facet_wrap(~ Site)
+
+ggplot(parameters, aes(x = Coral_Richness, y = Fish_Richness)) + 
+  geom_line(size = 1.1) +
+  geom_point(aes(color = Year), size = 2.8) +
+  scale_x_continuous(name ="Coral Richness") +
+  scale_y_continuous(name ="Fish Richness") +
+  scale_color_gradient(low="lightblue", high="darkblue") +
+  facet_wrap(~ Site)
+
+ggplot(parameters, aes(x = Coral_Richness, y = Combined_Richness)) + 
+  geom_line(size = 1.1) +
+  geom_point(aes(color = Year), size = 2.8) +
+  scale_x_continuous(name ="Coral Richness") +
+  scale_y_continuous(name ="Combined Richness") +
+  scale_color_gradient(low="lightblue", high="darkblue") +
+  facet_wrap(~ Site)
+
+
+
+
