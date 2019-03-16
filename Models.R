@@ -19,7 +19,8 @@ library(plyr)
 library(dplyr)
 library(ggplot2)
 library(reshape2)
-
+# For model output in table format
+library(sjPlot)
 
 
 ## Import coral dataset
@@ -469,6 +470,9 @@ parameters <- separate(parameters, Site_Year, into = c("Year", "Site"), sep="_")
 
 
 #######################Plots by site over time################################
+# Verify year is factor for x-axis labels
+parameters$Year <- as.factor(parameters$Year)
+
 # Make plots for x = time
 ggplot(parameters, aes(x = Year, y = Coral_Richness, group = Site, color = Site)) + 
 # To show points
@@ -748,4 +752,51 @@ ggplot(parameters, aes(x = Coral_Richness, y = Combined_Richness)) +
   scale_y_continuous(name ="Combined Richness") +
   scale_color_gradient(low="lightblue", high="darkblue") +
   facet_wrap(~ Site)
+
+############
+# Change year to numeric to make it continuous for models
+parameters$Year <- as.numeric(parameters$Year)
+
+# Models
+fish_year = lm(Fish_Richness ~ Year, data = parameters)
+fish_site = lm(Fish_Richness ~ Site, data = parameters)
+fish_rugosity = lm(Fish_Richness ~ Rugosity, data = parameters)
+fish_cover = lm(Fish_Richness ~ Percent_Coral_Cover, data = parameters)
+fish_coralrichness = lm(Fish_Richness ~ Coral_Richness, data = parameters)
+#
+fish_year_site = lm(Fish_Richness ~ Year + Site, data = parameters)
+fish_rugosity_site = lm(Fish_Richness ~ Rugosity + Site, data = parameters)
+fish_cover_site = lm(Fish_Richness ~ Percent_Coral_Cover + Site, data = parameters)
+fish_coralrichness_site = lm(Fish_Richness ~ Coral_Richness + Site, data = parameters)
+fish_rugosity_year = lm(Fish_Richness ~ Rugosity + Year, data = parameters)
+fish_cover_year = lm(Fish_Richness ~ Percent_Coral_Cover + Year, data = parameters)
+fish_coralrichness_year = lm(Fish_Richness ~ Coral_Richness + Year, data = parameters)
+fish_rugosity_year_site = lm(Fish_Richness ~ Rugosity + Year + Site, data = parameters)
+fish_cover_year_site = lm(Fish_Richness ~ Percent_Coral_Cover + Year + Site, data = parameters)
+fish_coralrichness_year_site = lm(Fish_Richness ~ Coral_Richness + Year + Site, data = parameters)
+#
+fish_year_site_yearsite = lm(Fish_Richness ~ Year + Site + Year*Site, data = parameters)
+fish_year_site_yearsite_cover = lm(Fish_Richness ~ Year + Site + Year*Site + Percent_Coral_Cover, data = parameters)
+fish_year_site_yearsite_rugosity = lm(Fish_Richness ~ Year + Site + Year*Site + Rugosity, data = parameters)
+fish_year_site_yearsite_coralrichness = lm(Fish_Richness ~ Year + Site + Year*Site + Coral_Richness, data = parameters)
+fish_site_rugosity_rugositysite = lm(Fish_Richness ~ Site + Rugosity + Rugosity*Site, data = parameters)
+fish_site_cover_coversite = lm(Fish_Richness ~ Site + Percent_Coral_Cover + Percent_Coral_Cover*Site, data = parameters)
+fish_site_coralrichness_coralrichnesssite = lm(Fish_Richness ~ Site + Coral_Richness + Coral_Richness*Site, data = parameters)
+fish_year_rugosity_rugosityyear = lm(Fish_Richness ~ Year + Rugosity + Rugosity*Year, data = parameters)
+fish_year_cover_coveryear = lm(Fish_Richness ~ Year + Percent_Coral_Cover + Percent_Coral_Cover*Year, data = parameters)
+fish_year_coralrichness_coralrichnessyear = lm(Fish_Richness ~ Year + Coral_Richness + Coral_Richness*Year, data = parameters)
+
+#***These are only the 25 models to predict fish richness. I need to also run models for sponge richness, coral richness, and combined richness
+
+# An example of model output in table format
+tab_model(fish_year, fish_site, fish_rugosity, fish_cover, fish_coralrichness, fish_year_site, fish_rugosity_site, 
+          fish_cover_site, fish_coralrichness_site, fish_rugosity_year, fish_cover_year, fish_coralrichness_year,
+          fish_rugosity_year_site, fish_cover_year_site, fish_coralrichness_year_site, fish_year_site_yearsite,
+          fish_year_site_yearsite_cover, fish_year_site_yearsite_rugosity, fish_year_site_yearsite_coralrichness,
+          fish_site_rugosity_rugositysite, fish_site_cover_coversite, fish_site_coralrichness_coralrichnesssite,
+          fish_year_rugosity_rugosityyear, fish_year_cover_coveryear, fish_year_coralrichness_coralrichnessyear)
+
+
+
+
 
