@@ -21,7 +21,8 @@ library(ggplot2)
 library(reshape2)
 # For model output in table format
 library(sjPlot)
-
+# For AIC
+library(AICcmodavg)
 
 ## Import coral dataset
 benthic_raw <- read.csv("benthic.csv", header = T)
@@ -757,7 +758,7 @@ ggplot(parameters, aes(x = Coral_Richness, y = Combined_Richness)) +
 # Change year to numeric to make it continuous for models
 parameters$Year <- as.numeric(parameters$Year)
 
-# Models
+# Models for fish richness
 fish_year = lm(Fish_Richness ~ Year, data = parameters)
 fish_site = lm(Fish_Richness ~ Site, data = parameters)
 fish_rugosity = lm(Fish_Richness ~ Rugosity, data = parameters)
@@ -786,8 +787,6 @@ fish_year_rugosity_rugosityyear = lm(Fish_Richness ~ Year + Rugosity + Rugosity*
 fish_year_cover_coveryear = lm(Fish_Richness ~ Year + Percent_Coral_Cover + Percent_Coral_Cover*Year, data = parameters)
 fish_year_coralrichness_coralrichnessyear = lm(Fish_Richness ~ Year + Coral_Richness + Coral_Richness*Year, data = parameters)
 
-#***These are only the 25 models to predict fish richness. I need to also run models for sponge richness, coral richness, and combined richness
-
 # An example of model output in table format
 tab_model(fish_year, fish_site, fish_rugosity, fish_cover, fish_coralrichness, fish_year_site, fish_rugosity_site, 
           fish_cover_site, fish_coralrichness_site, fish_rugosity_year, fish_cover_year, fish_coralrichness_year,
@@ -798,5 +797,181 @@ tab_model(fish_year, fish_site, fish_rugosity, fish_cover, fish_coralrichness, f
 
 
 
+# Models for sponge richness
+sponge_year = lm(Sponge_Richness ~ Year, data = parameters)
+sponge_site = lm(Sponge_Richness ~ Site, data = parameters)
+sponge_rugosity = lm(Sponge_Richness ~ Rugosity, data = parameters)
+sponge_cover = lm(Sponge_Richness ~ Percent_Coral_Cover, data = parameters)
+sponge_coralrichness = lm(Sponge_Richness ~ Coral_Richness, data = parameters)
+#
+sponge_year_site = lm(Sponge_Richness ~ Year + Site, data = parameters)
+sponge_rugosity_site = lm(Sponge_Richness ~ Rugosity + Site, data = parameters)
+sponge_cover_site = lm(Sponge_Richness ~ Percent_Coral_Cover + Site, data = parameters)
+sponge_coralrichness_site = lm(Sponge_Richness ~ Coral_Richness + Site, data = parameters)
+sponge_rugosity_year = lm(Sponge_Richness ~ Rugosity + Year, data = parameters)
+sponge_cover_year = lm(Sponge_Richness ~ Percent_Coral_Cover + Year, data = parameters)
+sponge_coralrichness_year = lm(Sponge_Richness ~ Coral_Richness + Year, data = parameters)
+sponge_rugosity_year_site = lm(Sponge_Richness ~ Rugosity + Year + Site, data = parameters)
+sponge_cover_year_site = lm(Sponge_Richness ~ Percent_Coral_Cover + Year + Site, data = parameters)
+sponge_coralrichness_year_site = lm(Sponge_Richness ~ Coral_Richness + Year + Site, data = parameters)
+#
+sponge_year_site_yearsite = lm(Sponge_Richness ~ Year + Site + Year*Site, data = parameters)
+sponge_year_site_yearsite_cover = lm(Sponge_Richness ~ Year + Site + Year*Site + Percent_Coral_Cover, data = parameters)
+sponge_year_site_yearsite_rugosity = lm(Sponge_Richness ~ Year + Site + Year*Site + Rugosity, data = parameters)
+sponge_year_site_yearsite_coralrichness = lm(Sponge_Richness ~ Year + Site + Year*Site + Coral_Richness, data = parameters)
+sponge_site_rugosity_rugositysite = lm(Sponge_Richness ~ Site + Rugosity + Rugosity*Site, data = parameters)
+sponge_site_cover_coversite = lm(Sponge_Richness ~ Site + Percent_Coral_Cover + Percent_Coral_Cover*Site, data = parameters)
+sponge_site_coralrichness_coralrichnesssite = lm(Sponge_Richness ~ Site + Coral_Richness + Coral_Richness*Site, data = parameters)
+sponge_year_rugosity_rugosityyear = lm(Sponge_Richness ~ Year + Rugosity + Rugosity*Year, data = parameters)
+sponge_year_cover_coveryear = lm(Sponge_Richness ~ Year + Percent_Coral_Cover + Percent_Coral_Cover*Year, data = parameters)
+sponge_year_coralrichness_coralrichnessyear = lm(Sponge_Richness ~ Year + Coral_Richness + Coral_Richness*Year, data = parameters)
+
+# An example of model output in table format
+tab_model(sponge_year, sponge_site, sponge_rugosity, sponge_cover, sponge_coralrichness, sponge_year_site, sponge_rugosity_site, 
+          sponge_cover_site, sponge_coralrichness_site, sponge_rugosity_year, sponge_cover_year, sponge_coralrichness_year,
+          sponge_rugosity_year_site, sponge_cover_year_site, sponge_coralrichness_year_site, sponge_year_site_yearsite,
+          sponge_year_site_yearsite_cover, sponge_year_site_yearsite_rugosity, sponge_year_site_yearsite_coralrichness,
+          sponge_site_rugosity_rugositysite, sponge_site_cover_coversite, sponge_site_coralrichness_coralrichnesssite,
+          sponge_year_rugosity_rugosityyear, sponge_year_cover_coveryear, sponge_year_coralrichness_coralrichnessyear)
+
+
+
+# Models for coral richness
+coral_year = lm(Coral_Richness ~ Year, data = parameters)
+coral_site = lm(Coral_Richness ~ Site, data = parameters)
+coral_rugosity = lm(Coral_Richness ~ Rugosity, data = parameters)
+coral_cover = lm(Coral_Richness ~ Percent_Coral_Cover, data = parameters)
+#coral_coralrichness = lm(Coral_Richness ~ Coral_Richness, data = parameters)
+#
+coral_year_site = lm(Coral_Richness ~ Year + Site, data = parameters)
+coral_rugosity_site = lm(Coral_Richness ~ Rugosity + Site, data = parameters)
+coral_cover_site = lm(Coral_Richness ~ Percent_Coral_Cover + Site, data = parameters)
+#coral_coralrichness_site = lm(Coral_Richness ~ Coral_Richness + Site, data = parameters)
+coral_rugosity_year = lm(Coral_Richness ~ Rugosity + Year, data = parameters)
+coral_cover_year = lm(Coral_Richness ~ Percent_Coral_Cover + Year, data = parameters)
+#coral_coralrichness_year = lm(Coral_Richness ~ Coral_Richness + Year, data = parameters)
+coral_rugosity_year_site = lm(Coral_Richness ~ Rugosity + Year + Site, data = parameters)
+coral_cover_year_site = lm(Coral_Richness ~ Percent_Coral_Cover + Year + Site, data = parameters)
+#coral_coralrichness_year_site = lm(Coral_Richness ~ Coral_Richness + Year + Site, data = parameters)
+#
+coral_year_site_yearsite = lm(Coral_Richness ~ Year + Site + Year*Site, data = parameters)
+coral_year_site_yearsite_cover = lm(Coral_Richness ~ Year + Site + Year*Site + Percent_Coral_Cover, data = parameters)
+coral_year_site_yearsite_rugosity = lm(Coral_Richness ~ Year + Site + Year*Site + Rugosity, data = parameters)
+#coral_year_site_yearsite_coralrichness = lm(Coral_Richness ~ Year + Site + Year*Site + Coral_Richness, data = parameters)
+coral_site_rugosity_rugositysite = lm(Coral_Richness ~ Site + Rugosity + Rugosity*Site, data = parameters)
+coral_site_cover_coversite = lm(Coral_Richness ~ Site + Percent_Coral_Cover + Percent_Coral_Cover*Site, data = parameters)
+#coral_site_coralrichness_coralrichnesssite = lm(Coral_Richness ~ Site + Coral_Richness + Coral_Richness*Site, data = parameters)
+coral_year_rugosity_rugosityyear = lm(Coral_Richness ~ Year + Rugosity + Rugosity*Year, data = parameters)
+coral_year_cover_coveryear = lm(Coral_Richness ~ Year + Percent_Coral_Cover + Percent_Coral_Cover*Year, data = parameters)
+#coral_year_coralrichness_coralrichnessyear = lm(Coral_Richness ~ Year + Coral_Richness + Coral_Richness*Year, data = parameters)
+
+# An example of model output in table format
+tab_model(coral_year, coral_site, coral_rugosity, coral_cover, coral_year_site, coral_rugosity_site, 
+          coral_cover_site, coral_rugosity_year, coral_cover_year,coral_rugosity_year_site, coral_cover_year_site, 
+          coral_year_site_yearsite, coral_year_site_yearsite_cover, coral_year_site_yearsite_rugosity, 
+          coral_site_rugosity_rugositysite, coral_site_cover_coversite, coral_year_rugosity_rugosityyear, coral_year_cover_coveryear)
+
+
+
+# Models for combined richness
+combined_year = lm(Combined_Richness ~ Year, data = parameters)
+combined_site = lm(Combined_Richness ~ Site, data = parameters)
+combined_rugosity = lm(Combined_Richness ~ Rugosity, data = parameters)
+combined_cover = lm(Combined_Richness ~ Percent_Coral_Cover, data = parameters)
+combined_coralrichness = lm(Combined_Richness ~ Coral_Richness, data = parameters)
+#
+combined_year_site = lm(Combined_Richness ~ Year + Site, data = parameters)
+combined_rugosity_site = lm(Combined_Richness ~ Rugosity + Site, data = parameters)
+combined_cover_site = lm(Combined_Richness ~ Percent_Coral_Cover + Site, data = parameters)
+combined_coralrichness_site = lm(Combined_Richness ~ Coral_Richness + Site, data = parameters)
+combined_rugosity_year = lm(Combined_Richness ~ Rugosity + Year, data = parameters)
+combined_cover_year = lm(Combined_Richness ~ Percent_Coral_Cover + Year, data = parameters)
+combined_coralrichness_year = lm(Combined_Richness ~ Coral_Richness + Year, data = parameters)
+combined_rugosity_year_site = lm(Combined_Richness ~ Rugosity + Year + Site, data = parameters)
+combined_cover_year_site = lm(Combined_Richness ~ Percent_Coral_Cover + Year + Site, data = parameters)
+combined_coralrichness_year_site = lm(Combined_Richness ~ Coral_Richness + Year + Site, data = parameters)
+#
+combined_year_site_yearsite = lm(Combined_Richness ~ Year + Site + Year*Site, data = parameters)
+combined_year_site_yearsite_cover = lm(Combined_Richness ~ Year + Site + Year*Site + Percent_Coral_Cover, data = parameters)
+combined_year_site_yearsite_rugosity = lm(Combined_Richness ~ Year + Site + Year*Site + Rugosity, data = parameters)
+combined_year_site_yearsite_coralrichness = lm(Combined_Richness ~ Year + Site + Year*Site + Coral_Richness, data = parameters)
+combined_site_rugosity_rugositysite = lm(Combined_Richness ~ Site + Rugosity + Rugosity*Site, data = parameters)
+combined_site_cover_coversite = lm(Combined_Richness ~ Site + Percent_Coral_Cover + Percent_Coral_Cover*Site, data = parameters)
+combined_site_coralrichness_coralrichnesssite = lm(Combined_Richness ~ Site + Coral_Richness + Coral_Richness*Site, data = parameters)
+combined_year_rugosity_rugosityyear = lm(Combined_Richness ~ Year + Rugosity + Rugosity*Year, data = parameters)
+combined_year_cover_coveryear = lm(Combined_Richness ~ Year + Percent_Coral_Cover + Percent_Coral_Cover*Year, data = parameters)
+combined_year_coralrichness_coralrichnessyear = lm(Combined_Richness ~ Year + Coral_Richness + Coral_Richness*Year, data = parameters)
+
+# An example of model output in table format
+tab_model(combined_year, combined_site, combined_rugosity, combined_cover, combined_coralrichness, combined_year_site, combined_rugosity_site, 
+          combined_cover_site, combined_coralrichness_site, combined_rugosity_year, combined_cover_year, combined_coralrichness_year,
+          combined_rugosity_year_site, combined_cover_year_site, combined_coralrichness_year_site, combined_year_site_yearsite,
+          combined_year_site_yearsite_cover, combined_year_site_yearsite_rugosity, combined_year_site_yearsite_coralrichness,
+          combined_site_rugosity_rugositysite, combined_site_cover_coversite, combined_site_coralrichness_coralrichnesssite,
+          combined_year_rugosity_rugosityyear, combined_year_cover_coveryear, combined_year_coralrichness_coralrichnessyear)
+
+
+
+## AIC
+
+# Create a list of all of the fish models
+fish_models <- list(fish_year, fish_site, fish_rugosity, fish_cover, fish_coralrichness, fish_year_site, fish_rugosity_site, 
+                    fish_cover_site, fish_coralrichness_site, fish_rugosity_year, fish_cover_year, fish_coralrichness_year,
+                    fish_rugosity_year_site, fish_cover_year_site, fish_coralrichness_year_site, fish_year_site_yearsite,
+                    fish_year_site_yearsite_cover, fish_year_site_yearsite_rugosity, fish_year_site_yearsite_coralrichness,
+                    fish_site_rugosity_rugositysite, fish_site_cover_coversite, fish_site_coralrichness_coralrichnesssite,
+                    fish_year_rugosity_rugosityyear, fish_year_cover_coveryear, fish_year_coralrichness_coralrichnessyear)
+# Name each model in the same order they're listed in fish_models AND sponge_models
+model_names <- c("year", "site", "rugosity", "cover", "coralrichness", "year + site", "rugosity + site", 
+                 "cover + site", "coralrichness + site", "rugosity + year", "cover + year", "coralrichness + year",
+                 "rugosity + year + site", "cover + year + site", "coralrichness + year + site", "year + site + year*site",
+                 "year + site + year*site + cover", "year + site + year*site + rugosity", "year + site + year*site + coralrichness",
+                 "site + rugosity + rugosity*site", "site + cover + cover*site", "site + coralrichness + coralrichness*site",
+                 "year + rugosity + rugosity*year", "year + cover + cover*year", "year + coralrichness + coralrichness*year")
+# AIC table
+fish_aic_table <- aictab(fish_models, modnames = model_names, digits = 4)
+#write.csv(fish_aic_table, file = "fish_aic_table.csv")
+
+
+
+# Create a list of all of the sponge models
+sponge_models <- list(sponge_year, sponge_site, sponge_rugosity, sponge_cover, sponge_coralrichness, sponge_year_site, sponge_rugosity_site, 
+                     sponge_cover_site, sponge_coralrichness_site, sponge_rugosity_year, sponge_cover_year, sponge_coralrichness_year,
+                     sponge_rugosity_year_site, sponge_cover_year_site, sponge_coralrichness_year_site, sponge_year_site_yearsite,
+                     sponge_year_site_yearsite_cover, sponge_year_site_yearsite_rugosity, sponge_year_site_yearsite_coralrichness,
+                     sponge_site_rugosity_rugositysite, sponge_site_cover_coversite, sponge_site_coralrichness_coralrichnesssite,
+                     sponge_year_rugosity_rugosityyear, sponge_year_cover_coveryear, sponge_year_coralrichness_coralrichnessyear)
+# AIC table
+sponge_aic_table <- aictab(sponge_models, modnames = model_names, digits = 4)
+#write.csv(sponge_aic_table, file = "sponge_aic_table.csv")
+
+
+
+# Create a list of all of the coral models
+coral_models <- list(coral_year, coral_site, coral_rugosity, coral_cover, coral_year_site, coral_rugosity_site, 
+                     coral_cover_site, coral_rugosity_year, coral_cover_year,coral_rugosity_year_site, coral_cover_year_site, 
+                     coral_year_site_yearsite, coral_year_site_yearsite_cover, coral_year_site_yearsite_rugosity, 
+                     coral_site_rugosity_rugositysite, coral_site_cover_coversite, coral_year_rugosity_rugosityyear, coral_year_cover_coveryear)
+# Name each model in the same order they're listed in coral_models
+coral_model_names <- c("year", "site", "rugosity", "cover", "year + site", "rugosity + site", 
+                       "cover + site", "rugosity + year", "cover + year","rugosity + year + site", "cover + year + site", 
+                       "year + site + year*site", "year + site + year*site + cover", "year + site + year*site + rugosity", 
+                       "site + rugosity + rugosity*site", "site + cover + cover*site", "year + rugosity + rugosity*year", "year + cover + cover*year")
+# AIC table
+coral_aic_table <- aictab(coral_models, modnames = coral_model_names, digits = 4)
+#write.csv(coral_aic_table, file = "coral_aic_table.csv")
+
+
+
+# Create a list of all of the "combined" models
+combined_models <- list(combined_year, combined_site, combined_rugosity, combined_cover, combined_coralrichness, combined_year_site, combined_rugosity_site, 
+                        combined_cover_site, combined_coralrichness_site, combined_rugosity_year, combined_cover_year, combined_coralrichness_year,
+                        combined_rugosity_year_site, combined_cover_year_site, combined_coralrichness_year_site, combined_year_site_yearsite,
+                        combined_year_site_yearsite_cover, combined_year_site_yearsite_rugosity, combined_year_site_yearsite_coralrichness,
+                        combined_site_rugosity_rugositysite, combined_site_cover_coversite, combined_site_coralrichness_coralrichnesssite,
+                        combined_year_rugosity_rugosityyear, combined_year_cover_coveryear, combined_year_coralrichness_coralrichnessyear)
+# AIC table
+combined_aic_table <- aictab(combined_models, modnames = model_names, digits = 4)
+#write.csv(combined_aic_table, file = "combined_aic_table.csv")
 
 
