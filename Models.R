@@ -540,8 +540,13 @@ fish_coralrichness_year_site_log = lm(Fish_Richness ~ log(Coral_Richness) + Year
 fish_year_site_yearsite_coralrichness_log = lm(Fish_Richness ~ Year + Site + Year*Site + log(Coral_Richness), data = parameters)
 fish_site_coralrichness_coralrichnesssite_log = lm(Fish_Richness ~ Site + log(Coral_Richness) + log(Coral_Richness)*Site, data = parameters)
 fish_year_coralrichness_coralrichnessyear_log = lm(Fish_Richness ~ Year + log(Coral_Richness) + log(Coral_Richness)*Year, data = parameters)
-# # Power models for rugosity
-# fish_rugosity_power = lm(Fish_Richness ~ log(Rugosity), data = parameters)
+## Get coefficients for power models
+lm(log(Fish_Richness) ~ log(Rugosity), data = parameters)
+# a = intercept, b = log(x), use these to make y = (exp(a))*x^b
+lm(log(Fish_Richness) ~ log(Percent_Coral_Cover), data = parameters)
+lm(log(Fish_Richness) ~ log(Coral_Richness), data = parameters)
+# # Power models for rugosity*7* NOT SURE HOW TO INCLUDE POWER FUNCTION FOR ADDITIVE AND INTERACTIVE MODELS
+fish_rugosity_power = lm(Fish_Richness ~ exp(1.3536 + 0.4806*log(Rugosity)), data = parameters)
 # fish_rugosity_site_power = lm(Fish_Richness ~ log(Rugosity) + Site, data = parameters)
 # fish_rugosity_year_power = lm(Fish_Richness ~ log(Rugosity) + Year, data = parameters)
 # fish_rugosity_year_site_power = lm(Fish_Richness ~ log(Rugosity) + Year + Site, data = parameters)
@@ -549,7 +554,7 @@ fish_year_coralrichness_coralrichnessyear_log = lm(Fish_Richness ~ Year + log(Co
 # fish_site_rugosity_rugositysite_power = lm(Fish_Richness ~ Site + log(Rugosity) + log(Rugosity)*Site, data = parameters)
 # fish_year_rugosity_rugosityyear_power = lm(Fish_Richness ~ Year + log(Rugosity) + log(Rugosity)*Year, data = parameters)
 # # Power models for cover
-# fish_cover_power = lm(Fish_Richness ~ log(Percent_Coral_Cover), data = parameters)
+fish_cover_power = lm(Fish_Richness ~ exp(2.5184 + 0.2247*log(Percent_Coral_Cover)), data = parameters)
 # fish_cover_site_power = lm(Fish_Richness ~ log(Percent_Coral_Cover) + Site, data = parameters)
 # fish_cover_year_power = lm(Fish_Richness ~ log(Percent_Coral_Cover) + Year, data = parameters)
 # fish_cover_year_site_power = lm(Fish_Richness ~ log(Percent_Coral_Cover) + Year + Site, data = parameters)
@@ -557,7 +562,7 @@ fish_year_coralrichness_coralrichnessyear_log = lm(Fish_Richness ~ Year + log(Co
 # fish_site_cover_coversite_power = lm(Fish_Richness ~ Site + log(Percent_Coral_Cover) + log(Percent_Coral_Cover)*Site, data = parameters)
 # fish_year_cover_coveryear_power = lm(Fish_Richness ~ Year + log(Percent_Coral_Cover) + log(Percent_Coral_Cover)*Year, data = parameters)
 # # Power models for coral richness
-# fish_coralrichness_power = lm(Fish_Richness ~ log(Coral_Richness), data = parameters)
+fish_coralrichness_power = lm(Fish_Richness ~ exp(2.1755 + 0.3899*log(Coral_Richness)), data = parameters)
 # fish_coralrichness_site_power = lm(Fish_Richness ~ log(Coral_Richness) + Site, data = parameters)
 # fish_coralrichness_year_power = lm(Fish_Richness ~ log(Coral_Richness) + Year, data = parameters)
 # fish_coralrichness_year_site_power = lm(Fish_Richness ~ log(Coral_Richness) + Year + Site, data = parameters)
@@ -567,34 +572,34 @@ fish_year_coralrichness_coralrichnessyear_log = lm(Fish_Richness ~ Year + log(Co
 
 
 
-# An example of model output in table format
-tab_model(fish_year, fish_site, fish_rugosity, fish_cover, fish_coralrichness, fish_year_site, fish_rugosity_site, 
-          fish_cover_site, fish_coralrichness_site, fish_rugosity_year, fish_cover_year, fish_coralrichness_year,
-          fish_rugosity_year_site, fish_cover_year_site, fish_coralrichness_year_site, fish_year_site_yearsite,
-          fish_year_site_yearsite_cover, fish_year_site_yearsite_rugosity, fish_year_site_yearsite_coralrichness,
-          fish_site_rugosity_rugositysite, fish_site_cover_coversite, fish_site_coralrichness_coralrichnesssite,
-          fish_year_rugosity_rugosityyear, fish_year_cover_coveryear, fish_year_coralrichness_coralrichnessyear)
-# With logarithmic and power models
-tab_model(fish_year, fish_site, fish_rugosity, fish_cover, fish_coralrichness, fish_year_site, fish_rugosity_site, 
-          fish_cover_site, fish_coralrichness_site, fish_rugosity_year, fish_cover_year, fish_coralrichness_year,
-          fish_rugosity_year_site, fish_cover_year_site, fish_coralrichness_year_site, fish_year_site_yearsite,
-          fish_year_site_yearsite_cover, fish_year_site_yearsite_rugosity, fish_year_site_yearsite_coralrichness,
-          fish_site_rugosity_rugositysite, fish_site_cover_coversite, fish_site_coralrichness_coralrichnesssite,
-          fish_year_rugosity_rugosityyear, fish_year_cover_coveryear, fish_year_coralrichness_coralrichnessyear, 
-          fish_rugosity_log, fish_rugosity_site_log, fish_rugosity_year_log, fish_rugosity_year_site_log, 
-          fish_year_site_yearsite_rugosity_log, fish_site_rugosity_rugositysite_log, fish_year_rugosity_rugosityyear_log, 
-          fish_cover_log, fish_cover_site_log, fish_cover_year_log, fish_cover_year_site_log, 
-          fish_year_site_yearsite_cover_log, fish_site_cover_coversite_log, fish_year_cover_coveryear_log, 
-          fish_coralrichness_log, fish_coralrichness_site_log, fish_coralrichness_year_log, 
-          fish_coralrichness_year_site_log, fish_year_site_yearsite_coralrichness_log, 
-          fish_site_coralrichness_coralrichnesssite_log, fish_year_coralrichness_coralrichnessyear_log,
-          fish_rugosity_power, fish_rugosity_site_power, fish_rugosity_year_power, fish_rugosity_year_site_power, 
-          fish_year_site_yearsite_rugosity_power, fish_site_rugosity_rugositysite_power, fish_year_rugosity_rugosityyear_power, 
-          fish_cover_power, fish_cover_site_power, fish_cover_year_power, fish_cover_year_site_power, 
-          fish_year_site_yearsite_cover_power, fish_site_cover_coversite_power, fish_year_cover_coveryear_power, 
-          fish_coralrichness_power, fish_coralrichness_site_power, fish_coralrichness_year_power, 
-          fish_coralrichness_year_site_power, fish_year_site_yearsite_coralrichness_power, 
-          fish_site_coralrichness_coralrichnesssite_power, fish_year_coralrichness_coralrichnessyear_power)
+# # An example of model output in table format
+# tab_model(fish_year, fish_site, fish_rugosity, fish_cover, fish_coralrichness, fish_year_site, fish_rugosity_site, 
+#           fish_cover_site, fish_coralrichness_site, fish_rugosity_year, fish_cover_year, fish_coralrichness_year,
+#           fish_rugosity_year_site, fish_cover_year_site, fish_coralrichness_year_site, fish_year_site_yearsite,
+#           fish_year_site_yearsite_cover, fish_year_site_yearsite_rugosity, fish_year_site_yearsite_coralrichness,
+#           fish_site_rugosity_rugositysite, fish_site_cover_coversite, fish_site_coralrichness_coralrichnesssite,
+#           fish_year_rugosity_rugosityyear, fish_year_cover_coveryear, fish_year_coralrichness_coralrichnessyear)
+# # With logarithmic and power models
+# tab_model(fish_year, fish_site, fish_rugosity, fish_cover, fish_coralrichness, fish_year_site, fish_rugosity_site, 
+#           fish_cover_site, fish_coralrichness_site, fish_rugosity_year, fish_cover_year, fish_coralrichness_year,
+#           fish_rugosity_year_site, fish_cover_year_site, fish_coralrichness_year_site, fish_year_site_yearsite,
+#           fish_year_site_yearsite_cover, fish_year_site_yearsite_rugosity, fish_year_site_yearsite_coralrichness,
+#           fish_site_rugosity_rugositysite, fish_site_cover_coversite, fish_site_coralrichness_coralrichnesssite,
+#           fish_year_rugosity_rugosityyear, fish_year_cover_coveryear, fish_year_coralrichness_coralrichnessyear, 
+#           fish_rugosity_log, fish_rugosity_site_log, fish_rugosity_year_log, fish_rugosity_year_site_log, 
+#           fish_year_site_yearsite_rugosity_log, fish_site_rugosity_rugositysite_log, fish_year_rugosity_rugosityyear_log, 
+#           fish_cover_log, fish_cover_site_log, fish_cover_year_log, fish_cover_year_site_log, 
+#           fish_year_site_yearsite_cover_log, fish_site_cover_coversite_log, fish_year_cover_coveryear_log, 
+#           fish_coralrichness_log, fish_coralrichness_site_log, fish_coralrichness_year_log, 
+#           fish_coralrichness_year_site_log, fish_year_site_yearsite_coralrichness_log, 
+#           fish_site_coralrichness_coralrichnesssite_log, fish_year_coralrichness_coralrichnessyear_log,
+#           fish_rugosity_power, fish_rugosity_site_power, fish_rugosity_year_power, fish_rugosity_year_site_power, 
+#           fish_year_site_yearsite_rugosity_power, fish_site_rugosity_rugositysite_power, fish_year_rugosity_rugosityyear_power, 
+#           fish_cover_power, fish_cover_site_power, fish_cover_year_power, fish_cover_year_site_power, 
+#           fish_year_site_yearsite_cover_power, fish_site_cover_coversite_power, fish_year_cover_coveryear_power, 
+#           fish_coralrichness_power, fish_coralrichness_site_power, fish_coralrichness_year_power, 
+#           fish_coralrichness_year_site_power, fish_year_site_yearsite_coralrichness_power, 
+#           fish_site_coralrichness_coralrichnesssite_power, fish_year_coralrichness_coralrichnessyear_power)
 
 
 
@@ -652,8 +657,12 @@ sponge_coralrichness_year_site_log = lm(Sponge_Richness ~ log(Coral_Richness) + 
 sponge_year_site_yearsite_coralrichness_log = lm(Sponge_Richness ~ Year + Site + Year*Site + log(Coral_Richness), data = parameters)
 sponge_site_coralrichness_coralrichnesssite_log = lm(Sponge_Richness ~ Site + log(Coral_Richness) + log(Coral_Richness)*Site, data = parameters)
 sponge_year_coralrichness_coralrichnessyear_log = lm(Sponge_Richness ~ Year + log(Coral_Richness) + log(Coral_Richness)*Year, data = parameters)
+## Get coefficients for power models
+lm(log(Sponge_Richness) ~ log(Rugosity), data = parameters)
+lm(log(Sponge_Richness) ~ log(Percent_Coral_Cover), data = parameters)
+lm(log(Sponge_Richness) ~ log(Coral_Richness), data = parameters)
 # # Power models for rugosity
-# sponge_rugosity_power = lm(Sponge_Richness ~ log(Rugosity), data = parameters)
+sponge_rugosity_power = lm(Sponge_Richness ~ exp(3.4814 + -0.1145*log(Rugosity)), data = parameters)
 # sponge_rugosity_site_power = lm(Sponge_Richness ~ log(Rugosity) + Site, data = parameters)
 # sponge_rugosity_year_power = lm(Sponge_Richness ~ log(Rugosity) + Year, data = parameters)
 # sponge_rugosity_year_site_power = lm(Sponge_Richness ~ log(Rugosity) + Year + Site, data = parameters)
@@ -661,7 +670,7 @@ sponge_year_coralrichness_coralrichnessyear_log = lm(Sponge_Richness ~ Year + lo
 # sponge_site_rugosity_rugositysite_power = lm(Sponge_Richness ~ Site + log(Rugosity) + log(Rugosity)*Site, data = parameters)
 # sponge_year_rugosity_rugosityyear_power = lm(Sponge_Richness ~ Year + log(Rugosity) + log(Rugosity)*Year, data = parameters)
 # # Power models for cover
-# sponge_cover_power = lm(Sponge_Richness ~ log(Percent_Coral_Cover), data = parameters)
+sponge_cover_power = lm(Sponge_Richness ~ exp(3.4389 + -0.1381*log(Percent_Coral_Cover)), data = parameters)
 # sponge_cover_site_power = lm(Sponge_Richness ~ log(Percent_Coral_Cover) + Site, data = parameters)
 # sponge_cover_year_power = lm(Sponge_Richness ~ log(Percent_Coral_Cover) + Year, data = parameters)
 # sponge_cover_year_site_power = lm(Sponge_Richness ~ log(Percent_Coral_Cover) + Year + Site, data = parameters)
@@ -669,7 +678,7 @@ sponge_year_coralrichness_coralrichnessyear_log = lm(Sponge_Richness ~ Year + lo
 # sponge_site_cover_coversite_power = lm(Sponge_Richness ~ Site + log(Percent_Coral_Cover) + log(Percent_Coral_Cover)*Site, data = parameters)
 # sponge_year_cover_coveryear_power = lm(Sponge_Richness ~ Year + log(Percent_Coral_Cover) + log(Percent_Coral_Cover)*Year, data = parameters)
 # # Power models for coral richness
-# sponge_coralrichness_power = lm(Sponge_Richness ~ log(Coral_Richness), data = parameters)
+sponge_coralrichness_power = lm(Sponge_Richness ~ exp(3.5384 + -0.1928*log(Coral_Richness)), data = parameters)
 # sponge_coralrichness_site_power = lm(Sponge_Richness ~ log(Coral_Richness) + Site, data = parameters)
 # sponge_coralrichness_year_power = lm(Sponge_Richness ~ log(Coral_Richness) + Year, data = parameters)
 # sponge_coralrichness_year_site_power = lm(Sponge_Richness ~ log(Coral_Richness) + Year + Site, data = parameters)
@@ -679,34 +688,34 @@ sponge_year_coralrichness_coralrichnessyear_log = lm(Sponge_Richness ~ Year + lo
 
 
 
-# An example of model output in table format
-tab_model(sponge_year, sponge_site, sponge_rugosity, sponge_cover, sponge_coralrichness, sponge_year_site, sponge_rugosity_site, 
-          sponge_cover_site, sponge_coralrichness_site, sponge_rugosity_year, sponge_cover_year, sponge_coralrichness_year,
-          sponge_rugosity_year_site, sponge_cover_year_site, sponge_coralrichness_year_site, sponge_year_site_yearsite,
-          sponge_year_site_yearsite_cover, sponge_year_site_yearsite_rugosity, sponge_year_site_yearsite_coralrichness,
-          sponge_site_rugosity_rugositysite, sponge_site_cover_coversite, sponge_site_coralrichness_coralrichnesssite,
-          sponge_year_rugosity_rugosityyear, sponge_year_cover_coveryear, sponge_year_coralrichness_coralrichnessyear)
-# With logarithmic and power models
-tab_model(sponge_year, sponge_site, sponge_rugosity, sponge_cover, sponge_coralrichness, sponge_year_site, sponge_rugosity_site, 
-          sponge_cover_site, sponge_coralrichness_site, sponge_rugosity_year, sponge_cover_year, sponge_coralrichness_year,
-          sponge_rugosity_year_site, sponge_cover_year_site, sponge_coralrichness_year_site, sponge_year_site_yearsite,
-          sponge_year_site_yearsite_cover, sponge_year_site_yearsite_rugosity, sponge_year_site_yearsite_coralrichness,
-          sponge_site_rugosity_rugositysite, sponge_site_cover_coversite, sponge_site_coralrichness_coralrichnesssite,
-          sponge_year_rugosity_rugosityyear, sponge_year_cover_coveryear, sponge_year_coralrichness_coralrichnessyear, 
-          sponge_rugosity_log, sponge_rugosity_site_log, sponge_rugosity_year_log, sponge_rugosity_year_site_log, 
-          sponge_year_site_yearsite_rugosity_log, sponge_site_rugosity_rugositysite_log, sponge_year_rugosity_rugosityyear_log, 
-          sponge_cover_log, sponge_cover_site_log, sponge_cover_year_log, sponge_cover_year_site_log, 
-          sponge_year_site_yearsite_cover_log, sponge_site_cover_coversite_log, sponge_year_cover_coveryear_log, 
-          sponge_coralrichness_log, sponge_coralrichness_site_log, sponge_coralrichness_year_log, 
-          sponge_coralrichness_year_site_log, sponge_year_site_yearsite_coralrichness_log, 
-          sponge_site_coralrichness_coralrichnesssite_log, sponge_year_coralrichness_coralrichnessyear_log,
-          sponge_rugosity_power, sponge_rugosity_site_power, sponge_rugosity_year_power, sponge_rugosity_year_site_power, 
-          sponge_year_site_yearsite_rugosity_power, sponge_site_rugosity_rugositysite_power, sponge_year_rugosity_rugosityyear_power, 
-          sponge_cover_power, sponge_cover_site_power, sponge_cover_year_power, sponge_cover_year_site_power, 
-          sponge_year_site_yearsite_cover_power, sponge_site_cover_coversite_power, sponge_year_cover_coveryear_power, 
-          sponge_coralrichness_power, sponge_coralrichness_site_power, sponge_coralrichness_year_power, 
-          sponge_coralrichness_year_site_power, sponge_year_site_yearsite_coralrichness_power, 
-          sponge_site_coralrichness_coralrichnesssite_power, sponge_year_coralrichness_coralrichnessyear_power)
+# # An example of model output in table format
+# tab_model(sponge_year, sponge_site, sponge_rugosity, sponge_cover, sponge_coralrichness, sponge_year_site, sponge_rugosity_site, 
+#           sponge_cover_site, sponge_coralrichness_site, sponge_rugosity_year, sponge_cover_year, sponge_coralrichness_year,
+#           sponge_rugosity_year_site, sponge_cover_year_site, sponge_coralrichness_year_site, sponge_year_site_yearsite,
+#           sponge_year_site_yearsite_cover, sponge_year_site_yearsite_rugosity, sponge_year_site_yearsite_coralrichness,
+#           sponge_site_rugosity_rugositysite, sponge_site_cover_coversite, sponge_site_coralrichness_coralrichnesssite,
+#           sponge_year_rugosity_rugosityyear, sponge_year_cover_coveryear, sponge_year_coralrichness_coralrichnessyear)
+# # With logarithmic and power models
+# tab_model(sponge_year, sponge_site, sponge_rugosity, sponge_cover, sponge_coralrichness, sponge_year_site, sponge_rugosity_site, 
+#           sponge_cover_site, sponge_coralrichness_site, sponge_rugosity_year, sponge_cover_year, sponge_coralrichness_year,
+#           sponge_rugosity_year_site, sponge_cover_year_site, sponge_coralrichness_year_site, sponge_year_site_yearsite,
+#           sponge_year_site_yearsite_cover, sponge_year_site_yearsite_rugosity, sponge_year_site_yearsite_coralrichness,
+#           sponge_site_rugosity_rugositysite, sponge_site_cover_coversite, sponge_site_coralrichness_coralrichnesssite,
+#           sponge_year_rugosity_rugosityyear, sponge_year_cover_coveryear, sponge_year_coralrichness_coralrichnessyear, 
+#           sponge_rugosity_log, sponge_rugosity_site_log, sponge_rugosity_year_log, sponge_rugosity_year_site_log, 
+#           sponge_year_site_yearsite_rugosity_log, sponge_site_rugosity_rugositysite_log, sponge_year_rugosity_rugosityyear_log, 
+#           sponge_cover_log, sponge_cover_site_log, sponge_cover_year_log, sponge_cover_year_site_log, 
+#           sponge_year_site_yearsite_cover_log, sponge_site_cover_coversite_log, sponge_year_cover_coveryear_log, 
+#           sponge_coralrichness_log, sponge_coralrichness_site_log, sponge_coralrichness_year_log, 
+#           sponge_coralrichness_year_site_log, sponge_year_site_yearsite_coralrichness_log, 
+#           sponge_site_coralrichness_coralrichnesssite_log, sponge_year_coralrichness_coralrichnessyear_log,
+#           sponge_rugosity_power, sponge_rugosity_site_power, sponge_rugosity_year_power, sponge_rugosity_year_site_power, 
+#           sponge_year_site_yearsite_rugosity_power, sponge_site_rugosity_rugositysite_power, sponge_year_rugosity_rugosityyear_power, 
+#           sponge_cover_power, sponge_cover_site_power, sponge_cover_year_power, sponge_cover_year_site_power, 
+#           sponge_year_site_yearsite_cover_power, sponge_site_cover_coversite_power, sponge_year_cover_coveryear_power, 
+#           sponge_coralrichness_power, sponge_coralrichness_site_power, sponge_coralrichness_year_power, 
+#           sponge_coralrichness_year_site_power, sponge_year_site_yearsite_coralrichness_power, 
+#           sponge_site_coralrichness_coralrichnesssite_power, sponge_year_coralrichness_coralrichnessyear_power)
 
 
 
@@ -756,8 +765,11 @@ coral_cover_year_site_log = lm(Coral_Richness ~ log(Percent_Coral_Cover) + Year 
 coral_year_site_yearsite_cover_log = lm(Coral_Richness ~ Year + Site + Year*Site + log(Percent_Coral_Cover), data = parameters)
 coral_site_cover_coversite_log = lm(Coral_Richness ~ Site + log(Percent_Coral_Cover) + log(Percent_Coral_Cover)*Site, data = parameters)
 coral_year_cover_coveryear_log = lm(Coral_Richness ~ Year + log(Percent_Coral_Cover) + log(Percent_Coral_Cover)*Year, data = parameters)
+## Get coefficients for power models
+lm(log(Coral_Richness) ~ log(Rugosity), data = parameters)
+lm(log(Coral_Richness) ~ log(Percent_Coral_Cover), data = parameters)
 # # Power models for rugosity
-# coral_rugosity_power = lm(Fish_Richness ~ log(Rugosity), data = parameters)
+coral_rugosity_power = lm(Coral_Richness ~ exp(1.267 + 0.332*log(Rugosity)), data = parameters)
 # coral_rugosity_site_power = lm(Fish_Richness ~ log(Rugosity) + Site, data = parameters)
 # coral_rugosity_year_power = lm(Fish_Richness ~ log(Rugosity) + Year, data = parameters)
 # coral_rugosity_year_site_power = lm(Fish_Richness ~ log(Rugosity) + Year + Site, data = parameters)
@@ -765,7 +777,7 @@ coral_year_cover_coveryear_log = lm(Coral_Richness ~ Year + log(Percent_Coral_Co
 # coral_site_rugosity_rugositysite_power = lm(Fish_Richness ~ Site + log(Rugosity) + log(Rugosity)*Site, data = parameters)
 # coral_year_rugosity_rugosityyear_power = lm(Fish_Richness ~ Year + log(Rugosity) + log(Rugosity)*Year, data = parameters)
 # # Power models for cover
-# coral_cover_power = lm(Fish_Richness ~ log(Percent_Coral_Cover), data = parameters)
+coral_cover_power = lm(Coral_Richness ~ exp(1.6023 + 0.3209*log(Percent_Coral_Cover)), data = parameters)
 # coral_cover_site_power = lm(Fish_Richness ~ log(Percent_Coral_Cover) + Site, data = parameters)
 # coral_cover_year_power = lm(Fish_Richness ~ log(Percent_Coral_Cover) + Year, data = parameters)
 # coral_cover_year_site_power = lm(Fish_Richness ~ log(Percent_Coral_Cover) + Year + Site, data = parameters)
@@ -775,26 +787,26 @@ coral_year_cover_coveryear_log = lm(Coral_Richness ~ Year + log(Percent_Coral_Co
 
 
 
-# An example of model output in table format
-tab_model(coral_year, coral_site, coral_rugosity, coral_cover, coral_year_site, coral_rugosity_site, 
-          coral_cover_site, coral_rugosity_year, coral_cover_year,coral_rugosity_year_site, coral_cover_year_site, 
-          coral_year_site_yearsite, coral_year_site_yearsite_cover, coral_year_site_yearsite_rugosity, 
-          coral_site_rugosity_rugositysite, coral_site_cover_coversite, coral_year_rugosity_rugosityyear, coral_year_cover_coveryear)
-# With logarithmic and power models
-tab_model(coral_year, coral_site, coral_rugosity, coral_cover, coral_year_site, coral_rugosity_site, 
-          coral_cover_site, coral_rugosity_year, coral_cover_year, 
-          coral_rugosity_year_site, coral_cover_year_site, coral_year_site_yearsite,
-          coral_year_site_yearsite_cover, coral_year_site_yearsite_rugosity,
-          coral_site_rugosity_rugositysite, coral_site_cover_coversite,
-          coral_year_rugosity_rugosityyear, coral_year_cover_coveryear,  
-          coral_rugosity_log, coral_rugosity_site_log, coral_rugosity_year_log, coral_rugosity_year_site_log, 
-          coral_year_site_yearsite_rugosity_log, coral_site_rugosity_rugositysite_log, coral_year_rugosity_rugosityyear_log, 
-          coral_cover_log, coral_cover_site_log, coral_cover_year_log, coral_cover_year_site_log, 
-          coral_year_site_yearsite_cover_log, coral_site_cover_coversite_log, coral_year_cover_coveryear_log, 
-          coral_rugosity_power, coral_rugosity_site_power, coral_rugosity_year_power, coral_rugosity_year_site_power, 
-          coral_year_site_yearsite_rugosity_power, coral_site_rugosity_rugositysite_power, coral_year_rugosity_rugosityyear_power, 
-          coral_cover_power, coral_cover_site_power, coral_cover_year_power, coral_cover_year_site_power, 
-          coral_year_site_yearsite_cover_power, coral_site_cover_coversite_power, coral_year_cover_coveryear_power)
+# # An example of model output in table format
+# tab_model(coral_year, coral_site, coral_rugosity, coral_cover, coral_year_site, coral_rugosity_site, 
+#           coral_cover_site, coral_rugosity_year, coral_cover_year,coral_rugosity_year_site, coral_cover_year_site, 
+#           coral_year_site_yearsite, coral_year_site_yearsite_cover, coral_year_site_yearsite_rugosity, 
+#           coral_site_rugosity_rugositysite, coral_site_cover_coversite, coral_year_rugosity_rugosityyear, coral_year_cover_coveryear)
+# # With logarithmic and power models
+# tab_model(coral_year, coral_site, coral_rugosity, coral_cover, coral_year_site, coral_rugosity_site, 
+#           coral_cover_site, coral_rugosity_year, coral_cover_year, 
+#           coral_rugosity_year_site, coral_cover_year_site, coral_year_site_yearsite,
+#           coral_year_site_yearsite_cover, coral_year_site_yearsite_rugosity,
+#           coral_site_rugosity_rugositysite, coral_site_cover_coversite,
+#           coral_year_rugosity_rugosityyear, coral_year_cover_coveryear,  
+#           coral_rugosity_log, coral_rugosity_site_log, coral_rugosity_year_log, coral_rugosity_year_site_log, 
+#           coral_year_site_yearsite_rugosity_log, coral_site_rugosity_rugositysite_log, coral_year_rugosity_rugosityyear_log, 
+#           coral_cover_log, coral_cover_site_log, coral_cover_year_log, coral_cover_year_site_log, 
+#           coral_year_site_yearsite_cover_log, coral_site_cover_coversite_log, coral_year_cover_coveryear_log, 
+#           coral_rugosity_power, coral_rugosity_site_power, coral_rugosity_year_power, coral_rugosity_year_site_power, 
+#           coral_year_site_yearsite_rugosity_power, coral_site_rugosity_rugositysite_power, coral_year_rugosity_rugosityyear_power, 
+#           coral_cover_power, coral_cover_site_power, coral_cover_year_power, coral_cover_year_site_power, 
+#           coral_year_site_yearsite_cover_power, coral_site_cover_coversite_power, coral_year_cover_coveryear_power)
 
 
 
@@ -851,8 +863,12 @@ combined_coralrichness_year_site_log = lm(Combined_Richness ~ log(Coral_Richness
 combined_year_site_yearsite_coralrichness_log = lm(Combined_Richness ~ Year + Site + Year*Site + log(Coral_Richness), data = parameters)
 combined_site_coralrichness_coralrichnesssite_log = lm(Combined_Richness ~ Site + log(Coral_Richness) + log(Coral_Richness)*Site, data = parameters)
 combined_year_coralrichness_coralrichnessyear_log = lm(Combined_Richness ~ Year + log(Coral_Richness) + log(Coral_Richness)*Year, data = parameters)
+## Get coefficients for power models
+lm(log(Combined_Richness) ~ log(Rugosity), data = parameters)
+lm(log(Combined_Richness) ~ log(Percent_Coral_Cover), data = parameters)
+lm(log(Combined_Richness) ~ log(Coral_Richness), data = parameters)
 # # Power models for rugosity
-# combined_rugosity_power = lm(Combined_Richness ~ log(Rugosity), data = parameters)
+combined_rugosity_power = lm(Combined_Richness ~ exp(3.2946 + 0.2075*log(Rugosity)), data = parameters)
 # combined_rugosity_site_power = lm(Combined_Richness ~ log(Rugosity) + Site, data = parameters)
 # combined_rugosity_year_power = lm(Combined_Richness ~ log(Rugosity) + Year, data = parameters)
 # combined_rugosity_year_site_power = lm(Combined_Richness ~ log(Rugosity) + Year + Site, data = parameters)
@@ -860,7 +876,7 @@ combined_year_coralrichness_coralrichnessyear_log = lm(Combined_Richness ~ Year 
 # combined_site_rugosity_rugositysite_power = lm(Combined_Richness ~ Site + log(Rugosity) + log(Rugosity)*Site, data = parameters)
 # combined_year_rugosity_rugosityyear_power = lm(Combined_Richness ~ Year + log(Rugosity) + log(Rugosity)*Year, data = parameters)
 # # Power models for cover
-# combined_cover_power = lm(Combined_Richness ~ log(Percent_Coral_Cover), data = parameters)
+combined_cover_power = lm(Combined_Richness ~ exp(3.79667 + 0.09738*log(Percent_Coral_Cover)), data = parameters)
 # combined_cover_site_power = lm(Combined_Richness ~ log(Percent_Coral_Cover) + Site, data = parameters)
 # combined_cover_year_power = lm(Combined_Richness ~ log(Percent_Coral_Cover) + Year, data = parameters)
 # combined_cover_year_site_power = lm(Combined_Richness ~ log(Percent_Coral_Cover) + Year + Site, data = parameters)
@@ -868,7 +884,7 @@ combined_year_coralrichness_coralrichnessyear_log = lm(Combined_Richness ~ Year 
 # combined_site_cover_coversite_power = lm(Combined_Richness ~ Site + log(Percent_Coral_Cover) + log(Percent_Coral_Cover)*Site, data = parameters)
 # combined_year_cover_coveryear_power = lm(Combined_Richness ~ Year + log(Percent_Coral_Cover) + log(Percent_Coral_Cover)*Year, data = parameters)
 # # Power models for coral richness
-# combined_coralrichness_power = lm(Combined_Richness ~ log(Coral_Richness), data = parameters)
+combined_coralrichness_power = lm(Combined_Richness ~ exp(3.3461 + 0.2876*log(Coral_Richness)), data = parameters)
 # combined_coralrichness_site_power = lm(Combined_Richness ~ log(Coral_Richness) + Site, data = parameters)
 # combined_coralrichness_year_power = lm(Combined_Richness ~ log(Coral_Richness) + Year, data = parameters)
 # combined_coralrichness_year_site_power = lm(Combined_Richness ~ log(Coral_Richness) + Year + Site, data = parameters)
@@ -878,34 +894,34 @@ combined_year_coralrichness_coralrichnessyear_log = lm(Combined_Richness ~ Year 
 
 
 
-# An example of model output in table format
-tab_model(combined_year, combined_site, combined_rugosity, combined_cover, combined_coralrichness, combined_year_site, combined_rugosity_site, 
-          combined_cover_site, combined_coralrichness_site, combined_rugosity_year, combined_cover_year, combined_coralrichness_year,
-          combined_rugosity_year_site, combined_cover_year_site, combined_coralrichness_year_site, combined_year_site_yearsite,
-          combined_year_site_yearsite_cover, combined_year_site_yearsite_rugosity, combined_year_site_yearsite_coralrichness,
-          combined_site_rugosity_rugositysite, combined_site_cover_coversite, combined_site_coralrichness_coralrichnesssite,
-          combined_year_rugosity_rugosityyear, combined_year_cover_coveryear, combined_year_coralrichness_coralrichnessyear)
-# With logarithmic and power models
-tab_model(combined_year, combined_site, combined_rugosity, combined_cover, combined_coralrichness, combined_year_site, combined_rugosity_site, 
-          combined_cover_site, combined_coralrichness_site, combined_rugosity_year, combined_cover_year, combined_coralrichness_year,
-          combined_rugosity_year_site, combined_cover_year_site, combined_coralrichness_year_site, combined_year_site_yearsite,
-          combined_year_site_yearsite_cover, combined_year_site_yearsite_rugosity, combined_year_site_yearsite_coralrichness,
-          combined_site_rugosity_rugositysite, combined_site_cover_coversite, combined_site_coralrichness_coralrichnesssite,
-          combined_year_rugosity_rugosityyear, combined_year_cover_coveryear, combined_year_coralrichness_coralrichnessyear, 
-          combined_rugosity_log, combined_rugosity_site_log, combined_rugosity_year_log, combined_rugosity_year_site_log, 
-          combined_year_site_yearsite_rugosity_log, combined_site_rugosity_rugositysite_log, combined_year_rugosity_rugosityyear_log, 
-          combined_cover_log, combined_cover_site_log, combined_cover_year_log, combined_cover_year_site_log, 
-          combined_year_site_yearsite_cover_log, combined_site_cover_coversite_log, combined_year_cover_coveryear_log, 
-          combined_coralrichness_log, combined_coralrichness_site_log, combined_coralrichness_year_log, 
-          combined_coralrichness_year_site_log, combined_year_site_yearsite_coralrichness_log, 
-          combined_site_coralrichness_coralrichnesssite_log, combined_year_coralrichness_coralrichnessyear_log,
-          combined_rugosity_power, combined_rugosity_site_power, combined_rugosity_year_power, combined_rugosity_year_site_power, 
-          combined_year_site_yearsite_rugosity_power, combined_site_rugosity_rugositysite_power, combined_year_rugosity_rugosityyear_power, 
-          combined_cover_power, combined_cover_site_power, combined_cover_year_power, combined_cover_year_site_power, 
-          combined_year_site_yearsite_cover_power, combined_site_cover_coversite_power, combined_year_cover_coveryear_power, 
-          combined_coralrichness_power, combined_coralrichness_site_power, combined_coralrichness_year_power, 
-          combined_coralrichness_year_site_power, combined_year_site_yearsite_coralrichness_power, 
-          combined_site_coralrichness_coralrichnesssite_power, combined_year_coralrichness_coralrichnessyear_power)
+# # An example of model output in table format
+# tab_model(combined_year, combined_site, combined_rugosity, combined_cover, combined_coralrichness, combined_year_site, combined_rugosity_site, 
+#           combined_cover_site, combined_coralrichness_site, combined_rugosity_year, combined_cover_year, combined_coralrichness_year,
+#           combined_rugosity_year_site, combined_cover_year_site, combined_coralrichness_year_site, combined_year_site_yearsite,
+#           combined_year_site_yearsite_cover, combined_year_site_yearsite_rugosity, combined_year_site_yearsite_coralrichness,
+#           combined_site_rugosity_rugositysite, combined_site_cover_coversite, combined_site_coralrichness_coralrichnesssite,
+#           combined_year_rugosity_rugosityyear, combined_year_cover_coveryear, combined_year_coralrichness_coralrichnessyear)
+# # With logarithmic and power models
+# tab_model(combined_year, combined_site, combined_rugosity, combined_cover, combined_coralrichness, combined_year_site, combined_rugosity_site, 
+#           combined_cover_site, combined_coralrichness_site, combined_rugosity_year, combined_cover_year, combined_coralrichness_year,
+#           combined_rugosity_year_site, combined_cover_year_site, combined_coralrichness_year_site, combined_year_site_yearsite,
+#           combined_year_site_yearsite_cover, combined_year_site_yearsite_rugosity, combined_year_site_yearsite_coralrichness,
+#           combined_site_rugosity_rugositysite, combined_site_cover_coversite, combined_site_coralrichness_coralrichnesssite,
+#           combined_year_rugosity_rugosityyear, combined_year_cover_coveryear, combined_year_coralrichness_coralrichnessyear, 
+#           combined_rugosity_log, combined_rugosity_site_log, combined_rugosity_year_log, combined_rugosity_year_site_log, 
+#           combined_year_site_yearsite_rugosity_log, combined_site_rugosity_rugositysite_log, combined_year_rugosity_rugosityyear_log, 
+#           combined_cover_log, combined_cover_site_log, combined_cover_year_log, combined_cover_year_site_log, 
+#           combined_year_site_yearsite_cover_log, combined_site_cover_coversite_log, combined_year_cover_coveryear_log, 
+#           combined_coralrichness_log, combined_coralrichness_site_log, combined_coralrichness_year_log, 
+#           combined_coralrichness_year_site_log, combined_year_site_yearsite_coralrichness_log, 
+#           combined_site_coralrichness_coralrichnesssite_log, combined_year_coralrichness_coralrichnessyear_log,
+#           combined_rugosity_power, combined_rugosity_site_power, combined_rugosity_year_power, combined_rugosity_year_site_power, 
+#           combined_year_site_yearsite_rugosity_power, combined_site_rugosity_rugositysite_power, combined_year_rugosity_rugosityyear_power, 
+#           combined_cover_power, combined_cover_site_power, combined_cover_year_power, combined_cover_year_site_power, 
+#           combined_year_site_yearsite_cover_power, combined_site_cover_coversite_power, combined_year_cover_coveryear_power, 
+#           combined_coralrichness_power, combined_coralrichness_site_power, combined_coralrichness_year_power, 
+#           combined_coralrichness_year_site_power, combined_year_site_yearsite_coralrichness_power, 
+#           combined_site_coralrichness_coralrichnesssite_power, combined_year_coralrichness_coralrichnessyear_power)
 
 
 
@@ -1267,21 +1283,13 @@ ggplot(parameters, aes(x = Year, y = Rugosity, group = Site, color = Site)) +
         panel.grid.minor = element_line(colour="light gray", size = (0.5)),
         panel.background = element_blank(), 
         axis.line = element_line(colour = "black"))
-#*7*
 
 
 
 
 
-#######################Plots with site################################*7*
-ggplot(parameters, aes(x = Percent_Coral_Cover, y = Coral_Richness)) + 
-  #geom_line(size = 1.1) +
-  geom_point(size = 5, aes(color = parameters$Site))+
-  scale_x_continuous(name ="Coral Cover (%)") +
-  scale_y_continuous(name ="Coral Richness") +
-  geom_smooth(method = "lm",formula = y ~ x) +
-  geom_smooth(method = ,formula = y ~ log(x), color = "red")
 
+#######################Plots with site################################
 # Plots where x = % cover
 ggplot(parameters, aes(x = Percent_Coral_Cover, y = Coral_Richness, color = Site)) + 
   #geom_line(size = 1.1) +
@@ -1520,3 +1528,61 @@ ggplot(parameters, aes(x = Coral_Richness, y = Combined_Richness)) +
   scale_y_continuous(name ="Combined Richness") +
   scale_color_gradient(low="lightblue", high="darkblue") +
   facet_wrap(~ Site)
+################################################################
+# AIC Table and Figures for presentation *7*
+#Coral Richness and Rugosity
+ggplot(parameters, aes(x = Rugosity, y = Coral_Richness)) + 
+  geom_point(size = 3)+
+  scale_x_continuous(name ="Rugosity") +
+  scale_y_continuous(name ="Coral Richness") +
+  geom_smooth(size = 1.2, method = "lm", formula = y ~ x, aes(color = "Linear")) +
+  geom_smooth(size = 1.2, method = "lm", formula = y ~ log(x), aes(color = "Logarithmic")) +
+  geom_smooth(size = 1.2, method = "lm", formula = y ~ exp(1.267 + 0.332*log(x)), aes(color = "Power")) +
+  scale_colour_manual(name = "Models", values = c("blue", "red", "green")) +
+  theme(text=element_text(size=27), 
+        panel.grid.major = element_line(colour="light gray", size = (0.5)), 
+        panel.grid.minor = element_line(colour="light gray", size = (0.5)),
+        panel.background = element_blank(), 
+        axis.line = element_line(colour = "black"))
+#Coral Richness and Coral Cover
+ggplot(parameters, aes(x = Percent_Coral_Cover, y = Coral_Richness)) + 
+  #geom_line(size = 1.1) +
+  #geom_point(size = 5, aes(color = parameters$Site))+
+  geom_point(size = 3)+
+  scale_x_continuous(name ="Coral Cover (%)") +
+  scale_y_continuous(name ="Coral Richness") +
+  geom_smooth(size = 1.2, method = "lm", formula = y ~ x, aes(color = "Linear")) +
+  geom_smooth(size = 1.2, method = "lm", formula = y ~ log(x), aes(color = "Logarithmic")) +
+  geom_smooth(size = 1.2, method = "lm", formula = y ~ exp(1.6023 + 0.3209*log(x)), aes(color = "Power")) +
+  scale_colour_manual(name = "Models", values = c("blue", "red", "green")) +
+  theme(text=element_text(size=27), 
+        #axis.text.x=element_text(angle = +90, hjust = 0),
+        panel.grid.major = element_line(colour="light gray", size = (0.5)), 
+        panel.grid.minor = element_line(colour="light gray", size = (0.5)),
+        panel.background = element_blank(), 
+        axis.line = element_line(colour = "black"))
+
+#AIC for presentation
+coral_models_presentation <- list(coral_year, coral_site, coral_rugosity, coral_cover, coral_year_site, coral_rugosity_site,
+                              coral_cover_site, coral_rugosity_year, coral_cover_year,coral_rugosity_year_site, coral_cover_year_site,
+                              coral_year_site_yearsite, coral_year_site_yearsite_cover, coral_year_site_yearsite_rugosity,
+                              coral_site_rugosity_rugositysite, coral_site_cover_coversite, coral_year_rugosity_rugosityyear, coral_year_cover_coveryear,
+                              coral_rugosity_log, coral_rugosity_site_log, coral_rugosity_year_log, coral_rugosity_year_site_log,
+                              coral_year_site_yearsite_rugosity_log, coral_site_rugosity_rugositysite_log, coral_year_rugosity_rugosityyear_log,
+                              coral_cover_log, coral_cover_site_log, coral_cover_year_log, coral_cover_year_site_log,
+                              coral_year_site_yearsite_cover_log, coral_site_cover_coversite_log, coral_year_cover_coveryear_log,
+                               coral_rugosity_power, coral_cover_power)
+coral_model_names_presentation <- c("year", "site", "rugosity", "cover", "year + site", "rugosity + site",
+                                 "cover + site", "rugosity + year", "cover + year","rugosity + year + site", "cover + year + site",
+                                 "year + site + year*site", "year + site + year*site + cover", "year + site + year*site + rugosity",
+                                 "site + rugosity + rugosity*site", "site + cover + cover*site", "year + rugosity + rugosity*year",
+                                 "year + cover + cover*year",
+                                 "log(rugosity)", "log(rugosity) + site", "log(rugosity) + year", "log(rugosity) + site + year",
+                                 "log(rugosity) + site + year + year*site", "log(rugosity) + site + log(rugosity)*site",
+                                 "log(rugosity) + year + log(rugosity)*year", "log(cover)", "log(cover) + site", "log(cover) + year",
+                                 "log(cover) + site + year", "log(cover) + site + year + year*site", "log(cover) + site + log(cover)*site",
+                                 "log(cover) + year + log(cover)*year",
+                                 "power(rugosity)", "power(cover)")
+# AIC table with log and power models
+coral_aic_table_presentation <- aictab(coral_models_presentation, modnames = coral_model_names_presentation, digits = 4)
+#write.csv(coral_aic_table_presentation, file = "coral_aic_table_presentation.csv")
