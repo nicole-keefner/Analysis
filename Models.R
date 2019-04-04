@@ -31,11 +31,10 @@ library(ggplot2)
 
 ## Import variables.csv dataset
 variables <- read.csv("variables.csv", header = T)
-
+# Note that year is treated as type integer and is therefore continuous
 
 # ***When feel comfortable regarding models, review again with year as categorical for more support
-# Change year to numeric to make it continuous for models
-variables$Year <- as.numeric(variables$Year)
+
 
 # Models for fish richness
 fish_year = lm(Fish_Richness ~ Year, data = variables)
@@ -915,8 +914,8 @@ ggplot(variables, aes(x = Coral_Richness, y = Fish_Richness)) +
   scale_x_continuous(name ="Coral Richness") +
   scale_y_continuous(name ="Fish Richness") +
   geom_smooth(size = 1.2, method = "lm", formula = y ~ x, aes(color = "Linear")) +
-  geom_smooth(size = 1.2, method = "lm", formula = y ~ log(x), aes(color = "Logarithmic")) +
-  geom_smooth(size = 1.2, method = "lm", formula = y ~ exp(2.1422 + 0.4041*log(x)), aes(color = "Power")) +
+  #geom_smooth(size = 1.2, method = "lm", formula = y ~ log(x), aes(color = "Logarithmic")) +
+  #geom_smooth(size = 1.2, method = "lm", formula = y ~ exp(2.1422 + 0.4041*log(x)), aes(color = "Power")) +
   scale_colour_manual(name = "Models", values = c("blue", "red", "green")) +
   theme(text=element_text(size=27), 
         panel.grid.major = element_line(colour="light gray", size = (0.5)), 
@@ -930,8 +929,8 @@ ggplot(variables, aes(x = Rugosity, y = Sponge_Richness)) +
   scale_x_continuous(name ="Rugosity") +
   scale_y_continuous(name ="Sponge Richness") +
   geom_smooth(size = 1.2, method = "lm", formula = y ~ x, aes(color = "Linear")) +
-  geom_smooth(size = 1.2, method = "lm", formula = y ~ log(x), aes(color = "Logarithmic")) +
-  geom_smooth(size = 1.2, method = "lm", formula = y ~ exp(3.4258 + -0.1012*log(x)), aes(color = "Power")) +
+  #geom_smooth(size = 1.2, method = "lm", formula = y ~ log(x), aes(color = "Logarithmic")) +
+  #geom_smooth(size = 1.2, method = "lm", formula = y ~ exp(3.4258 + -0.1012*log(x)), aes(color = "Power")) +
   scale_colour_manual(name = "Models", values = c("blue", "red", "green")) +
   theme(text=element_text(size=27), 
         panel.grid.major = element_line(colour="light gray", size = (0.5)), 
@@ -945,8 +944,8 @@ ggplot(variables, aes(x = Percent_Coral_Cover, y = Sponge_Richness)) +
   scale_x_continuous(name ="Coral Cover (%)") +
   scale_y_continuous(name ="Sponge Richness") +
   geom_smooth(size = 1.2, method = "lm", formula = y ~ x, aes(color = "Linear")) +
-  geom_smooth(size = 1.2, method = "lm", formula = y ~ log(x), aes(color = "Logarithmic")) +
-  geom_smooth(size = 1.2, method = "lm", formula = y ~ exp(3.4226 + -0.1344*log(x)), aes(color = "Power")) +
+  #geom_smooth(size = 1.2, method = "lm", formula = y ~ log(x), aes(color = "Logarithmic")) +
+  #geom_smooth(size = 1.2, method = "lm", formula = y ~ exp(3.4226 + -0.1344*log(x)), aes(color = "Power")) +
   scale_colour_manual(name = "Models", values = c("blue", "red", "green")) +
   theme(text=element_text(size=27), 
         panel.grid.major = element_line(colour="light gray", size = (0.5)), 
@@ -960,8 +959,8 @@ ggplot(variables, aes(x = Coral_Richness, y = Sponge_Richness)) +
   scale_x_continuous(name ="Coral Richness") +
   scale_y_continuous(name ="Sponge Richness") +
   geom_smooth(size = 1.2, method = "lm", formula = y ~ x, aes(color = "Linear")) +
-  geom_smooth(size = 1.2, method = "lm", formula = y ~ log(x), aes(color = "Logarithmic")) +
-  geom_smooth(size = 1.2, method = "lm", formula = y ~ exp(3.5587 + -0.2029*log(x)), aes(color = "Power")) +
+  #geom_smooth(size = 1.2, method = "lm", formula = y ~ log(x), aes(color = "Logarithmic")) +
+  #geom_smooth(size = 1.2, method = "lm", formula = y ~ exp(3.5587 + -0.2029*log(x)), aes(color = "Power")) +
   scale_colour_manual(name = "Models", values = c("blue", "red", "green")) +
   theme(text=element_text(size=27), 
         panel.grid.major = element_line(colour="light gray", size = (0.5)), 
@@ -975,6 +974,8 @@ ggplot(variables, aes(x = Rugosity, y = Coral_Richness)) +
   scale_x_continuous(name ="Rugosity") +
   scale_y_continuous(name ="Coral Richness") +
   geom_smooth(size = 1.2, method = "lm", formula = y ~ x, aes(color = "Linear")) +
+  geom_smooth(size = 1.2, method = "lm", formula = y ~ log(x), aes(color = "Logarithmic")) +
+  geom_smooth(size = 1.2, method = "lm", formula = y ~ exp(0.8607 + 0.9674*log(x)), aes(color = "Power")) +
   scale_colour_manual(name = "Models", values = c("blue")) +
   theme(text=element_text(size=27), 
         panel.grid.major = element_line(colour="light gray", size = (0.5)), 
@@ -1033,8 +1034,8 @@ ggplot(variables, aes(x = Coral_Richness, y = Combined_Richness)) +
   scale_x_continuous(name ="Coral Richness") +
   scale_y_continuous(name ="Combined Richness") +
   geom_smooth(size = 1.2, method = "lm", formula = y ~ x, aes(color = "Linear")) +
-  geom_smooth(size = 1.2, method = "lm", formula = y ~ log(x), aes(color = "Logarithmic")) +
-  geom_smooth(size = 1.2, method = "lm", formula = y ~ exp(3.3032 + 0.3036*log(x)), aes(color = "Power")) +
+  #geom_smooth(size = 1.2, method = "lm", formula = y ~ log(x), aes(color = "Logarithmic")) +
+  #geom_smooth(size = 1.2, method = "lm", formula = y ~ exp(3.3032 + 0.3036*log(x)), aes(color = "Power")) +
   scale_colour_manual(name = "Models", values = c("blue", "red", "green")) +
   theme(text=element_text(size=27), 
         panel.grid.major = element_line(colour="light gray", size = (0.5)), 
@@ -1122,7 +1123,7 @@ ggplot(variables, aes(x = Coral_Richness, y = Fish_Richness, group = Site, color
         axis.line = element_line(colour = "black"))
 
 # Change year to numeric to allow for color gradient
-variables$Year <- as.numeric(variables$Year)
+variables$Year <- as.numeric(as.character(variables$Year))
 
 # Across time when x = Rugosity
 ggplot(variables, aes(x = Rugosity, y = Fish_Richness)) + 
@@ -1258,7 +1259,7 @@ ggplot(variables, aes(x = Coral_Richness, y = Sponge_Richness, group = Site, col
         axis.line = element_line(colour = "black"))
 
 # Change year to numeric to allow for color gradient
-variables$Year <- as.numeric(variables$Year)
+variables$Year <- as.numeric(as.character(variables$Year))
 
 # Across time when x = Rugosity
 ggplot(variables, aes(x = Rugosity, y = Sponge_Richness)) + 
@@ -1377,7 +1378,7 @@ ggplot(variables, aes(x = Percent_Coral_Cover, y = Coral_Richness, group = Site,
         axis.line = element_line(colour = "black"))
 
 # Change year to numeric to allow for color gradient
-variables$Year <- as.numeric(variables$Year)
+variables$Year <- as.numeric(as.character(variables$Year))
 
 # Across time when x = Rugosity
 ggplot(variables, aes(x = Rugosity, y = Coral_Richness)) + 
@@ -1482,7 +1483,7 @@ ggplot(variables, aes(x = Coral_Richness, y = Combined_Richness, group = Site, c
         axis.line = element_line(colour = "black"))
 
 # Change year to numeric to allow for color gradient
-variables$Year <- as.numeric(variables$Year)
+variables$Year <- as.numeric(as.character(variables$Year))
 
 # Across time when x = Rugosity
 ggplot(variables, aes(x = Rugosity, y = Combined_Richness)) + 
