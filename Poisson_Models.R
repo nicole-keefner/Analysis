@@ -61,7 +61,29 @@ hist(variables$Sponge_and_Fish_Richness, breaks = 25)
 
 
 # For Poisson distribution:
-#fish_year_p = gglm.nb(Fish_Richness ~ Year, data = variables, family = poisson)
+fish_year_p = glm(Fish_Richness ~ Year, data = variables, family = poisson)
+
+# Compare log liklihoods between negative binomial (m1; df=2) and Poisson (m2; df=1)
+m1 = glm.nb(Fish_Richness ~ 1, data = variables)
+m2 = glm(Fish_Richness ~ 1, data = variables, family = poisson)
+logLik(m1)
+logLik(m2)
+m1 = glm.nb(Coral_Richness ~ 1, data = variables)
+m2 = glm(Coral_Richness ~ 1, data = variables, family = poisson)
+logLik(m1)
+logLik(m2)
+m1 = glm.nb(Sponge_Richness ~ 1, data = variables)
+m2 = glm(Sponge_Richness ~ 1, data = variables, family = poisson)
+logLik(m1)
+logLik(m2)
+m1 = glm.nb(Sponge_and_Fish_Richness ~ 1, data = sponge_complete)
+m2 = glm(Sponge_and_Fish_Richness ~ 1, data = variables, family = poisson)
+logLik(m1)
+logLik(m2)
+m1 = glm.nb(Combined_Richness ~ 1, data = variables)
+m2 = glm(Combined_Richness ~ 1, data = variables, family = poisson)
+logLik(m1)
+logLik(m2)
 
 
 
