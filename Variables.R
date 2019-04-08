@@ -436,6 +436,21 @@ variables <- merge(variables, sponge_richness, by = "Site_Year", all = T)
 variables <- merge(variables, fish_richness, by = "Site_Year", all = T)
 variables <- variables[,c("Site_Year","Percent_Coral_Cover", "Rugosity", "Coral_Richness", "Sponge_Richness", "Fish_Richness")]
 
+# ***Add a column called Sponge_and_Fish_Richness that adds the richness of sponges and fishes
+# However, the sponge and fish richness will only be calculated for the Site_Year combinations where
+# richness values are present for both groups.
+# Subset variables data to only Site_Year and richnesses
+sponge_and_fish_richness <- variables[,c("Site_Year", "Sponge_Richness", "Fish_Richness")]
+# Check for complete cases and remove any rows with missing data
+sponge_and_fish_richness <- sponge_and_fish_richness[complete.cases(sponge_and_fish_richness), ]
+# Create new column called Sponge_and_Fish_Richness with the sum of coral, sponge, and fish richness
+sponge_and_fish_richness$Sponge_and_Fish_Richness <- sponge_and_fish_richness$Sponge_Richness + sponge_and_fish_richness$Fish_Richness
+# Remove richness columns except combined
+sponge_and_fish_richness <- sponge_and_fish_richness[,c("Site_Year", "Sponge_and_Fish_Richness")]
+
+# Merge sponge_and_fish_richness with the variables dataframe
+variables <- merge(variables, sponge_and_fish_richness, by = "Site_Year", all = T)
+
 # ***Add a column called Combined_Richness that adds the richness of corals, sponges, and fishes
 # However, the combined richness will only be calculated for the Site_Year combinations where
 # richness values are present for all 3 groups.
@@ -450,6 +465,8 @@ combined_richness <- combined_richness[,c("Site_Year", "Combined_Richness")]
 
 # Merge combined_richness with the variables dataframe
 variables <- merge(variables, combined_richness, by = "Site_Year", all = T)
+
+
 
 # Split Site_Year column into separate Year and Site columns
 variables$Site_Year <- as.character(variables$Site_Year)
