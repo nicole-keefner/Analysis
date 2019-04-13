@@ -471,6 +471,15 @@ variables <- merge(variables, combined_richness, by = "Site_Year", all = T)
 # Split Site_Year column into separate Year and Site columns
 variables$Site_Year <- as.character(variables$Site_Year)
 variables <- separate(variables, Site_Year, into = c("Year", "Site"), sep="_")
+# Make Site type factor and Year type integer
+variables$Site <- as.factor(variables$Site)
+variables$Year <- as.integer(variables$Year)
+
+# Rename Year column True_Year
+colnames(variables)[colnames(variables) == "Year"] <- "True_Year"
+# Create new column called Year with the first year (1992) set to 0
+# Using time starting at zero helps interpreting the intercept of the model and gives numerical stability
+variables$Year <- variables$True_Year - 1992
 
 # Save this variables table as a .csv
 #write.table(variables, file="variables.csv", sep=",", col.names=TRUE,row.names=FALSE)

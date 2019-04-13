@@ -34,8 +34,8 @@ library(MASS)
 ## Import variables.csv dataset
 variables <- read.csv("variables.csv", header = T)
 # Note that year is treated as type integer and is therefore continuous
-# Change year to numeric, so that it is 1-27 instead of 1992-2018
-variables$Year <- as.numeric(variables$Year)
+
+
 
 # Because there are NA's in the Sponge_Richness column, R will be unable to calculate summary values
 # Create subset of data called "sponge_complete" that retains only complete cases for Sponge_Richness
@@ -61,13 +61,16 @@ hist(variables$Sponge_and_Fish_Richness, breaks = 25)
 
 
 # For Poisson distribution:
-fish_year_p = glm(Fish_Richness ~ Year, data = variables, family = poisson)
+#fish_year_p = glm(Fish_Richness ~ Year, data = variables, family = poisson)
 
 # Compare log liklihoods between negative binomial (m1; df=2) and Poisson (m2; df=1)
 m1 = glm.nb(Fish_Richness ~ 1, data = variables)
 m2 = glm(Fish_Richness ~ 1, data = variables, family = poisson)
 logLik(m1)
 logLik(m2)
+# Found this on 2 different websites, but I don't know how to interpret the result
+#pchisq(2 * (logLik(m1) - logLik(m2)), df = 1, lower.tail = FALSE)
+
 m1 = glm.nb(Coral_Richness ~ 1, data = variables)
 m2 = glm(Coral_Richness ~ 1, data = variables, family = poisson)
 logLik(m1)
@@ -172,6 +175,8 @@ fish_coralrichness_power = glm.nb(Fish_Richness ~ exp(2.1422 + 0.4041*log(Coral_
 # fish_year_site_yearsite_coralrichness_power = glm.nb(Fish_Richness ~ Year + Site + Year*Site + log(Coral_Richness), data = variables)
 # fish_site_coralrichness_coralrichnesssite_power = glm.nb(Fish_Richness ~ Site + log(Coral_Richness) + log(Coral_Richness)*Site, data = variables)
 # fish_year_coralrichness_coralrichnessyear_power = glm.nb(Fish_Richness ~ Year + log(Coral_Richness) + log(Coral_Richness)*Year, data = variables)
+# 
+fish_year_sqyear = glm.nb(Fish_Richness ~ Year + Year^2, data = variables)
 
 
 
@@ -288,7 +293,8 @@ sponge_coralrichness_power = glm.nb(Sponge_Richness ~ exp(3.5587 + -0.2029*log(C
 # sponge_year_site_yearsite_coralrichness_power = glm.nb(Sponge_Richness ~ Year + Site + Year*Site + log(Coral_Richness), data = variables)
 # sponge_site_coralrichness_coralrichnesssite_power = glm.nb(Sponge_Richness ~ Site + log(Coral_Richness) + log(Coral_Richness)*Site, data = variables)
 # sponge_year_coralrichness_coralrichnessyear_power = glm.nb(Sponge_Richness ~ Year + log(Coral_Richness) + log(Coral_Richness)*Year, data = variables)
-
+# 
+sponge_year_sqyear = glm.nb(Sponge_Richness ~ Year + Year^2, data = variables)
 
 
 # # An example of model output in table format
@@ -387,6 +393,8 @@ coral_cover_power = glm.nb(Coral_Richness ~ exp(1.6342 + 0.3108*log(Percent_Cora
 # coral_year_site_yearsite_cover_power = glm.nb(Fish_Richness ~ Year + Site + Year*Site + log(Percent_Coral_Cover), data = variables)
 # coral_site_cover_coversite_power = glm.nb(Fish_Richness ~ Site + log(Percent_Coral_Cover) + log(Percent_Coral_Cover)*Site, data = variables)
 # coral_year_cover_coveryear_power = glm.nb(Fish_Richness ~ Year + log(Percent_Coral_Cover) + log(Percent_Coral_Cover)*Year, data = variables)
+# 
+coral_year_sqyear = glm.nb(Coral_Richness ~ Year + Year^2, data = variables)
 
 
 
@@ -433,6 +441,7 @@ fishsponge_site_coralrichness_coralrichnesssite_log = glm.nb(Sponge_and_Fish_Ric
 fishsponge_year_coralrichness_coralrichnessyear_log = glm.nb(Sponge_and_Fish_Richness ~ Year + log(Coral_Richness) + log(Coral_Richness)*Year, data = variables)
 glm.nb(log(Sponge_and_Fish_Richness) ~ log(Coral_Richness), data = variables)
 fishsponge_coralrichness_power = glm.nb(Sponge_and_Fish_Richness ~ exp(3.4928 + 0.1297*log(Coral_Richness)), data = variables)
+fishsponge_year_sqyear = glm.nb(Sponge_and_Fish_Richness ~ Year + Year^2, data = variables)
 
 # Models for combined richness
 combined_year = glm.nb(Combined_Richness ~ Year, data = variables)
@@ -514,7 +523,8 @@ combined_cover_power = glm.nb(Combined_Richness ~ exp(3.79088 + 0.09888*log(Perc
 # # combined_year_site_yearsite_coralrichness_power = glm.nb(Combined_Richness ~ Year + Site + Year*Site + log(Coral_Richness), data = variables)
 # # combined_site_coralrichness_coralrichnesssite_power = glm.nb(Combined_Richness ~ Site + log(Coral_Richness) + log(Coral_Richness)*Site, data = variables)
 # # combined_year_coralrichness_coralrichnessyear_power = glm.nb(Combined_Richness ~ Year + log(Coral_Richness) + log(Coral_Richness)*Year, data = variables)
-
+# 
+combined_year_sqyear = glm.nb(Combined_Richness ~ Year + Year^2, data = variables)
 
 
 # # An example of model output in table format
@@ -672,7 +682,7 @@ fish_models <- list(fish_year, fish_site, fish_rugosity, fish_cover, fish_coralr
                     fish_coralrichness_log, fish_coralrichness_site_log, fish_coralrichness_year_log, 
                     fish_coralrichness_year_site_log, fish_year_site_yearsite_coralrichness_log, 
                     fish_site_coralrichness_coralrichnesssite_log, fish_year_coralrichness_coralrichnessyear_log, 
-                    fish_rugosity_power, fish_cover_power, fish_coralrichness_power)
+                    fish_rugosity_power, fish_cover_power, fish_coralrichness_power, fish_year_sqyear)
 # Name each model in the same order they're listed in fish_models
 model_names <- c("year", "site", "rugosity", "cover", "coralrichness", "year + site", "rugosity + site", 
                  "cover + site", "coralrichness + site", "rugosity + year", "cover + year", "coralrichness + year",
@@ -688,11 +698,11 @@ model_names <- c("year", "site", "rugosity", "cover", "coralrichness", "year + s
                  "log(coralrichness) + site", "log(coralrichness) + year", "log(coralrichness) + site + year", 
                  "log(coralrichness) + site + year + year*site", "log(coralrichness) + site + log(coralrichness)*site", 
                  "log(coralrichness) + year + log(coralrichness)*year",
-                 "power(rugosity)", "power(cover)", "power(coralrichness)")
+                 "power(rugosity)", "power(cover)", "power(coralrichness)", "year_sqyear")
 # AIC table
 fish_aic_table <- aictab(fish_models, modnames = model_names, digits = 4)
 # Create file with AIC table
-#write.csv(fish_aic_table, file = "fish_aic_table.csv")
+#write.csv(fish_aic_table, file = "nb_fish_aic_table.csv")
 
 
 
@@ -760,11 +770,11 @@ sponge_models <- list(sponge_year, sponge_site, sponge_rugosity, sponge_cover, s
                       sponge_coralrichness_log, sponge_coralrichness_site_log, sponge_coralrichness_year_log, 
                       sponge_coralrichness_year_site_log, sponge_year_site_yearsite_coralrichness_log, 
                       sponge_site_coralrichness_coralrichnesssite_log, sponge_year_coralrichness_coralrichnessyear_log, 
-                      sponge_rugosity_power, sponge_cover_power, sponge_coralrichness_power)
+                      sponge_rugosity_power, sponge_cover_power, sponge_coralrichness_power, sponge_year_sqyear)
 # AIC table
 sponge_aic_table <- aictab(sponge_models, modnames = model_names, digits = 4)
 # Create file with AIC table
-#write.csv(sponge_aic_table, file = "sponge_aic_table.csv")
+#write.csv(sponge_aic_table, file = "nb_sponge_aic_table.csv")
 
 
 
@@ -842,7 +852,7 @@ coral_models <- list(coral_year, coral_site, coral_rugosity, coral_cover, coral_
                      coral_year_site_yearsite_rugosity_log, coral_site_rugosity_rugositysite_log, coral_year_rugosity_rugosityyear_log,
                      coral_cover_log, coral_cover_site_log, coral_cover_year_log, coral_cover_year_site_log,
                      coral_year_site_yearsite_cover_log, coral_site_cover_coversite_log, coral_year_cover_coveryear_log,
-                     coral_rugosity_power, coral_cover_power)
+                     coral_rugosity_power, coral_cover_power, coral_year_sqyear)
 # Name each model in the same order they're listed in coral_models
 coral_model_names <- c("year", "site", "rugosity", "cover", "year + site", "rugosity + site",
                        "cover + site", "rugosity + year", "cover + year","rugosity + year + site", "cover + year + site",
@@ -853,13 +863,13 @@ coral_model_names <- c("year", "site", "rugosity", "cover", "year + site", "rugo
                        "log(rugosity) + site + year + year*site", "log(rugosity) + site + log(rugosity)*site",
                        "log(rugosity) + year + log(rugosity)*year", "log(cover)", "log(cover) + site", "log(cover) + year",
                        "log(cover) + site + year", "log(cover) + site + year + year*site", "log(cover) + site + log(cover)*site",
-                       "log(cover) + year + log(cover)*year", "power(rugosity)", "power(cover)")
+                       "log(cover) + year + log(cover)*year", "power(rugosity)", "power(cover)", "year_sqyear")
 
 
 # AIC table
 coral_aic_table <- aictab(coral_models, modnames = coral_model_names, digits = 4)
 # Create file with AIC table
-#write.csv(coral_aic_table, file = "coral_aic_table.csv")
+#write.csv(coral_aic_table, file = "nb_coral_aic_table.csv")
 
 ## Fish and sponge models including all logarithmic models and simple power models
 fishsponge_models <- list(fishsponge_year, fishsponge_site, fishsponge_year_site, fishsponge_year_site_yearsite, fishsponge_coralrichness, 
@@ -868,7 +878,7 @@ fishsponge_models <- list(fishsponge_year, fishsponge_site, fishsponge_year_site
                           fishsponge_year_coralrichness_coralrichnessyear, fishsponge_coralrichness_log, 
                           fishsponge_coralrichness_site_log, fishsponge_coralrichness_year_log, fishsponge_coralrichness_year_site_log, 
                           fishsponge_year_site_yearsite_coralrichness_log, fishsponge_site_coralrichness_coralrichnesssite_log, 
-                          fishsponge_year_coralrichness_coralrichnessyear_log, fishsponge_coralrichness_power)
+                          fishsponge_year_coralrichness_coralrichnessyear_log, fishsponge_coralrichness_power, fishsponge_year_sqyear)
 # Name each model in the same order they're listed in coral_models
 fishsponge_model_names <- c("year", "site", "year + site", "year + site + year*site", "coralrichness",
                             "coralrichness + site", "coralrichness + year", "coralrichness + year + site",
@@ -876,11 +886,11 @@ fishsponge_model_names <- c("year", "site", "year + site", "year + site + year*s
                             "coralrichness + year + coralrichness*year", "log(coralrichness)",
                             "log(coralrichness) + site", "log(coralrichness) + year", "log(coralrichness) + site + year",
                             "log(coralrichness) + site + year + year*site", "log(coralrichness) + site + log(coralrichness)*site",
-                            "log(coralrichness) + year + log(coralrichness)*year", "power(coralrichness)")
+                            "log(coralrichness) + year + log(coralrichness)*year", "power(coralrichness)", "year_sqyear")
 # AIC table
 fishsponge_aic_table <- aictab(fishsponge_models, modnames = fishsponge_model_names, digits = 4)
 # Create file with AIC table
-#write.csv(fishsponge_aic_table, file = "spongeandfish_aic_table.csv")
+#write.csv(fishsponge_aic_table, file = "nb_spongeandfish_aic_table.csv")
 
 
 
@@ -945,11 +955,11 @@ combined_models <- list(combined_year, combined_site, combined_rugosity, combine
                         combined_year_site_yearsite_rugosity_log, combined_site_rugosity_rugositysite_log, combined_year_rugosity_rugosityyear_log, 
                         combined_cover_log, combined_cover_site_log, combined_cover_year_log, combined_cover_year_site_log, 
                         combined_year_site_yearsite_cover_log, combined_site_cover_coversite_log, combined_year_cover_coveryear_log, 
-                        combined_rugosity_power, combined_cover_power)
+                        combined_rugosity_power, combined_cover_power, combined_year_sqyear)
 # AIC table
 combined_aic_table <- aictab(combined_models, modnames = coral_model_names, digits = 4)
 # Create file with AIC table
-#write.csv(combined_aic_table, file = "combined_aic_table.csv")
+#write.csv(combined_aic_table, file = "nb_combined_aic_table.csv")
 ########################################################################
 
 
@@ -1139,12 +1149,11 @@ ggplot(variables, aes(x = Coral_Richness, y = Combined_Richness)) +
         axis.line = element_line(colour = "black"))
 
 
-# Import data again to get true values of year back
-variables <- read.csv("variables.csv", header = T)
+
 # Verify year is factor for x-axis labels
-variables$Year <- as.factor(variables$Year)
+variables$True_Year <- as.factor(variables$True_Year)
 # Rugosity over time
-ggplot(variables, aes(x = Year, y = Rugosity, group = Site, color = Site)) + 
+ggplot(variables, aes(x = True_Year, y = Rugosity, group = Site, color = Site)) + 
   geom_line(size = 1.1) +
   scale_x_discrete(name = "Time (year)") +
   scale_y_continuous(name = "Rugosity") +
@@ -1155,7 +1164,7 @@ ggplot(variables, aes(x = Year, y = Rugosity, group = Site, color = Site)) +
         panel.background = element_blank(), 
         axis.line = element_line(colour = "black"))
 # Coral cover over time
-ggplot(variables, aes(x = Year, y = Percent_Coral_Cover, group = Site, color = Site)) + 
+ggplot(variables, aes(x = True_Year, y = Percent_Coral_Cover, group = Site, color = Site)) + 
   geom_line(size = 1.1) +
   scale_x_discrete(name = "Time (year)") +
   scale_y_continuous(name = "Coral Cover (%)") +
@@ -1171,10 +1180,10 @@ ggplot(variables, aes(x = Year, y = Percent_Coral_Cover, group = Site, color = S
 ## ***Simple Figures for Fish Richness
 
 # Verify year is factor for x-axis labels
-variables$Year <- as.factor(variables$Year)
+variables$True_Year <- as.factor(variables$True_Year)
 
 # Over time
-ggplot(variables, aes(x = Year, y = Fish_Richness, group = Site, color = Site)) + 
+ggplot(variables, aes(x = True_Year, y = Fish_Richness, group = Site, color = Site)) + 
   geom_line(size = 1.1) +
   scale_x_discrete(name = "Time (year)") +
   scale_y_continuous(name = "Fish Richness") +
@@ -1219,11 +1228,11 @@ ggplot(variables, aes(x = Coral_Richness, y = Fish_Richness, group = Site, color
         axis.line = element_line(colour = "black"))
 
 # Change year to numeric to allow for color gradient
-variables$Year <- as.numeric(as.character(variables$Year))
+variables$True_Year <- as.numeric(as.character(variables$True_Year))
 
 # Across time when x = Rugosity
 ggplot(variables, aes(x = Rugosity, y = Fish_Richness)) + 
-  geom_point(aes(color = Year), size = 4) +
+  geom_point(aes(color = True_Year), size = 4) +
   scale_x_continuous(name = "Rugosity") +
   scale_y_continuous(name = "Fish Richness") +
   scale_color_gradient(low="lightblue", high="darkblue") +
@@ -1235,7 +1244,7 @@ ggplot(variables, aes(x = Rugosity, y = Fish_Richness)) +
 
 # Across time when x = Coral Cover
 ggplot(variables, aes(x = Percent_Coral_Cover, y = Fish_Richness)) + 
-  geom_point(aes(color = Year), size = 4) +
+  geom_point(aes(color = True_Year), size = 4) +
   scale_x_continuous(name = "Coral Cover (%)") +
   scale_y_continuous(name = "Fish Richness") +
   scale_color_gradient(low="lightblue", high="darkblue") +
@@ -1247,7 +1256,7 @@ ggplot(variables, aes(x = Percent_Coral_Cover, y = Fish_Richness)) +
 
 # Across time when x = Coral Richness
 ggplot(variables, aes(x = Coral_Richness, y = Fish_Richness)) + 
-  geom_point(aes(color = Year), size = 4) +
+  geom_point(aes(color = True_Year), size = 4) +
   scale_x_continuous(name = "Coral Richness") +
   scale_y_continuous(name = "Fish Richness") +
   scale_color_gradient(low="lightblue", high="darkblue") +
@@ -1259,7 +1268,7 @@ ggplot(variables, aes(x = Coral_Richness, y = Fish_Richness)) +
 
 # Across time when x = Rugosity separated by site
 ggplot(variables, aes(x = Rugosity, y = Fish_Richness)) + 
-  geom_point(aes(color = Year), size = 3) +
+  geom_point(aes(color = True_Year), size = 3) +
   scale_x_continuous(name = "Rugosity") +
   scale_y_continuous(name = "Fish Richness") +
   scale_color_gradient(low="lightblue", high="darkblue") +
@@ -1272,7 +1281,7 @@ ggplot(variables, aes(x = Rugosity, y = Fish_Richness)) +
 
 # Across time when x = Coral Cover separated by site
 ggplot(variables, aes(x = Percent_Coral_Cover, y = Fish_Richness)) + 
-  geom_point(aes(color = Year), size = 3) +
+  geom_point(aes(color = True_Year), size = 3) +
   scale_x_continuous(name = "Coral Cover (%)") +
   scale_y_continuous(name = "Fish Richness") +
   scale_color_gradient(low="lightblue", high="darkblue") +
@@ -1285,7 +1294,7 @@ ggplot(variables, aes(x = Percent_Coral_Cover, y = Fish_Richness)) +
 
 # Across time when x = Coral Richness separated by site
 ggplot(variables, aes(x = Coral_Richness, y = Fish_Richness)) + 
-  geom_point(aes(color = Year), size = 3) +
+  geom_point(aes(color = True_Year), size = 3) +
   scale_x_continuous(name = "Coral Richness") +
   scale_y_continuous(name = "Fish Richness") +
   scale_color_gradient(low="lightblue", high="darkblue") +
@@ -1301,10 +1310,10 @@ ggplot(variables, aes(x = Coral_Richness, y = Fish_Richness)) +
 ## ***Simple Figures for Sponge Richness
 
 # Verify year is factor for x-axis labels
-variables$Year <- as.factor(variables$Year)
+variables$True_Year <- as.factor(variables$True_Year)
 
 # Over time
-ggplot(variables, aes(x = Year, y = Sponge_Richness, group = Site, color = Site)) + 
+ggplot(variables, aes(x = True_Year, y = Sponge_Richness, group = Site, color = Site)) + 
   geom_line(size = 1.1) +
   scale_x_discrete(name = "Time (year)") +
   scale_y_continuous(name = "Sponge Richness") +
@@ -1316,7 +1325,7 @@ ggplot(variables, aes(x = Year, y = Sponge_Richness, group = Site, color = Site)
         axis.line = element_line(colour = "black"))
 # ***Notice that this figure has line breaks where the value for Sponge Richness in that given year is NA
 # # The following code will remove the line breaks by deleting the years without values and merging the line segments 
-# ggplot(variables[!is.na(variables$Sponge_Richness),], aes(x = Year, y = Sponge_Richness, group = Site, color = Site)) + 
+# ggplot(variables[!is.na(variables$Sponge_Richness),], aes(x = True_Year, y = Sponge_Richness, group = Site, color = Site)) + 
 #   geom_line(size = 1.1) +
 #   scale_x_discrete(name ="Time (year)") +
 #   scale_y_continuous(name ="Sponge Richness")
@@ -1355,11 +1364,11 @@ ggplot(variables, aes(x = Coral_Richness, y = Sponge_Richness, group = Site, col
         axis.line = element_line(colour = "black"))
 
 # Change year to numeric to allow for color gradient
-variables$Year <- as.numeric(as.character(variables$Year))
+variables$True_Year <- as.numeric(as.character(variables$True_Year))
 
 # Across time when x = Rugosity
 ggplot(variables, aes(x = Rugosity, y = Sponge_Richness)) + 
-  geom_point(aes(color = Year), size = 4) +
+  geom_point(aes(color = True_Year), size = 4) +
   scale_x_continuous(name = "Rugosity") +
   scale_y_continuous(name = "Sponge Richness") +
   scale_color_gradient(low="lightblue", high="darkblue") +
@@ -1371,7 +1380,7 @@ ggplot(variables, aes(x = Rugosity, y = Sponge_Richness)) +
 
 # Across time when x = Coral Cover
 ggplot(variables, aes(x = Percent_Coral_Cover, y = Sponge_Richness)) + 
-  geom_point(aes(color = Year), size = 4) +
+  geom_point(aes(color = True_Year), size = 4) +
   scale_x_continuous(name = "Coral Cover (%)") +
   scale_y_continuous(name = "Sponge Richness") +
   scale_color_gradient(low="lightblue", high="darkblue") +
@@ -1383,7 +1392,7 @@ ggplot(variables, aes(x = Percent_Coral_Cover, y = Sponge_Richness)) +
 
 # Across time when x = Coral Richness
 ggplot(variables, aes(x = Coral_Richness, y = Sponge_Richness)) + 
-  geom_point(aes(color = Year), size = 4) +
+  geom_point(aes(color = True_Year), size = 4) +
   scale_x_continuous(name = "Coral Richness") +
   scale_y_continuous(name = "Sponge Richness") +
   scale_color_gradient(low="lightblue", high="darkblue") +
@@ -1395,7 +1404,7 @@ ggplot(variables, aes(x = Coral_Richness, y = Sponge_Richness)) +
 
 # Across time when x = Rugosity separated by site
 ggplot(variables, aes(x = Rugosity, y = Sponge_Richness)) + 
-  geom_point(aes(color = Year), size = 3) +
+  geom_point(aes(color = True_Year), size = 3) +
   scale_x_continuous(name = "Rugosity") +
   scale_y_continuous(name = "Sponge Richness") +
   scale_color_gradient(low="lightblue", high="darkblue") +
@@ -1408,7 +1417,7 @@ ggplot(variables, aes(x = Rugosity, y = Sponge_Richness)) +
 
 # Across time when x = Coral Cover separated by site
 ggplot(variables, aes(x = Percent_Coral_Cover, y = Sponge_Richness)) + 
-  geom_point(aes(color = Year), size = 3) +
+  geom_point(aes(color = True_Year), size = 3) +
   scale_x_continuous(name = "Coral Cover (%)") +
   scale_y_continuous(name = "Sponge Richness") +
   scale_color_gradient(low="lightblue", high="darkblue") +
@@ -1421,7 +1430,7 @@ ggplot(variables, aes(x = Percent_Coral_Cover, y = Sponge_Richness)) +
 
 # Across time when x = Coral Richness separated by site
 ggplot(variables, aes(x = Coral_Richness, y = Sponge_Richness)) + 
-  geom_point(aes(color = Year), size = 3) +
+  geom_point(aes(color = True_Year), size = 3) +
   scale_x_continuous(name = "Coral Richness") +
   scale_y_continuous(name = "Sponge Richness") +
   scale_color_gradient(low="lightblue", high="darkblue") +
@@ -1437,10 +1446,10 @@ ggplot(variables, aes(x = Coral_Richness, y = Sponge_Richness)) +
 ## ***Simple Figures for Coral Richness
 
 # Verify year is factor for x-axis labels
-variables$Year <- as.factor(variables$Year)
+variables$True_Year <- as.factor(variables$True_Year)
 
 # Over time
-ggplot(variables, aes(x = Year, y = Coral_Richness, group = Site, color = Site)) + 
+ggplot(variables, aes(x = True_Year, y = Coral_Richness, group = Site, color = Site)) + 
   geom_line(size = 1.1) +
   scale_x_discrete(name = "Time (year)") +
   scale_y_continuous(name = "Coral Richness") +
@@ -1474,11 +1483,11 @@ ggplot(variables, aes(x = Percent_Coral_Cover, y = Coral_Richness, group = Site,
         axis.line = element_line(colour = "black"))
 
 # Change year to numeric to allow for color gradient
-variables$Year <- as.numeric(as.character(variables$Year))
+variables$True_Year <- as.numeric(as.character(variables$True_Year))
 
 # Across time when x = Rugosity
 ggplot(variables, aes(x = Rugosity, y = Coral_Richness)) + 
-  geom_point(aes(color = Year), size = 4) +
+  geom_point(aes(color = True_Year), size = 4) +
   scale_x_continuous(name = "Rugosity") +
   scale_y_continuous(name = "Coral Richness") +
   scale_color_gradient(low="lightblue", high="darkblue") +
@@ -1490,7 +1499,7 @@ ggplot(variables, aes(x = Rugosity, y = Coral_Richness)) +
 
 # Across time when x = Coral Cover
 ggplot(variables, aes(x = Percent_Coral_Cover, y = Coral_Richness)) + 
-  geom_point(aes(color = Year), size = 4) +
+  geom_point(aes(color = True_Year), size = 4) +
   scale_x_continuous(name = "Coral Cover (%)") +
   scale_y_continuous(name = "Coral Richness") +
   scale_color_gradient(low="lightblue", high="darkblue") +
@@ -1502,7 +1511,7 @@ ggplot(variables, aes(x = Percent_Coral_Cover, y = Coral_Richness)) +
 
 # Across time when x = Rugosity separated by site
 ggplot(variables, aes(x = Rugosity, y = Coral_Richness)) + 
-  geom_point(aes(color = Year), size = 3) +
+  geom_point(aes(color = True_Year), size = 3) +
   scale_x_continuous(name = "Rugosity") +
   scale_y_continuous(name = "Coral Richness") +
   scale_color_gradient(low="lightblue", high="darkblue") +
@@ -1515,7 +1524,7 @@ ggplot(variables, aes(x = Rugosity, y = Coral_Richness)) +
 
 # Across time when x = Coral Cover separated by site
 ggplot(variables, aes(x = Percent_Coral_Cover, y = Coral_Richness)) + 
-  geom_point(aes(color = Year), size = 3) +
+  geom_point(aes(color = True_Year), size = 3) +
   scale_x_continuous(name = "Coral Cover (%)") +
   scale_y_continuous(name = "Coral Richness") +
   scale_color_gradient(low="lightblue", high="darkblue") +
@@ -1531,10 +1540,10 @@ ggplot(variables, aes(x = Percent_Coral_Cover, y = Coral_Richness)) +
 ## ***Simple Figures for Combined Richness
 
 # Verify year is factor for x-axis labels
-variables$Year <- as.factor(variables$Year)
+variables$True_Year <- as.factor(variables$True_Year)
 
 # Over time
-ggplot(variables, aes(x = Year, y = Combined_Richness, group = Site, color = Site)) + 
+ggplot(variables, aes(x = True_Year, y = Combined_Richness, group = Site, color = Site)) + 
   geom_line(size = 1.1) +
   scale_x_discrete(name = "Time (year)") +
   scale_y_continuous(name = "Combined Richness") +
@@ -1579,11 +1588,11 @@ ggplot(variables, aes(x = Coral_Richness, y = Combined_Richness, group = Site, c
         axis.line = element_line(colour = "black"))
 
 # Change year to numeric to allow for color gradient
-variables$Year <- as.numeric(as.character(variables$Year))
+variables$True_Year <- as.numeric(as.character(variables$True_Year))
 
 # Across time when x = Rugosity
 ggplot(variables, aes(x = Rugosity, y = Combined_Richness)) + 
-  geom_point(aes(color = Year), size = 4) +
+  geom_point(aes(color = True_Year), size = 4) +
   scale_x_continuous(name = "Rugosity") +
   scale_y_continuous(name = "Combined Richness") +
   scale_color_gradient(low="lightblue", high="darkblue") +
@@ -1595,7 +1604,7 @@ ggplot(variables, aes(x = Rugosity, y = Combined_Richness)) +
 
 # Across time when x = Coral Cover
 ggplot(variables, aes(x = Percent_Coral_Cover, y = Combined_Richness)) + 
-  geom_point(aes(color = Year), size = 4) +
+  geom_point(aes(color = True_Year), size = 4) +
   scale_x_continuous(name = "Coral Cover (%)") +
   scale_y_continuous(name = "Combined Richness") +
   scale_color_gradient(low="lightblue", high="darkblue") +
@@ -1607,7 +1616,7 @@ ggplot(variables, aes(x = Percent_Coral_Cover, y = Combined_Richness)) +
 
 # Across time when x = Coral Richness
 ggplot(variables, aes(x = Coral_Richness, y = Combined_Richness)) + 
-  geom_point(aes(color = Year), size = 4) +
+  geom_point(aes(color = True_Year), size = 4) +
   scale_x_continuous(name = "Coral Richness") +
   scale_y_continuous(name = "Combined Richness") +
   scale_color_gradient(low="lightblue", high="darkblue") +
@@ -1619,7 +1628,7 @@ ggplot(variables, aes(x = Coral_Richness, y = Combined_Richness)) +
 
 # Across time when x = Rugosity separated by site
 ggplot(variables, aes(x = Rugosity, y = Combined_Richness)) + 
-  geom_point(aes(color = Year), size = 3) +
+  geom_point(aes(color = True_Year), size = 3) +
   scale_x_continuous(name = "Rugosity") +
   scale_y_continuous(name = "Combined Richness") +
   scale_color_gradient(low="lightblue", high="darkblue") +
@@ -1632,7 +1641,7 @@ ggplot(variables, aes(x = Rugosity, y = Combined_Richness)) +
 
 # Across time when x = Coral Cover separated by site
 ggplot(variables, aes(x = Percent_Coral_Cover, y = Combined_Richness)) + 
-  geom_point(aes(color = Year), size = 3) +
+  geom_point(aes(color = True_Year), size = 3) +
   scale_x_continuous(name = "Coral Cover (%)") +
   scale_y_continuous(name = "Combined Richness") +
   scale_color_gradient(low="lightblue", high="darkblue") +
@@ -1645,7 +1654,7 @@ ggplot(variables, aes(x = Percent_Coral_Cover, y = Combined_Richness)) +
 
 # Across time when x = Coral Richness separated by site
 ggplot(variables, aes(x = Coral_Richness, y = Combined_Richness)) + 
-  geom_point(aes(color = Year), size = 3) +
+  geom_point(aes(color = True_Year), size = 3) +
   scale_x_continuous(name = "Coral Richness") +
   scale_y_continuous(name = "Combined Richness") +
   scale_color_gradient(low="lightblue", high="darkblue") +
@@ -1659,7 +1668,132 @@ ggplot(variables, aes(x = Coral_Richness, y = Combined_Richness)) +
 ################################################################
 
 # Create HTML files for most parsimonious models and models with one variable
-tab_model(fish_rugosity_site, fish_site, fish_rugosity, fish_cover, fish_coralrichness, fish_year)
-tab_model(sponge_year_site_yearsite, sponge_site, sponge_cover, sponge_coralrichness, sponge_year, sponge_rugosity)
-tab_model(coral_cover_year_site_log, coral_cover, coral_site, coral_rugosity, coral_year)
-tab_model(combined_year_site_yearsite_coralrichness, combined_site, combined_coralrichness, combined_rugosity, combined_cover, combined_year)
+tab_model(fish_site, fish_rugosity, fish_cover, fish_coralrichness, fish_year)
+tab_model(sponge_rugosity_year_site_log, sponge_site, sponge_cover, sponge_coralrichness, sponge_year, sponge_rugosity)
+tab_model(coral_cover_year_log, coral_cover, coral_site, coral_rugosity, coral_year)
+tab_model(combined_cover_year_site_log, combined_site, combined_rugosity, combined_cover, combined_year)
+tab_model(fishsponge_year_site, fishsponge_site, fishsponge_coralrichness, fishsponge_year)
+
+##############################################################################################################################################################
+
+
+
+
+
+
+
+
+## Figures for NEAFWA
+
+# Coral richness across time when x = Coral Cover
+ggplot(variables, aes(x = Percent_Coral_Cover, y = Coral_Richness)) + 
+  geom_point(aes(color = True_Year), size = 4) +
+  labs(color="Year") +
+  scale_x_continuous(name = "Coral Cover (%)") +
+  scale_y_continuous(name = "Coral Richness") +
+  scale_color_gradient(low="lightblue", high="darkblue") +
+  geom_smooth(size = 1.2, method = "glm.nb", formula = y ~ log(x), color = "black") +
+  theme(text=element_text(size = 18), 
+        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
+        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
+        panel.background = element_blank(), 
+        axis.line = element_line(colour = "black"))
+
+
+# Sponge richness across time and with separate site lines when x = Rugosity
+ggplot(variables, aes(x = Rugosity, y = Sponge_Richness)) + 
+  geom_point(aes(color = True_Year), size = 4) +
+  labs(color="Year") +
+  scale_x_continuous(name = "Rugosity") +
+  scale_y_continuous(name = "Sponge Richness") +
+  scale_color_gradient(low="lightblue", high="darkblue") +
+  geom_smooth(size = 1.2, method = "glm.nb", formula = y ~ log(x), color = "black") +
+  theme(text=element_text(size = 18), 
+        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
+        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
+        panel.background = element_blank(), 
+        axis.line = element_line(colour = "black"))+
+  facet_wrap(~ Site)
+
+# Fish richness with separate site lines when x = Cover
+ggplot(variables, aes(x = Percent_Coral_Cover, y = Fish_Richness)) + 
+  geom_point(color = "lightblue", size = 4) +
+  scale_x_continuous(name = "Coral Cover (%)") +
+  scale_y_continuous(name = "Fish Richness") +
+  geom_smooth(size = 1.2, method = "glm.nb", formula = y ~ log(x), color = "black") +
+  theme(text=element_text(size = 18), 
+        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
+        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
+        panel.background = element_blank(), 
+        axis.line = element_line(colour = "black"))+
+  facet_wrap(~ Site)
+
+# Fish richness with separate site lines when x = Rugosity
+ggplot(variables, aes(x = Rugosity, y = Fish_Richness)) + 
+  geom_point(color = "lightblue", size = 4) +
+  scale_x_continuous(name = "Rugosity") +
+  scale_y_continuous(name = "Fish Richness") +
+  geom_smooth(size = 1.2, method = "glm.nb", formula = y ~ x, color = "black") +
+  theme(text=element_text(size = 18), 
+        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
+        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
+        panel.background = element_blank(), 
+        axis.line = element_line(colour = "black"))+
+  facet_wrap(~ Site)
+
+# Sponge+fish richness across time and with separate site lines when x = Coral Richness
+ggplot(variables, aes(x = Coral_Richness, y = Sponge_and_Fish_Richness)) + 
+  geom_point(aes(color = True_Year), size = 4) +
+  labs(color="Year") +
+  scale_x_continuous(name = "Coral Richness") +
+  scale_y_continuous(name = "Sponge + Fish Richness") +
+  scale_color_gradient(low="lightblue", high="darkblue") +
+  geom_smooth(size = 1.2, method = "glm.nb", formula = y ~ x, color = "black") +
+  theme(text=element_text(size = 18), 
+        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
+        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
+        panel.background = element_blank(), 
+        axis.line = element_line(colour = "black"))+
+  facet_wrap(~ Site)
+
+# Combined richness across time and with separate site lines when x = Cover
+ggplot(variables, aes(x = Percent_Coral_Cover, y = Combined_Richness)) + 
+  geom_point(aes(color = True_Year), size = 4) +
+  labs(color="Year") +
+  scale_x_continuous(name = "Coral Cover (%)") +
+  scale_y_continuous(name = "Combined Richness") +
+  scale_color_gradient(low="lightblue", high="darkblue") +
+  geom_smooth(size = 1.2, method = "glm.nb", formula = y ~ log(x), color = "black") +
+  theme(text=element_text(size = 18), 
+        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
+        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
+        panel.background = element_blank(), 
+        axis.line = element_line(colour = "black"))+
+  facet_wrap(~ Site)
+
+# Sponge+fish richness with separate site lines when x = Time
+ggplot(variables, aes(x = True_Year, y = Sponge_and_Fish_Richness)) + 
+  geom_point(color = "lightblue", size = 4) +
+  scale_x_continuous(name = "Year") +
+  scale_y_continuous(name = "Sponge + Fish Richness") +
+  geom_smooth(size = 1.2, method = "glm.nb", formula = y ~ x, color = "black") +
+  theme(text=element_text(size = 18), 
+        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
+        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
+        panel.background = element_blank(), 
+        axis.line = element_line(colour = "black"))+
+  facet_wrap(~ Site)
+
+# Fish richness with site
+ggplot(variables, aes(x = Site, y = Fish_Richness, fill = Site)) + 
+  scale_fill_viridis_d()+
+  geom_boxplot() +
+  scale_x_discrete(name = "Site") +
+  scale_y_continuous(name = "Fish Richness") +
+  theme(legend.position = "none",
+        text=element_text(size = 18), 
+        axis.text.x=element_text(angle = +90, hjust = 0),
+        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
+        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
+        panel.background = element_blank(), 
+        axis.line = element_line(colour = "black"))
