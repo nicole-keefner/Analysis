@@ -115,7 +115,7 @@ coral_percentcover <- aggregate(x = benthic_raw_longform$livecoral_all_cover,
 # Rename columns to match the data in them
 names(x = coral_percentcover) <- c("Site", "Year", "Percent_Coral_Cover")
 
-# For Mean Counts of corals for each site_year (not absolutely necessary for this paper, but might be useful if you want to look at differences over time and site for a particular species)
+# For Mean Counts of corals for each site_year (this step is not absolutely necessary for this paper, but might be useful if you want to look at differences over time and site for a particular species)
 # Aggregate groups by the site, year, and taxonomic group then averages the counts for each of these across all transects (in this case, 3 transects per site_year)
 coral_averages <- aggregate(x = benthic_raw_longform$Count, 
                             by = list(benthic_raw_longform$site, benthic_raw_longform$year, benthic_raw_longform$Taxonomic_Group), 
@@ -243,7 +243,7 @@ sponge_raw_longform$Year <- as.factor(x = sponge_raw_longform$Year)
 #summary(sponge_raw_longform$Site)
 #summary(sponge_raw_longform$Year)
 
-# For Mean Counts of sponges for each site_year (not absolutely necessary for this paper, but might be useful if you want to look at differences over time and site for a particular species)
+# For Mean Counts of sponges for each site_year (this step is not absolutely necessary for this paper, but might be useful if you want to look at differences over time and site for a particular species)
 # Aggregate groups by the site, year, taxgroup then averages the counts for each of these across all transects (in this case, 3 transects per site_year)
 sponge_averages <- aggregate(x = sponge_raw_longform$Count, 
                              by = list(sponge_raw_longform$Site, sponge_raw_longform$Year, sponge_raw_longform$Taxonomic_Group), 
@@ -350,7 +350,7 @@ fish_raw_longform$year <- as.factor(x = fish_raw_longform$year)
 #summary(fish_raw_longform$site)
 #summary(fish_raw_longform$year)
 
-# For Mean Counts of fishes for each site_year (not absolutely necessary for this paper, but might be useful if you want to look at differences over time and site for a particular species)
+# For Mean Counts of fishes for each site_year (this step is not absolutely necessary for this paper, but might be useful if you want to look at differences over time and site for a particular species)
 # Aggregate groups by the site, year, speciescode then averages the counts for each of these across all transects (in this case, 3 transects per site_year)
 fish_averages <- aggregate(x = fish_raw_longform$Count, 
                            by = list(fish_raw_longform$site, fish_raw_longform$year, fish_raw_longform$Species_Code), 

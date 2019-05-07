@@ -26,7 +26,7 @@ library(sjPlot)
 library(AICcmodavg)
 # First used to make figures using function ggplot
 library(ggplot2)
-# First used for negative binomial modeling using function gglm.nb.nb
+# First used for negative binomial modeling using function glm.nb
 library(MASS)
 
 
@@ -35,7 +35,8 @@ library(MASS)
 variables <- read.csv("variables.csv", header = T)
 # Note that year is treated as type integer and is therefore continuous
 
-
+# 4 targets: richness of corals, sponges, fishes, and combined
+# 3 surrogates: percent coral cover, percent sponge cover, rugosity
 
 # Because there are NA's in the Sponge_Richness column, R will be unable to calculate summary values
 # Create subset of data called "sponge_complete" that retains only complete cases for Sponge_Richness
@@ -43,21 +44,62 @@ sponge_complete <- variables[complete.cases(variables$Sponge_Richness), ]
 
 
 
-# Determine means and SD's for all variables
-c("Coral_Richness", round(mean(variables$Coral_Richness), digits = 3), round(sd(variables$Coral_Richness), digits = 3),
-  "Fish_Richness", round(mean(variables$Fish_Richness), digits = 3), round(sd(variables$Fish_Richness), digits = 3),
-  "Sponge_Richness", round(mean(sponge_complete$Sponge_Richness), digits = 3), round(sd(sponge_complete$Sponge_Richness), digits = 3),
-  "Rugosity", round(mean(variables$Rugosity), digits = 3), round(sd(variables$Rugosity), digits = 3),
-  "Percent_Coral_Cover", round(mean(variables$Percent_Coral_Cover), digits = 3), round(sd(variables$Percent_Coral_Cover), digits = 3),
-  "Sponge_and_Fish_Richness", round(mean(sponge_complete$Sponge_and_Fish_Richness), digits = 3), round(sd(sponge_complete$Sponge_and_Fish_Richness), digits = 3),
-  "Combined_Richness", round(mean(sponge_complete$Combined_Richness), digits = 3), round(sd(sponge_complete$Combined_Richness), digits = 3))
+# Create dataframe with means and SD's for all variables
+avg_name <-c("Percent_Coral_Cover", 
+             "Percent_Sponge_Cover", 
+             "Rugosity", 
+             "Coral_Richness", 
+             "Sponge_Richness", 
+             "Fish_Richness", 
+             "Combined_Richness")
+avg_mean <-c(round(mean(variables$Percent_Coral_Cover), digits = 3), 
+             round(mean(variables$Percent_Sponge_Cover), digits = 3), 
+             round(mean(sponge_complete$Rugosity), digits = 3), 
+             round(mean(variables$Coral_Richness), digits = 3), 
+             round(mean(variables$Sponge_Richness), digits = 3), 
+             round(mean(variables$Fish_Richness), digits = 3),  
+             round(mean(sponge_complete$Combined_Richness), digits = 3))
+avg_sd <-c(round(sd(variables$Percent_Coral_Cover), digits = 3), 
+           round(sd(variables$Percent_Sponge_Cover), digits = 3),
+           round(sd(sponge_complete$Rugosity), digits = 3),
+           round(sd(variables$Coral_Richness), digits = 3),
+           round(sd(variables$Sponge_Richness), digits = 3),
+           round(sd(variables$Fish_Richness), digits = 3),
+           round(sd(sponge_complete$Combined_Richness), digits = 3))
+avg_df <- data.frame(avg_name, avg_mean, avg_sd)
 
 # Graph frequency distributions of response variables
-hist(variables$Fish_Richness, breaks = 25)
-hist(variables$Sponge_Richness, breaks = 25)
+hist(variables$Percent_Coral_Cover, breaks = 25)
+hist(variables$Percent_Sponge_Cover, breaks = 25)
+hist(variables$Rugosity, breaks = 25)
 hist(variables$Coral_Richness, breaks = 25)
+hist(variables$Sponge_Richness, breaks = 25)
+hist(variables$Fish_Richness, breaks = 25)
 hist(variables$Combined_Richness, breaks = 25)
-hist(variables$Sponge_and_Fish_Richness, breaks = 25)
+
+# Objective 1: Create models that only include terms for surrogates 
+# in order to determine which of the 3 candidate surrogates is the best at predicting each target. 
+# Negative binomial distribution models and aic tables for each target with one surrogate
+# For each target, compare models in aic table
+coral_cc = glm.nb(formula = Coral_Richness ~ Percent_Coral_Cover, data = variables)
+coral_sc = glm.nb(formula = Coral_Richness ~ Percent_Sponge_Cover, data = variables)
+coral_r = glm.nb(formula = Coral_Richness ~ Rugosity, data = variables)
+coral_surrogate <- aictab(cand.set = list(coral_cc, coral_sc, coral_r), modnames = c("coral_cc", "coral_sc", "coral_r"), digits = 4)
+sponge_cc = glm.nb(formula = Sponge_Richness ~ Percent_Coral_Cover, data = variables)
+sponge_sc = glm.nb(formula = Sponge_Richness ~ Percent_Sponge_Cover, data = variables)
+sponge_r = glm.nb(formula = Sponge_Richness ~ Rugosity, data = variables)
+sponge_surrogate <- aictab(cand.set = list(sponge_cc, sponge_sc, sponge_r), modnames = c("sponge_cc", "sponge_sc", "sponge_r"), digits = 4)
+fish_cc = glm.nb(formula = Fish_Richness ~ Percent_Coral_Cover, data = variables)
+fish_sc = glm.nb(formula = Fish_Richness ~ Percent_Sponge_Cover, data = variables)
+fish_r = glm.nb(formula = Fish_Richness ~ Rugosity, data = variables)
+fish_surrogate <- aictab(cand.set = list(fish_cc, fish_sc, fish_r), modnames = c("fish_cc", "fish_sc", "fish_r"), digits = 4)
+combined_cc = glm.nb(formula = Combined_Richness ~ Percent_Coral_Cover, data = variables)
+combined_sc = glm.nb(formula = Combined_Richness ~ Percent_Sponge_Cover, data = variables)
+combined_r = glm.nb(formula = Combined_Richness ~ Rugosity, data = variables)
+combined_surrogate <- aictab(cand.set = list(combined_cc, combined_sc, combined_r), modnames = c("combined_cc", "combined_sc", "combined_r"), digits = 4)
+
+
+
 
 
 # For Poisson distribution:
@@ -1797,3 +1839,44 @@ ggplot(variables, aes(x = Site, y = Fish_Richness, fill = Site)) +
         panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
         panel.background = element_blank(), 
         axis.line = element_line(colour = "black"))
+#######################################################################################################################
+coral_cc = glm.nb(formula = Coral_Richness ~ Percent_Coral_Cover, data = variables)
+coral_sc = glm.nb(formula = Coral_Richness ~ Percent_Sponge_Cover, data = variables)
+coral_r = glm.nb(formula = Coral_Richness ~ Rugosity, data = variables)
+coral_cc_sc = glm.nb(formula = Coral_Richness ~ Percent_Coral_Cover + Percent_Sponge_Cover, data = variables)
+coral_cc_r = glm.nb(formula = Coral_Richness ~ Percent_Coral_Cover + Rugosity, data = variables)
+coral_sc_r = glm.nb(formula = Coral_Richness ~ Percent_Sponge_Cover + Rugosity, data = variables)
+coral_cc_sc_r = glm.nb(formula = Coral_Richness ~ Percent_Coral_Cover + Percent_Sponge_Cover + Rugosity, data = variables)
+coral_surrogate <- aictab(cand.set = list(coral_cc, coral_sc, coral_r, coral_cc_sc, coral_cc_r, coral_sc_r, coral_cc_sc_r), 
+                          modnames = c("coral_cc", "coral_sc", "coral_r", "coral_cc_sc", "coral_cc_r", "coral_sc_r", "coral_cc_sc_r"), 
+                          digits = 4)
+sponge_cc = glm.nb(formula = Sponge_Richness ~ Percent_Coral_Cover, data = variables)
+sponge_sc = glm.nb(formula = Sponge_Richness ~ Percent_Sponge_Cover, data = variables)
+sponge_r = glm.nb(formula = Sponge_Richness ~ Rugosity, data = variables)
+sponge_cc_sc = glm.nb(formula = Sponge_Richness ~ Percent_Coral_Cover + Percent_Sponge_Cover, data = variables)
+sponge_cc_r = glm.nb(formula = Sponge_Richness ~ Percent_Coral_Cover + Rugosity, data = variables)
+sponge_sc_r = glm.nb(formula = Sponge_Richness ~ Percent_Sponge_Cover + Rugosity, data = variables)
+sponge_cc_sc_r = glm.nb(formula = Sponge_Richness ~ Percent_Coral_Cover + Percent_Sponge_Cover + Rugosity, data = variables)
+sponge_surrogate <- aictab(cand.set = list(sponge_cc, sponge_sc, sponge_r, sponge_cc_sc, sponge_cc_r, sponge_sc_r, sponge_cc_sc_r), 
+                           modnames = c("sponge_cc", "sponge_sc", "sponge_r", "sponge_cc_sc", "sponge_cc_r", "sponge_sc_r", "sponge_cc_sc_r"), 
+                           digits = 4)
+fish_cc = glm.nb(formula = Fish_Richness ~ Percent_Coral_Cover, data = variables)
+fish_sc = glm.nb(formula = Fish_Richness ~ Percent_Sponge_Cover, data = variables)
+fish_r = glm.nb(formula = Fish_Richness ~ Rugosity, data = variables)
+fish_cc_sc = glm.nb(formula = Fish_Richness ~ Percent_Coral_Cover + Percent_Sponge_Cover, data = variables)
+fish_cc_r = glm.nb(formula = Fish_Richness ~ Percent_Coral_Cover + Rugosity, data = variables)
+fish_sc_r = glm.nb(formula = Fish_Richness ~ Percent_Sponge_Cover + Rugosity, data = variables)
+fish_cc_sc_r = glm.nb(formula = Fish_Richness ~ Percent_Coral_Cover + Percent_Sponge_Cover + Rugosity, data = variables)
+fish_surrogate <- aictab(cand.set = list(fish_cc, fish_sc, fish_r, fish_cc_sc, fish_cc_r, fish_sc_r, fish_cc_sc_r), 
+                         modnames = c("fish_cc", "fish_sc", "fish_r", "fish_cc_sc", "fish_cc_r", "fish_sc_r", "fish_cc_sc_r"), 
+                         digits = 4)
+combined_cc = glm.nb(formula = Combined_Richness ~ Percent_Coral_Cover, data = variables)
+combined_sc = glm.nb(formula = Combined_Richness ~ Percent_Sponge_Cover, data = variables)
+combined_r = glm.nb(formula = Combined_Richness ~ Rugosity, data = variables)
+combined_cc_sc = glm.nb(formula = Combined_Richness ~ Percent_Coral_Cover + Percent_Sponge_Cover, data = variables)
+combined_cc_r = glm.nb(formula = Combined_Richness ~ Percent_Coral_Cover + Rugosity, data = variables)
+combined_sc_r = glm.nb(formula = Combined_Richness ~ Percent_Sponge_Cover + Rugosity, data = variables)
+combined_cc_sc_r = glm.nb(formula = Combined_Richness ~ Percent_Coral_Cover + Percent_Sponge_Cover + Rugosity, data = variables)
+combined_surrogate <- aictab(cand.set = list(combined_cc, combined_sc, combined_r, combined_cc_sc, combined_cc_r, combined_sc_r, combined_cc_sc_r), 
+                             modnames = c("combined_cc", "combined_sc", "combined_r", "combined_cc_sc", "combined_cc_r", "combined_sc_r", "combined_cc_sc_r"), 
+                             digits = 4)
