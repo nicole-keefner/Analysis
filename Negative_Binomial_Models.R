@@ -174,108 +174,109 @@ coral_r_yr_site = glm.nb(Coral_Richness ~ Rugosity + Year + Site, data = variabl
 sponge_r_yr_site = glm.nb(Sponge_Richness ~ Rugosity + Year + Site, data = variables)
 fish_r_yr_site = glm.nb(Fish_Richness ~ Rugosity + Year + Site, data = variables)
 combined_r_yr_site = glm.nb(Combined_Richness ~ Rugosity + Year + Site, data = variables)
-# CC + Year + Site + YearxSite
-coral_cc_yr_site_yrxsite = glm.nb(Coral_Richness ~ Percent_Coral_Cover + Year + Site + Year*Site, data = variables)
-sponge_cc_yr_site_yrxsite = glm.nb(Sponge_Richness ~ Percent_Coral_Cover + Year + Site + Year*Site, data = variables)
-fish_cc_yr_site_yrxsite = glm.nb(Fish_Richness ~ Percent_Coral_Cover + Year + Site + Year*Site, data = variables)
-combined_cc_yr_site_yrxsite = glm.nb(Combined_Richness ~ Percent_Coral_Cover + Year + Site + Year*Site, data = variables)
-# SC + Year + Site + YearxSite
-coral_sc_yr_site_yrxsite = glm.nb(Coral_Richness ~ Percent_Sponge_Cover + Year + Site + Year*Site, data = variables)
-sponge_sc_yr_site_yrxsite = glm.nb(Sponge_Richness ~ Percent_Sponge_Cover + Year + Site + Year*Site, data = variables)
-fish_sc_yr_site_yrxsite = glm.nb(Fish_Richness ~ Percent_Sponge_Cover + Year + Site + Year*Site, data = variables)
-combined_sc_yr_site_yrxsite = glm.nb(Combined_Richness ~ Percent_Sponge_Cover + Year + Site + Year*Site, data = variables)
-# R + Year + Site + YearxSite
-coral_r_yr_site_yrxsite = glm.nb(Coral_Richness ~ Rugosity + Year + Site + Year*Site, data = variables)
-sponge_r_yr_site_yrxsite = glm.nb(Sponge_Richness ~ Rugosity + Year + Site + Year*Site, data = variables)
-fish_r_yr_site_yrxsite = glm.nb(Fish_Richness ~ Rugosity + Year + Site + Year*Site, data = variables)
-combined_r_yr_site_yrxsite = glm.nb(Combined_Richness ~ Rugosity + Year + Site + Year*Site, data = variables)
+# # The following models are not included in AIC tables or interpretations
+# # CC + Year + Site + YearxSite
+# coral_cc_yr_site_yrxsite = glm.nb(Coral_Richness ~ Percent_Coral_Cover + Year + Site + Year*Site, data = variables)
+# sponge_cc_yr_site_yrxsite = glm.nb(Sponge_Richness ~ Percent_Coral_Cover + Year + Site + Year*Site, data = variables)
+# fish_cc_yr_site_yrxsite = glm.nb(Fish_Richness ~ Percent_Coral_Cover + Year + Site + Year*Site, data = variables)
+# combined_cc_yr_site_yrxsite = glm.nb(Combined_Richness ~ Percent_Coral_Cover + Year + Site + Year*Site, data = variables)
+# # SC + Year + Site + YearxSite
+# coral_sc_yr_site_yrxsite = glm.nb(Coral_Richness ~ Percent_Sponge_Cover + Year + Site + Year*Site, data = variables)
+# sponge_sc_yr_site_yrxsite = glm.nb(Sponge_Richness ~ Percent_Sponge_Cover + Year + Site + Year*Site, data = variables)
+# fish_sc_yr_site_yrxsite = glm.nb(Fish_Richness ~ Percent_Sponge_Cover + Year + Site + Year*Site, data = variables)
+# combined_sc_yr_site_yrxsite = glm.nb(Combined_Richness ~ Percent_Sponge_Cover + Year + Site + Year*Site, data = variables)
+# # R + Year + Site + YearxSite
+# coral_r_yr_site_yrxsite = glm.nb(Coral_Richness ~ Rugosity + Year + Site + Year*Site, data = variables)
+# sponge_r_yr_site_yrxsite = glm.nb(Sponge_Richness ~ Rugosity + Year + Site + Year*Site, data = variables)
+# fish_r_yr_site_yrxsite = glm.nb(Fish_Richness ~ Rugosity + Year + Site + Year*Site, data = variables)
+# combined_r_yr_site_yrxsite = glm.nb(Combined_Richness ~ Rugosity + Year + Site + Year*Site, data = variables)
 
 ## AIC tables to evaluate surrogate effectiveness over space and time
 # Names of coral cover models in order they are listed for the AIC tables
-cc_modnames <- c("yr", "site", "yr_site", "yr_site_yrxsite", "cc", "cc_yr", "cc_site", "cc_yr_site", "cc_yr_site_yrxsite") 
+cc_modnames <- c("yr", "site", "yr_site", "yr_site_yrxsite", "cc", "cc_yr", "cc_site", "cc_yr_site") 
 # AIC to compare coral_cc models
 coral_cc <- aictab(cand.set = list(coral_yr, coral_site, coral_yr_site, coral_yr_site_yrxsite, 
-                                   coral_cc, coral_cc_yr, coral_cc_site, coral_cc_yr_site, coral_cc_yr_site_yrxsite), 
+                                   coral_cc, coral_cc_yr, coral_cc_site, coral_cc_yr_site), 
                    modnames = cc_modnames, digits = 4)
 # AIC to compare sponge_cc models
 sponge_cc <- aictab(cand.set = list(sponge_yr, sponge_site, sponge_yr_site, sponge_yr_site_yrxsite, 
-                                    sponge_cc, sponge_cc_yr, sponge_cc_site, sponge_cc_yr_site, sponge_cc_yr_site_yrxsite), 
+                                    sponge_cc, sponge_cc_yr, sponge_cc_site, sponge_cc_yr_site), 
                     modnames = cc_modnames, digits = 4)
 # AIC to compare fish_cc models
 fish_cc <- aictab(cand.set = list(fish_yr, fish_site, fish_yr_site, fish_yr_site_yrxsite, 
-                                    fish_cc, fish_cc_yr, fish_cc_site, fish_cc_yr_site, fish_cc_yr_site_yrxsite), 
+                                    fish_cc, fish_cc_yr, fish_cc_site, fish_cc_yr_site), 
                     modnames = cc_modnames, digits = 4)
 # AIC to compare combined_cc models
 combined_cc <- aictab(cand.set = list(combined_yr, combined_site, combined_yr_site, combined_yr_site_yrxsite, 
-                                    combined_cc, combined_cc_yr, combined_cc_site, combined_cc_yr_site, combined_cc_yr_site_yrxsite), 
+                                    combined_cc, combined_cc_yr, combined_cc_site, combined_cc_yr_site), 
                     modnames = cc_modnames, digits = 4)
 # Names of coral cover models in order they are listed for the AIC tables
-sc_modnames <- c("yr", "site", "yr_site", "yr_site_yrxsite", "sc", "sc_yr", "sc_site", "sc_yr_site", "sc_yr_site_yrxsite") 
+sc_modnames <- c("yr", "site", "yr_site", "yr_site_yrxsite", "sc", "sc_yr", "sc_site", "sc_yr_site") 
 # AIC to compare coral_sc models
 coral_sc <- aictab(cand.set = list(coral_yr, coral_site, coral_yr_site, coral_yr_site_yrxsite, 
-                                   coral_sc, coral_sc_yr, coral_sc_site, coral_sc_yr_site, coral_sc_yr_site_yrxsite), 
+                                   coral_sc, coral_sc_yr, coral_sc_site, coral_sc_yr_site), 
                    modnames = sc_modnames, digits = 4)
 # AIC to compare sponge_sc models
 sponge_sc <- aictab(cand.set = list(sponge_yr, sponge_site, sponge_yr_site, sponge_yr_site_yrxsite, 
-                                   sponge_sc, sponge_sc_yr, sponge_sc_site, sponge_sc_yr_site, sponge_sc_yr_site_yrxsite), 
+                                   sponge_sc, sponge_sc_yr, sponge_sc_site, sponge_sc_yr_site), 
                    modnames = sc_modnames, digits = 4)
 # AIC to compare fish_sc models
 fish_sc <- aictab(cand.set = list(fish_yr, fish_site, fish_yr_site, fish_yr_site_yrxsite, 
-                                   fish_sc, fish_sc_yr, fish_sc_site, fish_sc_yr_site, fish_sc_yr_site_yrxsite), 
+                                   fish_sc, fish_sc_yr, fish_sc_site, fish_sc_yr_site), 
                    modnames = sc_modnames, digits = 4)
 # AIC to compare combined_sc models
 combined_sc <- aictab(cand.set = list(combined_yr, combined_site, combined_yr_site, combined_yr_site_yrxsite, 
-                                   combined_sc, combined_sc_yr, combined_sc_site, combined_sc_yr_site, combined_sc_yr_site_yrxsite), 
+                                   combined_sc, combined_sc_yr, combined_sc_site, combined_sc_yr_site), 
                    modnames = sc_modnames, digits = 4)
 # Names of coral cover models in order they are listed for the AIC tables
-r_modnames <- c("yr", "site", "yr_site", "yr_site_yrxsite", "r", "r_yr", "r_site", "r_yr_site", "r_yr_site_yrxsite") 
+r_modnames <- c("yr", "site", "yr_site", "yr_site_yrxsite", "r", "r_yr", "r_site", "r_yr_site") 
 # AIC to compare coral_r models
 coral_r <- aictab(cand.set = list(coral_yr, coral_site, coral_yr_site, coral_yr_site_yrxsite, 
-                                   coral_r, coral_r_yr, coral_r_site, coral_r_yr_site, coral_r_yr_site_yrxsite), 
+                                   coral_r, coral_r_yr, coral_r_site, coral_r_yr_site), 
                    modnames = r_modnames, digits = 4)
 # AIC to compare sponge_r models
 sponge_r <- aictab(cand.set = list(sponge_yr, sponge_site, sponge_yr_site, sponge_yr_site_yrxsite, 
-                                   sponge_r, sponge_r_yr, sponge_r_site, sponge_r_yr_site, sponge_r_yr_site_yrxsite), 
+                                   sponge_r, sponge_r_yr, sponge_r_site, sponge_r_yr_site), 
                    modnames = r_modnames, digits = 4)
 # AIC to compare fish_r models
 fish_r <- aictab(cand.set = list(fish_yr, fish_site, fish_yr_site, fish_yr_site_yrxsite, 
-                                   fish_r, fish_r_yr, fish_r_site, fish_r_yr_site, fish_r_yr_site_yrxsite), 
+                                   fish_r, fish_r_yr, fish_r_site, fish_r_yr_site), 
                    modnames = r_modnames, digits = 4)
 # AIC to compare combined_r models
 combined_r <- aictab(cand.set = list(combined_yr, combined_site, combined_yr_site, combined_yr_site_yrxsite, 
-                                   combined_r, combined_r_yr, combined_r_site, combined_r_yr_site, combined_r_yr_site_yrxsite), 
+                                   combined_r, combined_r_yr, combined_r_site, combined_r_yr_site), 
                    modnames = r_modnames, digits = 4)
 
 ########################################################################
 
 ### Objective 3:Determine the best predictors of each target given our model set.
 obj_three_modnames <- c("yr", "site", "yr_site", "yr_site_yrxsite", 
-                  "cc", "cc_yr", "cc_site", "cc_yr_site", "cc_yr_site_yrxsite",
-                  "sc", "sc_yr", "sc_site", "sc_yr_site", "sc_yr_site_yrxsite",
-                  "r", "r_yr", "r_site", "r_yr_site", "r_yr_site_yrxsite") 
+                  "cc", "cc_yr", "cc_site", "cc_yr_site",
+                  "sc", "sc_yr", "sc_site", "sc_yr_site",
+                  "r", "r_yr", "r_site", "r_yr_site") 
 # AIC to compare all coral models
 coral_all <- aictab(cand.set = list(coral_yr, coral_site, coral_yr_site, coral_yr_site_yrxsite,
-                                    coral_cc, coral_cc_yr, coral_cc_site, coral_cc_yr_site, coral_cc_yr_site_yrxsite,
-                                    coral_sc, coral_sc_yr, coral_sc_site, coral_sc_yr_site, coral_sc_yr_site_yrxsite,
-                                    coral_r, coral_r_yr, coral_r_site, coral_r_yr_site, coral_r_yr_site_yrxsite), 
+                                    coral_cc, coral_cc_yr, coral_cc_site, coral_cc_yr_site,
+                                    coral_sc, coral_sc_yr, coral_sc_site, coral_sc_yr_site,
+                                    coral_r, coral_r_yr, coral_r_site, coral_r_yr_site), 
                     modnames = obj_three_modnames, digits = 4)
 # AIC to compare all sponge models
 sponge_all <- aictab(cand.set = list(sponge_yr, sponge_site, sponge_yr_site, sponge_yr_site_yrxsite,
-                                    sponge_cc, sponge_cc_yr, sponge_cc_site, sponge_cc_yr_site, sponge_cc_yr_site_yrxsite,
-                                    sponge_sc, sponge_sc_yr, sponge_sc_site, sponge_sc_yr_site, sponge_sc_yr_site_yrxsite,
-                                    sponge_r, sponge_r_yr, sponge_r_site, sponge_r_yr_site, sponge_r_yr_site_yrxsite), 
+                                    sponge_cc, sponge_cc_yr, sponge_cc_site, sponge_cc_yr_site,
+                                    sponge_sc, sponge_sc_yr, sponge_sc_site, sponge_sc_yr_site,
+                                    sponge_r, sponge_r_yr, sponge_r_site, sponge_r_yr_site), 
                     modnames = obj_three_modnames, digits = 4)
 # AIC to compare all fish models
 fish_all <- aictab(cand.set = list(fish_yr, fish_site, fish_yr_site, fish_yr_site_yrxsite,
-                                    fish_cc, fish_cc_yr, fish_cc_site, fish_cc_yr_site, fish_cc_yr_site_yrxsite,
-                                    fish_sc, fish_sc_yr, fish_sc_site, fish_sc_yr_site, fish_sc_yr_site_yrxsite,
-                                    fish_r, fish_r_yr, fish_r_site, fish_r_yr_site, fish_r_yr_site_yrxsite), 
+                                    fish_cc, fish_cc_yr, fish_cc_site, fish_cc_yr_site,
+                                    fish_sc, fish_sc_yr, fish_sc_site, fish_sc_yr_site,
+                                    fish_r, fish_r_yr, fish_r_site, fish_r_yr_site), 
                     modnames = obj_three_modnames, digits = 4)
 # AIC to compare all "combined" models
 combined_all <- aictab(cand.set = list(combined_yr, combined_site, combined_yr_site, combined_yr_site_yrxsite,
-                                    combined_cc, combined_cc_yr, combined_cc_site, combined_cc_yr_site, combined_cc_yr_site_yrxsite,
-                                    combined_sc, combined_sc_yr, combined_sc_site, combined_sc_yr_site, combined_sc_yr_site_yrxsite,
-                                    combined_r, combined_r_yr, combined_r_site, combined_r_yr_site, combined_r_yr_site_yrxsite), 
+                                    combined_cc, combined_cc_yr, combined_cc_site, combined_cc_yr_site,
+                                    combined_sc, combined_sc_yr, combined_sc_site, combined_sc_yr_site,
+                                    combined_r, combined_r_yr, combined_r_site, combined_r_yr_site), 
                     modnames = obj_three_modnames, digits = 4)
 
 ## Model output for competitive models (<2.0 deltaAIC)
@@ -297,13 +298,29 @@ summary(combined_cc_yr_site)
 
 ########################################################################
 
-#*obj* what does each model mean???
-#*obj* should I include sur + yr + sur*yr and/or sur + site + sur*site
+## Should I include sur + yr + sur*yr and/or sur + site + sur*site? 
+# NO ecological justification
+# I can only think that the first one might be relevant if something large timescale happened 
+# that changed the relationship between number of species and surrogate like coral cover. 
+# But I doubt anything like that would be captured in only 27 years.
+# These would mean that the effect of surrogate on target is different for different yrs (or sites)
+# i.e. the slopes of regression lines are different for different sites or that there are 3 dimensions
+
+## Should I include sur + yr + site + yr*site?
+# NO ecological justification
+# This would mean that the effect of time on the target is different for different sites and that
+# the surrogate improves the model, but does not modify the effect of time or site on the target.
+# This might be the case if different sites experience different conditions over time 
+# (e.g. disturbance is more common at one site than another and the level of disturbance changes over time)
+# AND that there was additionally variation in the data that could be further explained by the surrogate
+
+
 #*obj* Really consider how to evaluate the models for objective 2
 #*obj* Really figure out what the top models mean for objective 3
 #*obj* Test model assumptions and normality of residuals (Bird_regression files and logistic_lab)
-#*obj* Create new script for linear models with log and power models
-#*obj* Work on figures of top models (8 separate lines when site is included in top model)
+#*obj* Objective 4: Create new script for linear models with log and power models
+
+#*obj* Work on figures of top models (see image on phone)
 #*obj* Make sure to include prediction lines on model figures
 #*obj* Basic graphs
 
