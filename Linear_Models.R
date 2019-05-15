@@ -1,5 +1,7 @@
 ### Nicole Keefner
 ### Master's Thesis: Develop models and figures using variables.csv
+### Objective 4: Compare results of linear and negative binomial models
+### Linear in this script; negbin in other script that also has general data analysis independent of distribution used
 
 
 
@@ -14,14 +16,10 @@
 
 
 ## Load packages
-# First used for model output in HTML table format using function tab_model
-library(sjPlot)
 # First used for aic function, aictab
 library(AICcmodavg)
 # First used to make figures using function ggplot
 library(ggplot2)
-# First used for negative binomial modeling using function glm.nb
-library(MASS)
 # First used to make 3D model using function scatterplot3d
 library(scatterplot3d)
 
@@ -40,67 +38,28 @@ sponge_complete <- variables[complete.cases(variables$Sponge_Richness), ]
 
 
 
-# Create dataframe with means and SD's for all variables
-avg_name <-c("Percent_Coral_Cover", 
-             "Percent_Sponge_Cover", 
-             "Rugosity", 
-             "Coral_Richness", 
-             "Sponge_Richness", 
-             "Fish_Richness", 
-             "Combined_Richness")
-avg_mean <-c(round(x = mean(x = variables$Percent_Coral_Cover), digits = 3), 
-             round(x = mean(x = variables$Percent_Sponge_Cover), digits = 3), 
-             round(x = mean(x = sponge_complete$Rugosity), digits = 3), 
-             round(x = mean(x = variables$Coral_Richness), digits = 3), 
-             round(x = mean(x = variables$Sponge_Richness), digits = 3), 
-             round(x = mean(x = variables$Fish_Richness), digits = 3),  
-             round(x = mean(x = sponge_complete$Combined_Richness), digits = 3))
-avg_sd <-c(round(x = sd(x = variables$Percent_Coral_Cover), digits = 3), 
-           round(x = sd(x = variables$Percent_Sponge_Cover), digits = 3),
-           round(x = sd(x = sponge_complete$Rugosity), digits = 3),
-           round(x = sd(x = variables$Coral_Richness), digits = 3),
-           round(x = sd(x = variables$Sponge_Richness), digits = 3),
-           round(x = sd(x = variables$Fish_Richness), digits = 3),
-           round(x = sd(x = sponge_complete$Combined_Richness), digits = 3))
-avg_df <- data.frame(avg_name, avg_mean, avg_sd)
-
-# Graph frequency distributions of response variables
-hist(x = variables$Percent_Coral_Cover, breaks = 25)
-hist(x = variables$Percent_Sponge_Cover, breaks = 25)
-hist(x = variables$Rugosity, breaks = 25)
-hist(x = variables$Coral_Richness, breaks = 25)
-hist(x = variables$Sponge_Richness, breaks = 25)
-hist(x = variables$Fish_Richness, breaks = 25)
-hist(x = variables$Combined_Richness, breaks = 25)
-
-
-
 ########################################################################
 
 
 
-### Objective 1: Create models that only include terms for surrogates 
+### Objective 1 for Linear: Create models that only include terms for surrogates 
 ### in order to determine which of the 3 candidate surrogates is the best at predicting each target. 
-# glm.nb produces warning messages because the data is often underdispersed relative to a negative binomial distribution. 
-# Poisson might be more appropriate. However, when the mean = variance the NB distribution will provide similar results as the Poisson.
-# Negative binomial distribution is used to model count data with overdispersion; richness is count data.
-# Negative binomial distribution models and aic tables for each target with one surrogate
 # For each target, compare models in aic table
-coral_cc = glm.nb(formula = Coral_Richness ~ Percent_Coral_Cover, data = variables)
-coral_sc = glm.nb(formula = Coral_Richness ~ Percent_Sponge_Cover, data = variables)
-coral_r = glm.nb(formula = Coral_Richness ~ Rugosity, data = variables)
+coral_cc = lm(formula = Coral_Richness ~ Percent_Coral_Cover, data = variables)
+coral_sc = lm(formula = Coral_Richness ~ Percent_Sponge_Cover, data = variables)
+coral_r = lm(formula = Coral_Richness ~ Rugosity, data = variables)
 coral_surrogate <- aictab(cand.set = list(coral_cc, coral_sc, coral_r), modnames = c("coral_cc", "coral_sc", "coral_r"), digits = 4)
-sponge_cc = glm.nb(formula = Sponge_Richness ~ Percent_Coral_Cover, data = variables)
-sponge_sc = glm.nb(formula = Sponge_Richness ~ Percent_Sponge_Cover, data = variables)
-sponge_r = glm.nb(formula = Sponge_Richness ~ Rugosity, data = variables)
+sponge_cc = lm(formula = Sponge_Richness ~ Percent_Coral_Cover, data = variables)
+sponge_sc = lm(formula = Sponge_Richness ~ Percent_Sponge_Cover, data = variables)
+sponge_r = lm(formula = Sponge_Richness ~ Rugosity, data = variables)
 sponge_surrogate <- aictab(cand.set = list(sponge_cc, sponge_sc, sponge_r), modnames = c("sponge_cc", "sponge_sc", "sponge_r"), digits = 4)
-fish_cc = glm.nb(formula = Fish_Richness ~ Percent_Coral_Cover, data = variables)
-fish_sc = glm.nb(formula = Fish_Richness ~ Percent_Sponge_Cover, data = variables)
-fish_r = glm.nb(formula = Fish_Richness ~ Rugosity, data = variables)
+fish_cc = lm(formula = Fish_Richness ~ Percent_Coral_Cover, data = variables)
+fish_sc = lm(formula = Fish_Richness ~ Percent_Sponge_Cover, data = variables)
+fish_r = lm(formula = Fish_Richness ~ Rugosity, data = variables)
 fish_surrogate <- aictab(cand.set = list(fish_cc, fish_sc, fish_r), modnames = c("fish_cc", "fish_sc", "fish_r"), digits = 4)
-combined_cc = glm.nb(formula = Combined_Richness ~ Percent_Coral_Cover, data = variables)
-combined_sc = glm.nb(formula = Combined_Richness ~ Percent_Sponge_Cover, data = variables)
-combined_r = glm.nb(formula = Combined_Richness ~ Rugosity, data = variables)
+combined_cc = lm(formula = Combined_Richness ~ Percent_Coral_Cover, data = variables)
+combined_sc = lm(formula = Combined_Richness ~ Percent_Sponge_Cover, data = variables)
+combined_r = lm(formula = Combined_Richness ~ Rugosity, data = variables)
 combined_surrogate <- aictab(cand.set = list(combined_cc, combined_sc, combined_r), modnames = c("combined_cc", "combined_sc", "combined_r"), digits = 4)
 
 
@@ -109,150 +68,290 @@ combined_surrogate <- aictab(cand.set = list(combined_cc, combined_sc, combined_
 
 
 
-### Objective 2: Determine if relationships between targets and candidate 
+### Objective 2 for Linear: Determine if relationships between targets and candidate 
 ### surrogates remain consistent over space and time.
 
 ## No surrogates in these models:
 # Year (time)
-coral_yr = glm.nb(formula = Coral_Richness ~ Year, data = variables)
-sponge_yr = glm.nb(formula = Sponge_Richness ~ Year, data = variables)
-fish_yr = glm.nb(formula = Fish_Richness ~ Year, data = variables)
-combined_yr = glm.nb(formula = Combined_Richness ~ Year, data = variables)
+coral_yr = lm(formula = Coral_Richness ~ Year, data = variables)
+sponge_yr = lm(formula = Sponge_Richness ~ Year, data = variables)
+fish_yr = lm(formula = Fish_Richness ~ Year, data = variables)
+combined_yr = lm(formula = Combined_Richness ~ Year, data = variables)
 # Site (space)
-coral_site = glm.nb(formula = Coral_Richness ~ Site, data = variables)
-sponge_site = glm.nb(formula = Sponge_Richness ~ Site, data = variables)
-fish_site = glm.nb(formula = Fish_Richness ~ Site, data = variables)
-combined_site = glm.nb(formula = Combined_Richness ~ Site, data = variables)
+coral_site = lm(formula = Coral_Richness ~ Site, data = variables)
+sponge_site = lm(formula = Sponge_Richness ~ Site, data = variables)
+fish_site = lm(formula = Fish_Richness ~ Site, data = variables)
+combined_site = lm(formula = Combined_Richness ~ Site, data = variables)
 # Year + Site
-coral_yr_site = glm.nb(formula = Coral_Richness ~ Year + Site, data = variables)
-sponge_yr_site = glm.nb(formula = Sponge_Richness ~ Year + Site, data = variables)
-fish_yr_site = glm.nb(formula = Fish_Richness ~ Year + Site, data = variables)
-combined_yr_site = glm.nb(formula = Combined_Richness ~ Year + Site, data = variables)
+coral_yr_site = lm(formula = Coral_Richness ~ Year + Site, data = variables)
+sponge_yr_site = lm(formula = Sponge_Richness ~ Year + Site, data = variables)
+fish_yr_site = lm(formula = Fish_Richness ~ Year + Site, data = variables)
+combined_yr_site = lm(formula = Combined_Richness ~ Year + Site, data = variables)
 # Year + Site + YearxSite
-coral_yr_site_yrxsite = glm.nb(formula = Coral_Richness ~ Year + Site + Year*Site, data = variables)
-sponge_yr_site_yrxsite = glm.nb(formula = Sponge_Richness ~ Year + Site + Year*Site, data = variables)
-fish_yr_site_yrxsite = glm.nb(formula = Fish_Richness ~ Year + Site + Year*Site, data = variables)
-combined_yr_site_yrxsite = glm.nb(formula = Combined_Richness ~ Year + Site + Year*Site, data = variables)
+coral_yr_site_yrxsite = lm(formula = Coral_Richness ~ Year + Site + Year*Site, data = variables)
+sponge_yr_site_yrxsite = lm(formula = Sponge_Richness ~ Year + Site + Year*Site, data = variables)
+fish_yr_site_yrxsite = lm(formula = Fish_Richness ~ Year + Site + Year*Site, data = variables)
+combined_yr_site_yrxsite = lm(formula = Combined_Richness ~ Year + Site + Year*Site, data = variables)
 
 ## These models have surrogates:
 # CC + Year (time)
-coral_cc_yr = glm.nb(formula = Coral_Richness ~ Percent_Coral_Cover + Year, data = variables)
-sponge_cc_yr = glm.nb(formula = Sponge_Richness ~ Percent_Coral_Cover + Year, data = variables)
-fish_cc_yr = glm.nb(formula = Fish_Richness ~ Percent_Coral_Cover + Year, data = variables)
-combined_cc_yr = glm.nb(formula = Combined_Richness ~ Percent_Coral_Cover + Year, data = variables)
+coral_cc_yr = lm(formula = Coral_Richness ~ Percent_Coral_Cover + Year, data = variables)
+sponge_cc_yr = lm(formula = Sponge_Richness ~ Percent_Coral_Cover + Year, data = variables)
+fish_cc_yr = lm(formula = Fish_Richness ~ Percent_Coral_Cover + Year, data = variables)
+combined_cc_yr = lm(formula = Combined_Richness ~ Percent_Coral_Cover + Year, data = variables)
 # SC + Year (time)
-coral_sc_yr = glm.nb(formula = Coral_Richness ~ Percent_Sponge_Cover + Year, data = variables)
-sponge_sc_yr = glm.nb(formula = Sponge_Richness ~ Percent_Sponge_Cover + Year, data = variables)
-fish_sc_yr = glm.nb(formula = Fish_Richness ~ Percent_Sponge_Cover + Year, data = variables)
-combined_sc_yr = glm.nb(formula = Combined_Richness ~ Percent_Sponge_Cover + Year, data = variables)
+coral_sc_yr = lm(formula = Coral_Richness ~ Percent_Sponge_Cover + Year, data = variables)
+sponge_sc_yr = lm(formula = Sponge_Richness ~ Percent_Sponge_Cover + Year, data = variables)
+fish_sc_yr = lm(formula = Fish_Richness ~ Percent_Sponge_Cover + Year, data = variables)
+combined_sc_yr = lm(formula = Combined_Richness ~ Percent_Sponge_Cover + Year, data = variables)
 # R + Year (time)
-coral_r_yr = glm.nb(formula = Coral_Richness ~ Rugosity + Year, data = variables)
-sponge_r_yr = glm.nb(formula = Sponge_Richness ~ Rugosity + Year, data = variables)
-fish_r_yr = glm.nb(formula = Fish_Richness ~ Rugosity + Year, data = variables)
-combined_r_yr = glm.nb(formula = Combined_Richness ~ Rugosity + Year, data = variables)
+coral_r_yr = lm(formula = Coral_Richness ~ Rugosity + Year, data = variables)
+sponge_r_yr = lm(formula = Sponge_Richness ~ Rugosity + Year, data = variables)
+fish_r_yr = lm(formula = Fish_Richness ~ Rugosity + Year, data = variables)
+combined_r_yr = lm(formula = Combined_Richness ~ Rugosity + Year, data = variables)
 # CC + Site (space)
-coral_cc_site = glm.nb(formula = Coral_Richness ~ Percent_Coral_Cover + Site, data = variables)
-sponge_cc_site = glm.nb(formula = Sponge_Richness ~ Percent_Coral_Cover + Site, data = variables)
-fish_cc_site = glm.nb(formula = Fish_Richness ~ Percent_Coral_Cover + Site, data = variables)
-combined_cc_site = glm.nb(formula = Combined_Richness ~ Percent_Coral_Cover + Site, data = variables)
+coral_cc_site = lm(formula = Coral_Richness ~ Percent_Coral_Cover + Site, data = variables)
+sponge_cc_site = lm(formula = Sponge_Richness ~ Percent_Coral_Cover + Site, data = variables)
+fish_cc_site = lm(formula = Fish_Richness ~ Percent_Coral_Cover + Site, data = variables)
+combined_cc_site = lm(formula = Combined_Richness ~ Percent_Coral_Cover + Site, data = variables)
 # SC + Site (space)
-coral_sc_site = glm.nb(formula = Coral_Richness ~ Percent_Sponge_Cover + Site, data = variables)
-sponge_sc_site = glm.nb(formula = Sponge_Richness ~ Percent_Sponge_Cover + Site, data = variables)
-fish_sc_site = glm.nb(formula = Fish_Richness ~ Percent_Sponge_Cover + Site, data = variables)
-combined_sc_site = glm.nb(formula = Combined_Richness ~ Percent_Sponge_Cover + Site, data = variables)
+coral_sc_site = lm(formula = Coral_Richness ~ Percent_Sponge_Cover + Site, data = variables)
+sponge_sc_site = lm(formula = Sponge_Richness ~ Percent_Sponge_Cover + Site, data = variables)
+fish_sc_site = lm(formula = Fish_Richness ~ Percent_Sponge_Cover + Site, data = variables)
+combined_sc_site = lm(formula = Combined_Richness ~ Percent_Sponge_Cover + Site, data = variables)
 # R + Site (space)
-coral_r_site = glm.nb(formula = Coral_Richness ~ Rugosity + Site, data = variables)
-sponge_r_site = glm.nb(formula = Sponge_Richness ~ Rugosity + Site, data = variables)
-fish_r_site = glm.nb(formula = Fish_Richness ~ Rugosity + Site, data = variables)
-combined_r_site = glm.nb(formula = Combined_Richness ~ Rugosity + Site, data = variables)
+coral_r_site = lm(formula = Coral_Richness ~ Rugosity + Site, data = variables)
+sponge_r_site = lm(formula = Sponge_Richness ~ Rugosity + Site, data = variables)
+fish_r_site = lm(formula = Fish_Richness ~ Rugosity + Site, data = variables)
+combined_r_site = lm(formula = Combined_Richness ~ Rugosity + Site, data = variables)
 # CC + Year + Site
-coral_cc_yr_site = glm.nb(formula = Coral_Richness ~ Percent_Coral_Cover + Year + Site, data = variables)
-sponge_cc_yr_site = glm.nb(formula = Sponge_Richness ~ Percent_Coral_Cover + Year + Site, data = variables)
-fish_cc_yr_site = glm.nb(formula = Fish_Richness ~ Percent_Coral_Cover + Year + Site, data = variables)
-combined_cc_yr_site = glm.nb(formula = Combined_Richness ~ Percent_Coral_Cover + Year + Site, data = variables)
+coral_cc_yr_site = lm(formula = Coral_Richness ~ Percent_Coral_Cover + Year + Site, data = variables)
+sponge_cc_yr_site = lm(formula = Sponge_Richness ~ Percent_Coral_Cover + Year + Site, data = variables)
+fish_cc_yr_site = lm(formula = Fish_Richness ~ Percent_Coral_Cover + Year + Site, data = variables)
+combined_cc_yr_site = lm(formula = Combined_Richness ~ Percent_Coral_Cover + Year + Site, data = variables)
 # SC + Year + Site
-coral_sc_yr_site = glm.nb(formula = Coral_Richness ~ Percent_Sponge_Cover + Year + Site, data = variables)
-sponge_sc_yr_site = glm.nb(formula = Sponge_Richness ~ Percent_Sponge_Cover + Year + Site, data = variables)
-fish_sc_yr_site = glm.nb(formula = Fish_Richness ~ Percent_Sponge_Cover + Year + Site, data = variables)
-combined_sc_yr_site = glm.nb(formula = Combined_Richness ~ Percent_Sponge_Cover + Year + Site, data = variables)
+coral_sc_yr_site = lm(formula = Coral_Richness ~ Percent_Sponge_Cover + Year + Site, data = variables)
+sponge_sc_yr_site = lm(formula = Sponge_Richness ~ Percent_Sponge_Cover + Year + Site, data = variables)
+fish_sc_yr_site = lm(formula = Fish_Richness ~ Percent_Sponge_Cover + Year + Site, data = variables)
+combined_sc_yr_site = lm(formula = Combined_Richness ~ Percent_Sponge_Cover + Year + Site, data = variables)
 # R + Year + Site
-coral_r_yr_site = glm.nb(formula = Coral_Richness ~ Rugosity + Year + Site, data = variables)
-sponge_r_yr_site = glm.nb(formula = Sponge_Richness ~ Rugosity + Year + Site, data = variables)
-fish_r_yr_site = glm.nb(formula = Fish_Richness ~ Rugosity + Year + Site, data = variables)
-combined_r_yr_site = glm.nb(formula = Combined_Richness ~ Rugosity + Year + Site, data = variables)
+coral_r_yr_site = lm(formula = Coral_Richness ~ Rugosity + Year + Site, data = variables)
+sponge_r_yr_site = lm(formula = Sponge_Richness ~ Rugosity + Year + Site, data = variables)
+fish_r_yr_site = lm(formula = Fish_Richness ~ Rugosity + Year + Site, data = variables)
+combined_r_yr_site = lm(formula = Combined_Richness ~ Rugosity + Year + Site, data = variables)
 # # The following models are not included in AIC tables or interpretations
 # # CC + Year + Site + YearxSite
-# coral_cc_yr_site_yrxsite = glm.nb(formula = Coral_Richness ~ Percent_Coral_Cover + Year + Site + Year*Site, data = variables)
-# sponge_cc_yr_site_yrxsite = glm.nb(formula = Sponge_Richness ~ Percent_Coral_Cover + Year + Site + Year*Site, data = variables)
-# fish_cc_yr_site_yrxsite = glm.nb(formula = Fish_Richness ~ Percent_Coral_Cover + Year + Site + Year*Site, data = variables)
-# combined_cc_yr_site_yrxsite = glm.nb(formula = Combined_Richness ~ Percent_Coral_Cover + Year + Site + Year*Site, data = variables)
+# coral_cc_yr_site_yrxsite = lm(formula = Coral_Richness ~ Percent_Coral_Cover + Year + Site + Year*Site, data = variables)
+# sponge_cc_yr_site_yrxsite = lm(formula = Sponge_Richness ~ Percent_Coral_Cover + Year + Site + Year*Site, data = variables)
+# fish_cc_yr_site_yrxsite = lm(formula = Fish_Richness ~ Percent_Coral_Cover + Year + Site + Year*Site, data = variables)
+# combined_cc_yr_site_yrxsite = lm(formula = Combined_Richness ~ Percent_Coral_Cover + Year + Site + Year*Site, data = variables)
 # # SC + Year + Site + YearxSite
-# coral_sc_yr_site_yrxsite = glm.nb(formula = Coral_Richness ~ Percent_Sponge_Cover + Year + Site + Year*Site, data = variables)
-# sponge_sc_yr_site_yrxsite = glm.nb(formula = Sponge_Richness ~ Percent_Sponge_Cover + Year + Site + Year*Site, data = variables)
-# fish_sc_yr_site_yrxsite = glm.nb(formula = Fish_Richness ~ Percent_Sponge_Cover + Year + Site + Year*Site, data = variables)
-# combined_sc_yr_site_yrxsite = glm.nb(formula = Combined_Richness ~ Percent_Sponge_Cover + Year + Site + Year*Site, data = variables)
+# coral_sc_yr_site_yrxsite = lm(formula = Coral_Richness ~ Percent_Sponge_Cover + Year + Site + Year*Site, data = variables)
+# sponge_sc_yr_site_yrxsite = lm(formula = Sponge_Richness ~ Percent_Sponge_Cover + Year + Site + Year*Site, data = variables)
+# fish_sc_yr_site_yrxsite = lm(formula = Fish_Richness ~ Percent_Sponge_Cover + Year + Site + Year*Site, data = variables)
+# combined_sc_yr_site_yrxsite = lm(formula = Combined_Richness ~ Percent_Sponge_Cover + Year + Site + Year*Site, data = variables)
 # # R + Year + Site + YearxSite
-# coral_r_yr_site_yrxsite = glm.nb(formula = Coral_Richness ~ Rugosity + Year + Site + Year*Site, data = variables)
-# sponge_r_yr_site_yrxsite = glm.nb(formula = Sponge_Richness ~ Rugosity + Year + Site + Year*Site, data = variables)
-# fish_r_yr_site_yrxsite = glm.nb(formula = Fish_Richness ~ Rugosity + Year + Site + Year*Site, data = variables)
-# combined_r_yr_site_yrxsite = glm.nb(formula = Combined_Richness ~ Rugosity + Year + Site + Year*Site, data = variables)
+# coral_r_yr_site_yrxsite = lm(formula = Coral_Richness ~ Rugosity + Year + Site + Year*Site, data = variables)
+# sponge_r_yr_site_yrxsite = lm(formula = Sponge_Richness ~ Rugosity + Year + Site + Year*Site, data = variables)
+# fish_r_yr_site_yrxsite = lm(formula = Fish_Richness ~ Rugosity + Year + Site + Year*Site, data = variables)
+# combined_r_yr_site_yrxsite = lm(formula = Combined_Richness ~ Rugosity + Year + Site + Year*Site, data = variables)
+
+
+
+## These models have surrogates:
+## Logarithmic Models
+coral_cc_log = lm(formula = Coral_Richness ~ log(Percent_Coral_Cover), data = variables)
+coral_sc_log = lm(formula = Coral_Richness ~ log(Percent_Sponge_Cover), data = variables)
+coral_r_log = lm(formula = Coral_Richness ~ log(Rugosity), data = variables)
+sponge_cc_log = lm(formula = Sponge_Richness ~ log(Percent_Coral_Cover), data = variables)
+sponge_sc_log = lm(formula = Sponge_Richness ~ log(Percent_Sponge_Cover), data = variables)
+sponge_r_log = lm(formula = Sponge_Richness ~ log(Rugosity), data = variables)
+fish_cc_log = lm(formula = Fish_Richness ~ log(Percent_Coral_Cover), data = variables)
+fish_sc_log = lm(formula = Fish_Richness ~ log(Percent_Sponge_Cover), data = variables)
+fish_r_log = lm(formula = Fish_Richness ~ log(Rugosity), data = variables)
+combined_cc_log = lm(formula = Combined_Richness ~ log(Percent_Coral_Cover), data = variables)
+combined_sc_log = lm(formula = Combined_Richness ~ log(Percent_Sponge_Cover), data = variables)
+combined_r_log = lm(formula = Combined_Richness ~ log(Rugosity), data = variables)
+# CC + Year (time)
+coral_cc_yr_log = lm(formula = Coral_Richness ~ log(Percent_Coral_Cover) + Year, data = variables)
+sponge_cc_yr_log = lm(formula = Sponge_Richness ~ log(Percent_Coral_Cover) + Year, data = variables)
+fish_cc_yr_log = lm(formula = Fish_Richness ~ log(Percent_Coral_Cover) + Year, data = variables)
+combined_cc_yr_log = lm(formula = Combined_Richness ~ log(Percent_Coral_Cover) + Year, data = variables)
+# SC + Year (time)
+coral_sc_yr_log = lm(formula = Coral_Richness ~ log(Percent_Sponge_Cover) + Year, data = variables)
+sponge_sc_yr_log = lm(formula = Sponge_Richness ~ log(Percent_Sponge_Cover) + Year, data = variables)
+fish_sc_yr_log = lm(formula = Fish_Richness ~ log(Percent_Sponge_Cover) + Year, data = variables)
+combined_sc_yr_log = lm(formula = Combined_Richness ~ log(Percent_Sponge_Cover) + Year, data = variables)
+# R + Year (time)
+coral_r_yr_log = lm(formula = Coral_Richness ~ log(Rugosity) + Year, data = variables)
+sponge_r_yr_log = lm(formula = Sponge_Richness ~ log(Rugosity) + Year, data = variables)
+fish_r_yr_log = lm(formula = Fish_Richness ~ log(Rugosity) + Year, data = variables)
+combined_r_yr_log = lm(formula = Combined_Richness ~ log(Rugosity) + Year, data = variables)
+# CC + Site (space)
+coral_cc_site_log = lm(formula = Coral_Richness ~ log(Percent_Coral_Cover) + Site, data = variables)
+sponge_cc_site_log = lm(formula = Sponge_Richness ~ log(Percent_Coral_Cover) + Site, data = variables)
+fish_cc_site_log = lm(formula = Fish_Richness ~ log(Percent_Coral_Cover) + Site, data = variables)
+combined_cc_site_log = lm(formula = Combined_Richness ~ log(Percent_Coral_Cover) + Site, data = variables)
+# SC + Site (space)
+coral_sc_site_log = lm(formula = Coral_Richness ~ log(Percent_Sponge_Cover) + Site, data = variables)
+sponge_sc_site_log = lm(formula = Sponge_Richness ~ log(Percent_Sponge_Cover) + Site, data = variables)
+fish_sc_site_log = lm(formula = Fish_Richness ~ log(Percent_Sponge_Cover) + Site, data = variables)
+combined_sc_site_log = lm(formula = Combined_Richness ~ log(Percent_Sponge_Cover) + Site, data = variables)
+# R + Site (space)
+coral_r_site_log = lm(formula = Coral_Richness ~ log(Rugosity) + Site, data = variables)
+sponge_r_site_log = lm(formula = Sponge_Richness ~ log(Rugosity) + Site, data = variables)
+fish_r_site_log = lm(formula = Fish_Richness ~ log(Rugosity) + Site, data = variables)
+combined_r_site_log = lm(formula = Combined_Richness ~ log(Rugosity) + Site, data = variables)
+# CC + Year + Site
+coral_cc_yr_site_log = lm(formula = Coral_Richness ~ log(Percent_Coral_Cover) + Year + Site, data = variables)
+sponge_cc_yr_site_log = lm(formula = Sponge_Richness ~ log(Percent_Coral_Cover) + Year + Site, data = variables)
+fish_cc_yr_site_log = lm(formula = Fish_Richness ~ log(Percent_Coral_Cover) + Year + Site, data = variables)
+combined_cc_yr_site_log = lm(formula = Combined_Richness ~ log(Percent_Coral_Cover) + Year + Site, data = variables)
+# SC + Year + Site
+coral_sc_yr_site_log = lm(formula = Coral_Richness ~ log(Percent_Sponge_Cover) + Year + Site, data = variables)
+sponge_sc_yr_site_log = lm(formula = Sponge_Richness ~ log(Percent_Sponge_Cover) + Year + Site, data = variables)
+fish_sc_yr_site_log = lm(formula = Fish_Richness ~ log(Percent_Sponge_Cover) + Year + Site, data = variables)
+combined_sc_yr_site_log = lm(formula = Combined_Richness ~ log(Percent_Sponge_Cover) + Year + Site, data = variables)
+# R + Year + Site
+coral_r_yr_site_log = lm(formula = Coral_Richness ~ log(Rugosity) + Year + Site, data = variables)
+sponge_r_yr_site_log = lm(formula = Sponge_Richness ~ log(Rugosity) + Year + Site, data = variables)
+fish_r_yr_site_log = lm(formula = Fish_Richness ~ log(Rugosity) + Year + Site, data = variables)
+combined_r_yr_site_log = lm(formula = Combined_Richness ~ log(Rugosity) + Year + Site, data = variables)
+# # The following models are not included in AIC tables or interpretations
+# # CC + Year + Site + YearxSite
+# coral_cc_yr_site_yrxsite_log = lm(formula = Coral_Richness ~ log(Percent_Coral_Cover) + Year + Site + Year*Site, data = variables)
+# sponge_cc_yr_site_yrxsite_log = lm(formula = Sponge_Richness ~ log(Percent_Coral_Cover) + Year + Site + Year*Site, data = variables)
+# fish_cc_yr_site_yrxsite_log = lm(formula = Fish_Richness ~ log(Percent_Coral_Cover) + Year + Site + Year*Site, data = variables)
+# combined_cc_yr_site_yrxsite_log = lm(formula = Combined_Richness ~ log(Percent_Coral_Cover) + Year + Site + Year*Site, data = variables)
+# # SC + Year + Site + YearxSite
+# coral_sc_yr_site_yrxsite_log = lm(formula = Coral_Richness ~ log(Percent_Sponge_Cover) + Year + Site + Year*Site, data = variables)
+# sponge_sc_yr_site_yrxsite_log = lm(formula = Sponge_Richness ~ log(Percent_Sponge_Cover) + Year + Site + Year*Site, data = variables)
+# fish_sc_yr_site_yrxsite_log = lm(formula = Fish_Richness ~ log(Percent_Sponge_Cover) + Year + Site + Year*Site, data = variables)
+# combined_sc_yr_site_yrxsite_log = lm(formula = Combined_Richness ~ log(Percent_Sponge_Cover) + Year + Site + Year*Site, data = variables)
+# # R + Year + Site + YearxSite
+# coral_r_yr_site_yrxsite_log = lm(formula = Coral_Richness ~ log(Rugosity) + Year + Site + Year*Site, data = variables)
+# sponge_r_yr_site_yrxsite_log = lm(formula = Sponge_Richness ~ log(Rugosity) + Year + Site + Year*Site, data = variables)
+# fish_r_yr_site_yrxsite_log = lm(formula = Fish_Richness ~ log(Rugosity) + Year + Site + Year*Site, data = variables)
+# combined_r_yr_site_yrxsite_log = lm(formula = Combined_Richness ~ log(Rugosity) + Year + Site + Year*Site, data = variables)
+
+
+
+## These models have surrogates:
+## Power Models
+# Not sure how to create power models for additive or interactive models***
+## Determine coefficients for power models
+# lm(log(Coral_Richness) ~ log(Percent_Coral_Cover), data = variables)
+# lm(log(Sponge_Richness) ~ log(Percent_Coral_Cover), data = variables)
+# lm(log(Fish_Richness) ~ log(Percent_Coral_Cover), data = variables)
+# lm(log(Combined_Richness) ~ log(Percent_Coral_Cover), data = variables)
+# lm(log(Coral_Richness) ~ log(Percent_Sponge_Cover), data = variables)
+# lm(log(Sponge_Richness) ~ log(Percent_Sponge_Cover), data = variables)
+# lm(log(Fish_Richness) ~ log(Percent_Sponge_Cover), data = variables)
+# lm(log(Combined_Richness) ~ log(Percent_Sponge_Cover), data = variables)
+# lm(log(Coral_Richness) ~ log(Rugosity), data = variables)
+# lm(log(Sponge_Richness) ~ log(Rugosity), data = variables)
+# lm(log(Fish_Richness) ~ log(Rugosity), data = variables)
+# lm(log(Combined_Richness) ~ log(Rugosity), data = variables)
+# # a = intercept, b = log(x), use these to make y = (exp(a))*x^b
+
+
+coral_cc_power = lm(formula = Coral_Richness ~ exp(1.6105 + 0.3192*log(Percent_Coral_Cover)), data = variables)
+coral_sc_power = lm(formula = Coral_Richness ~ exp(2.61614 + -0.05529*log(Percent_Sponge_Cover)), data = variables)
+coral_r_power = lm(formula = Coral_Richness ~ exp(1.2232 + 0.3443*log(Rugosity)), data = variables)
+sponge_cc_power = lm(formula = Sponge_Richness ~ exp(3.4085 + -0.1281*log(Percent_Coral_Cover)), data = variables)
+sponge_sc_power = lm(formula = Sponge_Richness ~ exp(2.7577 + 0.1532*log(Percent_Sponge_Cover)), data = variables)
+sponge_r_power = lm(formula = Sponge_Richness ~ exp(3.4420 + -0.1045*log(Rugosity)), data = variables)
+fish_cc_power = lm(formula = Fish_Richness ~ exp(2.4905 + 0.2335*log(Percent_Coral_Cover)), data = variables)
+fish_sc_power = lm(formula = Fish_Richness ~ exp(3.3994 + -0.1335*log(Percent_Sponge_Cover)), data = variables)
+fish_r_power = lm(formula = Fish_Richness ~ exp(1.304 + 0.493*log(Rugosity)), data = variables)
+combined_cc_power = lm(formula = Combined_Richness ~ exp(3.7769 + 0.1033*log(Percent_Coral_Cover)), data = variables)
+combined_sc_power = lm(formula = Combined_Richness ~ exp(4.09341 + -0.01529*log(Percent_Sponge_Cover)), data = variables)
+combined_r_power = lm(formula = Combined_Richness ~ exp(3.2614 + 0.2155*log(Rugosity)), data = variables)
+
 
 
 ## AIC tables to evaluate surrogate effectiveness over space and time
 # Names of coral cover models in order they are listed for the AIC tables
-cc_modnames <- c("yr", "site", "yr_site", "yr_site_yrxsite", "cc", "cc_yr", "cc_site", "cc_yr_site") 
+cc_modnames <- c("yr", "site", "yr_site", "yr_site_yrxsite", "cc", "cc_yr", "cc_site", "cc_yr_site",
+                 "cc_log", "cc_yr_log", "cc_site_log", "cc_yr_site_log", "cc_power") 
 # AIC to compare coral_cc models
 coral_cc <- aictab(cand.set = list(coral_yr, coral_site, coral_yr_site, coral_yr_site_yrxsite, 
-                                   coral_cc, coral_cc_yr, coral_cc_site, coral_cc_yr_site), 
+                                   coral_cc, coral_cc_yr, coral_cc_site, coral_cc_yr_site,
+                                   coral_cc_log, coral_cc_yr_log, coral_cc_site_log, coral_cc_yr_site_log,
+                                   coral_cc_power), 
                    modnames = cc_modnames, digits = 4)
 # AIC to compare sponge_cc models
 sponge_cc <- aictab(cand.set = list(sponge_yr, sponge_site, sponge_yr_site, sponge_yr_site_yrxsite, 
-                                    sponge_cc, sponge_cc_yr, sponge_cc_site, sponge_cc_yr_site), 
+                                    sponge_cc, sponge_cc_yr, sponge_cc_site, sponge_cc_yr_site,
+                                    sponge_cc_log, sponge_cc_yr_log, sponge_cc_site_log, sponge_cc_yr_site_log,
+                                    sponge_cc_power),
                     modnames = cc_modnames, digits = 4)
 # AIC to compare fish_cc models
 fish_cc <- aictab(cand.set = list(fish_yr, fish_site, fish_yr_site, fish_yr_site_yrxsite, 
-                                    fish_cc, fish_cc_yr, fish_cc_site, fish_cc_yr_site), 
-                    modnames = cc_modnames, digits = 4)
+                                  fish_cc, fish_cc_yr, fish_cc_site, fish_cc_yr_site,
+                                  fish_cc_log, fish_cc_yr_log, fish_cc_site_log, fish_cc_yr_site_log,
+                                  fish_cc_power),
+                  modnames = cc_modnames, digits = 4)
 # AIC to compare combined_cc models
 combined_cc <- aictab(cand.set = list(combined_yr, combined_site, combined_yr_site, combined_yr_site_yrxsite, 
-                                    combined_cc, combined_cc_yr, combined_cc_site, combined_cc_yr_site), 
-                    modnames = cc_modnames, digits = 4)
+                                      combined_cc, combined_cc_yr, combined_cc_site, combined_cc_yr_site,
+                                      combined_cc_log, combined_cc_yr_log, combined_cc_site_log, combined_cc_yr_site_log,
+                                      combined_cc_power),
+                      modnames = cc_modnames, digits = 4)
 # Names of sponge cover models in order they are listed for the AIC tables
-sc_modnames <- c("yr", "site", "yr_site", "yr_site_yrxsite", "sc", "sc_yr", "sc_site", "sc_yr_site") 
+sc_modnames <- c("yr", "site", "yr_site", "yr_site_yrxsite", "sc", "sc_yr", "sc_site", "sc_yr_site",
+                 "sc_log", "sc_yr_log", "sc_site_log", "sc_yr_site_log", "sc_power") 
 # AIC to compare coral_sc models
 coral_sc <- aictab(cand.set = list(coral_yr, coral_site, coral_yr_site, coral_yr_site_yrxsite, 
-                                   coral_sc, coral_sc_yr, coral_sc_site, coral_sc_yr_site), 
+                                   coral_sc, coral_sc_yr, coral_sc_site, coral_sc_yr_site,
+                                   coral_sc_log, coral_sc_yr_log, coral_sc_site_log, coral_sc_yr_site_log,
+                                   coral_sc_power), 
                    modnames = sc_modnames, digits = 4)
 # AIC to compare sponge_sc models
 sponge_sc <- aictab(cand.set = list(sponge_yr, sponge_site, sponge_yr_site, sponge_yr_site_yrxsite, 
-                                   sponge_sc, sponge_sc_yr, sponge_sc_site, sponge_sc_yr_site), 
-                   modnames = sc_modnames, digits = 4)
+                                    sponge_sc, sponge_sc_yr, sponge_sc_site, sponge_sc_yr_site,
+                                    sponge_sc_log, sponge_sc_yr_log, sponge_sc_site_log, sponge_sc_yr_site_log,
+                                    sponge_sc_power), 
+                    modnames = sc_modnames, digits = 4)
 # AIC to compare fish_sc models
 fish_sc <- aictab(cand.set = list(fish_yr, fish_site, fish_yr_site, fish_yr_site_yrxsite, 
-                                   fish_sc, fish_sc_yr, fish_sc_site, fish_sc_yr_site), 
-                   modnames = sc_modnames, digits = 4)
+                                  fish_sc, fish_sc_yr, fish_sc_site, fish_sc_yr_site,
+                                  fish_sc_log, fish_sc_yr_log, fish_sc_site_log, fish_sc_yr_site_log,
+                                  fish_sc_power), 
+                  modnames = sc_modnames, digits = 4)
 # AIC to compare combined_sc models
 combined_sc <- aictab(cand.set = list(combined_yr, combined_site, combined_yr_site, combined_yr_site_yrxsite, 
-                                   combined_sc, combined_sc_yr, combined_sc_site, combined_sc_yr_site), 
-                   modnames = sc_modnames, digits = 4)
+                                      combined_sc, combined_sc_yr, combined_sc_site, combined_sc_yr_site,
+                                      combined_sc_log, combined_sc_yr_log, combined_sc_site_log, combined_sc_yr_site_log,
+                                      combined_sc_power), 
+                      modnames = sc_modnames, digits = 4)
 # Names of rugosity models in order they are listed for the AIC tables
-r_modnames <- c("yr", "site", "yr_site", "yr_site_yrxsite", "r", "r_yr", "r_site", "r_yr_site") 
+r_modnames <- c("yr", "site", "yr_site", "yr_site_yrxsite", "r", "r_yr", "r_site", "r_yr_site",
+                "r_log", "r_yr_log", "r_site_log", "r_yr_site_log", "r_power")  
 # AIC to compare coral_r models
 coral_r <- aictab(cand.set = list(coral_yr, coral_site, coral_yr_site, coral_yr_site_yrxsite, 
-                                   coral_r, coral_r_yr, coral_r_site, coral_r_yr_site), 
-                   modnames = r_modnames, digits = 4)
+                                  coral_r, coral_r_yr, coral_r_site, coral_r_yr_site,
+                                  coral_r_log, coral_r_yr_log, coral_r_site_log, coral_r_yr_site_log,
+                                  coral_r_power), 
+                  modnames = r_modnames, digits = 4)
 # AIC to compare sponge_r models
 sponge_r <- aictab(cand.set = list(sponge_yr, sponge_site, sponge_yr_site, sponge_yr_site_yrxsite, 
-                                   sponge_r, sponge_r_yr, sponge_r_site, sponge_r_yr_site), 
+                                   sponge_r, sponge_r_yr, sponge_r_site, sponge_r_yr_site,
+                                   sponge_r_log, sponge_r_yr_log, sponge_r_site_log, sponge_r_yr_site_log,
+                                   sponge_r_power), 
                    modnames = r_modnames, digits = 4)
 # AIC to compare fish_r models
 fish_r <- aictab(cand.set = list(fish_yr, fish_site, fish_yr_site, fish_yr_site_yrxsite, 
-                                   fish_r, fish_r_yr, fish_r_site, fish_r_yr_site), 
-                   modnames = r_modnames, digits = 4)
+                                 fish_r, fish_r_yr, fish_r_site, fish_r_yr_site,
+                                 fish_r_log, fish_r_yr_log, fish_r_site_log, fish_r_yr_site_log,
+                                 fish_r_power), 
+                 modnames = r_modnames, digits = 4)
 # AIC to compare combined_r models
 combined_r <- aictab(cand.set = list(combined_yr, combined_site, combined_yr_site, combined_yr_site_yrxsite, 
-                                   combined_r, combined_r_yr, combined_r_site, combined_r_yr_site), 
-                   modnames = r_modnames, digits = 4)
+                                     combined_r, combined_r_yr, combined_r_site, combined_r_yr_site,
+                                     combined_r_log, combined_r_yr_log, combined_r_site_log, combined_r_yr_site_log,
+                                     combined_r_power), 
+                     modnames = r_modnames, digits = 4)
 
 
 
@@ -260,11 +359,14 @@ combined_r <- aictab(cand.set = list(combined_yr, combined_site, combined_yr_sit
 
 
 
-### Objective 3: Determine the best predictors of each target given our model set.
+### Objective 3 for Linear: Determine the best predictors of each target given our model set.
 obj_three_modnames <- c("yr", "site", "yr_site", "yr_site_yrxsite", 
-                  "cc", "cc_yr", "cc_site", "cc_yr_site",
-                  "sc", "sc_yr", "sc_site", "sc_yr_site",
-                  "r", "r_yr", "r_site", "r_yr_site") 
+                        "cc", "cc_yr", "cc_site", "cc_yr_site",
+                        "sc", "sc_yr", "sc_site", "sc_yr_site",
+                        "r", "r_yr", "r_site", "r_yr_site",
+                        "cc_log", "cc_yr_log", "cc_site_log", "cc_yr_site_log", "cc_power",
+                        "sc_log", "sc_yr_log", "sc_site_log", "sc_yr_site_log", "sc_power",
+                        "r_log", "r_yr_log", "r_site_log", "r_yr_site_log", "r_power") 
 # *** I'm unsure as to why, but the next 4 AIC tables can only be produced if I close the script,
 # ***re-run the code, but DO NOT run any of the AIC tables above
 # ***That is why these tables are saved in separate .csv files.
@@ -272,49 +374,72 @@ obj_three_modnames <- c("yr", "site", "yr_site", "yr_site_yrxsite",
 coral_all <- aictab(cand.set = list(coral_yr, coral_site, coral_yr_site, coral_yr_site_yrxsite,
                                     coral_cc, coral_cc_yr, coral_cc_site, coral_cc_yr_site,
                                     coral_sc, coral_sc_yr, coral_sc_site, coral_sc_yr_site,
-                                    coral_r, coral_r_yr, coral_r_site, coral_r_yr_site), 
+                                    coral_r, coral_r_yr, coral_r_site, coral_r_yr_site,
+                                    coral_cc_log, coral_cc_yr_log, coral_cc_site_log, coral_cc_yr_site_log,
+                                    coral_cc_power,
+                                    coral_sc_log, coral_sc_yr_log, coral_sc_site_log, coral_sc_yr_site_log,
+                                    coral_sc_power,
+                                    coral_r_log, coral_r_yr_log, coral_r_site_log, coral_r_yr_site_log,
+                                    coral_r_power), 
                     modnames = obj_three_modnames, digits = 4)
 # AIC to compare all sponge models
 sponge_all <- aictab(cand.set = list(sponge_yr, sponge_site, sponge_yr_site, sponge_yr_site_yrxsite,
-                                    sponge_cc, sponge_cc_yr, sponge_cc_site, sponge_cc_yr_site,
-                                    sponge_sc, sponge_sc_yr, sponge_sc_site, sponge_sc_yr_site,
-                                    sponge_r, sponge_r_yr, sponge_r_site, sponge_r_yr_site), 
-                    modnames = obj_three_modnames, digits = 4)
+                                     sponge_cc, sponge_cc_yr, sponge_cc_site, sponge_cc_yr_site,
+                                     sponge_sc, sponge_sc_yr, sponge_sc_site, sponge_sc_yr_site,
+                                     sponge_r, sponge_r_yr, sponge_r_site, sponge_r_yr_site,
+                                     sponge_cc_log, sponge_cc_yr_log, sponge_cc_site_log, sponge_cc_yr_site_log,
+                                     sponge_cc_power,
+                                     sponge_sc_log, sponge_sc_yr_log, sponge_sc_site_log, sponge_sc_yr_site_log,
+                                     sponge_sc_power,
+                                     sponge_r_log, sponge_r_yr_log, sponge_r_site_log, sponge_r_yr_site_log,
+                                     sponge_r_power), 
+                     modnames = obj_three_modnames, digits = 4)
 # AIC to compare all fish models
 fish_all <- aictab(cand.set = list(fish_yr, fish_site, fish_yr_site, fish_yr_site_yrxsite,
-                                    fish_cc, fish_cc_yr, fish_cc_site, fish_cc_yr_site,
-                                    fish_sc, fish_sc_yr, fish_sc_site, fish_sc_yr_site,
-                                    fish_r, fish_r_yr, fish_r_site, fish_r_yr_site), 
-                    modnames = obj_three_modnames, digits = 4)
+                                   fish_cc, fish_cc_yr, fish_cc_site, fish_cc_yr_site,
+                                   fish_sc, fish_sc_yr, fish_sc_site, fish_sc_yr_site,
+                                   fish_r, fish_r_yr, fish_r_site, fish_r_yr_site,
+                                   fish_cc_log, fish_cc_yr_log, fish_cc_site_log, fish_cc_yr_site_log,
+                                   fish_cc_power,
+                                   fish_sc_log, fish_sc_yr_log, fish_sc_site_log, fish_sc_yr_site_log,
+                                   fish_sc_power,
+                                   fish_r_log, fish_r_yr_log, fish_r_site_log, fish_r_yr_site_log,
+                                   fish_r_power),
+                   modnames = obj_three_modnames, digits = 4)
 # AIC to compare all "combined" models
 combined_all <- aictab(cand.set = list(combined_yr, combined_site, combined_yr_site, combined_yr_site_yrxsite,
-                                    combined_cc, combined_cc_yr, combined_cc_site, combined_cc_yr_site,
-                                    combined_sc, combined_sc_yr, combined_sc_site, combined_sc_yr_site,
-                                    combined_r, combined_r_yr, combined_r_site, combined_r_yr_site), 
-                    modnames = obj_three_modnames, digits = 4)
+                                       combined_cc, combined_cc_yr, combined_cc_site, combined_cc_yr_site,
+                                       combined_sc, combined_sc_yr, combined_sc_site, combined_sc_yr_site,
+                                       combined_r, combined_r_yr, combined_r_site, combined_r_yr_site,
+                                       combined_cc_log, combined_cc_yr_log, combined_cc_site_log, combined_cc_yr_site_log,
+                                       combined_cc_power,
+                                       combined_sc_log, combined_sc_yr_log, combined_sc_site_log, combined_sc_yr_site_log,
+                                       combined_sc_power,
+                                       combined_r_log, combined_r_yr_log, combined_r_site_log, combined_r_yr_site_log,
+                                       combined_r_power), 
+                       modnames = obj_three_modnames, digits = 4)
 
 ## Save these AIC tables as .csv files
-# write.table(x = coral_all, file = "coral_all.csv", sep = ",", col.names = TRUE,row.names = FALSE)
-# write.table(x = sponge_all, file = "sponge_all.csv", sep = ",", col.names = TRUE,row.names = FALSE)
-# write.table(x = fish_all, file = "fish_all.csv", sep = ",", col.names = TRUE,row.names = FALSE)
-# write.table(x = combined_all, file = "combined_all.csv", sep = ",", col.names = TRUE,row.names = FALSE)
+# write.table(x = coral_all, file = "coral_all_linear.csv", sep = ",", col.names = TRUE,row.names = FALSE)
+# write.table(x = sponge_all, file = "sponge_all_linear.csv", sep = ",", col.names = TRUE,row.names = FALSE)
+# write.table(x = fish_all, file = "fish_all_linear.csv", sep = ",", col.names = TRUE,row.names = FALSE)
+# write.table(x = combined_all, file = "combined_all_linear.csv", sep = ",", col.names = TRUE,row.names = FALSE)
 
-## Model output for competitive models (<2.0 deltaAIC)
+## Model output for competitive models (<2.0 deltaAIC)***
 # Look at significance of model coefficients
 # For coral richness
-summary(coral_cc_yr)
+summary(coral_cc_yr_site_log)
+summary(coral_cc_yr_log)
 # For sponge richness
-summary(sponge_r_yr_site) #r coefficient not significant (0.07)
-summary(sponge_yr_site)
-summary(sponge_cc_yr_site) #cc coefficient not significant
+summary(sponge_r_yr_site_log)
+summary(sponge_yr_site_yrxsite)
 # For fish richness
+summary(fish_r_site)
+summary(fish_r_site_log)
 summary(fish_site)
-summary(fish_r_site) #r coefficient not significant
 summary(fish_yr_site) #yr coefficient not significant
-summary(fish_cc_site) #cc coefficient not significant
-summary(fish_sc_site) #sc coefficient not significant
 # For combined richness
-summary(combined_cc_yr_site)
+summary(combined_cc_yr_site_log)
 
 
 
@@ -322,65 +447,15 @@ summary(combined_cc_yr_site)
 
 
 
-## Should I include sur + yr + sur*yr and/or sur + site + sur*site? 
-# NO ecological justification
-# I can only think that the first one might be relevant if something large timescale happened 
-# that changed the relationship between number of species and surrogate like coral cover. 
-# But I doubt anything like that would be captured in only 27 years.
-# These would mean that the effect of surrogate on target is different for different yrs (or sites)
-# i.e. the slopes of regression lines are different for different sites or that there are 3 dimensions
-
-## Should I include sur + yr + site + yr*site?
-# NO ecological justification
-# This would mean that the effect of time on the target is different for different sites and that
-# the surrogate improves the model, but does not modify the effect of time or site on the target.
-# This might be the case if different sites experience different conditions over time 
-# (e.g. disturbance is more common at one site than another and the level of disturbance changes over time)
-# AND that there was additionally variation in the data that could be further explained by the surrogate
+## Checking model assumptions***
 
 
-
-########################################################################
-
-
-
-## Checking model assumption of negative binomial***
-# Negative binomial models assume the conditional means are not equal to the conditional variances.
-# This inequality is captured by estimating a dispersion parameter that is held constant in a Poisson model.
-# Thus, the Poisson model is actually nested in the negative binomial model. 
-# We can then use a likelihood ratio test to compare these two and test this model assumption. 
-# To do this, we will run our model as a Poisson.
-# (https://stats.idre.ucla.edu/r/dae/negative-binomial-regression/)
-
-# These are the most complex models in the candidate set:
+# These are the most complex models in the candidate set [not including log and power]:
 # coral_cc_yr_site; coral_sc_yr_site; coral_r_yr_site
 # sponge_cc_yr_site; sponge_sc_yr_site; sponge_r_yr_site
 # fish_cc_yr_site; fish_sc_yr_site; fish_r_yr_site
 # combined_cc_yr_site; combined_sc_yr_site; combined_r_yr_site
 
-# Create set of Poisson models for comparison
-coral_cc_yr_site_pn <- glm(formula = Coral_Richness ~ Percent_Coral_Cover + Year + Site, family = "poisson", data = variables)
-coral_sc_yr_site_pn <- glm(formula = Coral_Richness ~ Percent_Sponge_Cover + Year + Site, family = "poisson", data = variables)
-coral_r_yr_site_pn <- glm(formula = Coral_Richness ~ Rugosity + Year + Site, family = "poisson", data = variables)
-sponge_cc_yr_site_pn <- glm(formula = Sponge_Richness ~ Percent_Coral_Cover + Year + Site, family = "poisson", data = variables)
-sponge_sc_yr_site_pn <- glm(formula = Sponge_Richness ~ Percent_Sponge_Cover + Year + Site, family = "poisson", data = variables)
-sponge_r_yr_site_pn <- glm(formula = Sponge_Richness ~ Rugosity + Year + Site, family = "poisson", data = variables)
-fish_cc_yr_site_pn <- glm(formula = Fish_Richness ~ Percent_Coral_Cover + Year + Site, family = "poisson", data = variables)
-fish_sc_yr_site_pn <- glm(formula = Fish_Richness ~ Percent_Sponge_Cover + Year + Site, family = "poisson", data = variables)
-fish_r_yr_site_pn <- glm(formula = Fish_Richness ~ Rugosity + Year + Site, family = "poisson", data = variables)
-combined_cc_yr_site_pn <- glm(formula = Combined_Richness ~ Percent_Coral_Cover + Year + Site, family = "poisson", data = variables)
-combined_sc_yr_site_pn <- glm(formula = Combined_Richness ~ Percent_Sponge_Cover + Year + Site, family = "poisson", data = variables)
-combined_r_yr_site_pn <- glm(formula = Combined_Richness ~ Rugosity + Year + Site, family = "poisson", data = variables)
-
-# ***
-pchisq(2 * (logLik(coral_cc_yr_site) - logLik(coral_cc_yr_site_pn)), df = 1, lower.tail = FALSE)
-# 'log Lik.' 1 (df=10)
-
-# Below are the results in the example at https://stats.idre.ucla.edu/r/dae/negative-binomial-regression/ 
-# However, I don't understand how they got 926.03...
-# ## 'log Lik.' 2.157e-203 (df=5)
-# In this example the associated chi-squared value estimated from 2*(logLik(m1) - logLik(m3)) is 926.03 with one degree of freedom. 
-# This strongly suggests the negative binomial model, estimating the dispersion parameter, is more appropriate than the Poisson model.
 
 
 
@@ -388,576 +463,56 @@ pchisq(2 * (logLik(coral_cc_yr_site) - logLik(coral_cc_yr_site_pn)), df = 1, low
 
 
 
-## Figures of basic relationships between surrogates (x) and targets (y)
-
-# Figure 1. Relationship between coral cover and coral richness.
-ggplot(data = variables, aes(x = Percent_Coral_Cover, y = Coral_Richness)) + 
-  geom_point(size = 3) +
-  scale_x_continuous(name = "Coral Cover (%)") +
-  scale_y_continuous(name = "Coral Richness") +
-  theme(text = element_text(size = 27),
-        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
-        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
-        panel.background = element_blank(), 
-        axis.line = element_line(colour = "black"))
-
-# Figure 2. Relationship between coral cover and sponge richness.
-ggplot(data = variables, aes(x = Percent_Coral_Cover, y = Sponge_Richness)) + 
-  geom_point(size = 3) +
-  scale_x_continuous(name = "Coral Cover (%)") +
-  scale_y_continuous(name = "Sponge Richness") +
-  theme(text = element_text(size = 27),
-        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
-        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
-        panel.background = element_blank(), 
-        axis.line = element_line(colour = "black"))
-# Resulting warning message just lets you know that there are years and sites for which these data are unavailable.
-# This does not change the resulting plot except that it will have fewer points than similar plots.
-
-# Figure 3. Relationship between coral cover and fish richness.
-ggplot(data = variables, aes(x = Percent_Coral_Cover, y = Fish_Richness)) + 
-  geom_point(size = 3) +
-  scale_x_continuous(name = "Coral Cover (%)") +
-  scale_y_continuous(name = "Fish Richness") +
-  theme(text = element_text(size = 27),
-        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
-        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
-        panel.background = element_blank(), 
-        axis.line = element_line(colour = "black"))
-
-# Figure 4. Relationship between coral cover and combined richness.
-ggplot(data = variables, aes(x = Percent_Coral_Cover, y = Combined_Richness)) + 
-  geom_point(size = 3) +
-  scale_x_continuous(name = "Coral Cover (%)") +
-  scale_y_continuous(name = "Combined Richness") +
-  theme(text = element_text(size = 27),
-        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
-        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
-        panel.background = element_blank(), 
-        axis.line = element_line(colour = "black"))
-# Resulting warning message similar to that from figure 2.
-# Combined richness was only calculated for sites and years when richness was recorded for all 3 groups.
-
-# Figure 5. Relationship between sponge cover and coral richness.
-ggplot(data = variables, aes(x = Percent_Sponge_Cover, y = Coral_Richness)) + 
-  geom_point(size = 3) +
-  scale_x_continuous(name = "Sponge Cover (%)") +
-  scale_y_continuous(name = "Coral Richness") +
-  theme(text = element_text(size = 27),
-        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
-        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
-        panel.background = element_blank(), 
-        axis.line = element_line(colour = "black"))
-
-# Figure 6. Relationship between sponge cover and sponge richness.
-ggplot(data = variables, aes(x = Percent_Sponge_Cover, y = Sponge_Richness)) + 
-  geom_point(size = 3) +
-  scale_x_continuous(name = "Sponge Cover (%)") +
-  scale_y_continuous(name = "Sponge Richness") +
-  theme(text = element_text(size = 27),
-        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
-        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
-        panel.background = element_blank(), 
-        axis.line = element_line(colour = "black"))
-# Resulting warning message same as that from figure 2.
-
-# Figure 7. Relationship between sponge cover and fish richness.
-ggplot(data = variables, aes(x = Percent_Sponge_Cover, y = Fish_Richness)) + 
-  geom_point(size = 3) +
-  scale_x_continuous(name = "Sponge Cover (%)") +
-  scale_y_continuous(name = "Fish Richness") +
-  theme(text = element_text(size = 27),
-        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
-        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
-        panel.background = element_blank(), 
-        axis.line = element_line(colour = "black"))
-
-# Figure 8. Relationship between sponge cover and combined richness.
-ggplot(data = variables, aes(x = Percent_Sponge_Cover, y = Combined_Richness)) + 
-  geom_point(size = 3) +
-  scale_x_continuous(name = "Sponge Cover (%)") +
-  scale_y_continuous(name = "Combined Richness") +
-  theme(text = element_text(size = 27),
-        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
-        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
-        panel.background = element_blank(), 
-        axis.line = element_line(colour = "black"))
-# Resulting warning message same as that from figure 4.
-
-# Figure 9. Relationship between rugosity and coral richness.
-ggplot(data = variables, aes(x = Rugosity, y = Coral_Richness)) + 
-  geom_point(size = 3) +
-  scale_x_continuous(name = "Rugosity") +
-  scale_y_continuous(name = "Coral Richness") +
-  theme(text = element_text(size = 27),
-        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
-        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
-        panel.background = element_blank(), 
-        axis.line = element_line(colour = "black"))
-
-# Figure 10. Relationship between rugosity and sponge richness.
-ggplot(data = variables, aes(x = Rugosity, y = Sponge_Richness)) + 
-  geom_point(size = 3) +
-  scale_x_continuous(name = "Rugosity") +
-  scale_y_continuous(name = "Sponge Richness") +
-  theme(text = element_text(size = 27),
-        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
-        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
-        panel.background = element_blank(), 
-        axis.line = element_line(colour = "black"))
-# Resulting warning message same as that from figure 2.
-
-# Figure 11. Relationship between rugosity and fish richness.
-ggplot(data = variables, aes(x = Rugosity, y = Fish_Richness)) + 
-  geom_point(size = 3) +
-  scale_x_continuous(name = "Rugosity") +
-  scale_y_continuous(name = "Fish Richness") +
-  theme(text = element_text(size = 27),
-        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
-        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
-        panel.background = element_blank(), 
-        axis.line = element_line(colour = "black"))
-
-# Figure 12. Relationship between rugosity and combined richness.
-ggplot(data = variables, aes(x = Rugosity, y = Combined_Richness)) + 
-  geom_point(size = 3) +
-  scale_x_continuous(name = "Rugosity") +
-  scale_y_continuous(name = "Combined Richness") +
-  theme(text = element_text(size = 27),
-        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
-        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
-        panel.background = element_blank(), 
-        axis.line = element_line(colour = "black"))
-# Resulting warning message same as that from figure 4.
-
-
 
 ########################################################################
-
-
-
-## Figures of basic relationships between time (x) and surrogates/targets (y)
-
-# Figure 13. Relationship between time and coral cover.
-ggplot(data = variables, aes(x = True_Year, y = Percent_Coral_Cover)) + 
-  geom_point(size = 3) +
-  scale_x_continuous(name = "Time (Years)") +
-  scale_y_continuous(name = "Coral Cover (%)") +
-  theme(text = element_text(size = 27),
-        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
-        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
-        panel.background = element_blank(), 
-        axis.line = element_line(colour = "black"))
-
-# Figure 14. Relationship between time and sponge cover.
-ggplot(data = variables, aes(x = True_Year, y = Percent_Sponge_Cover)) + 
-  geom_point(size = 3) +
-  scale_x_continuous(name = "Time (Years)") +
-  scale_y_continuous(name = "Sponge Cover (%)") +
-  theme(text = element_text(size = 27),
-        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
-        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
-        panel.background = element_blank(), 
-        axis.line = element_line(colour = "black"))
-
-# Figure 15. Relationship between time and rugosity.
-ggplot(data = variables, aes(x = True_Year, y = Rugosity)) + 
-  geom_point(size = 3) +
-  scale_x_continuous(name = "Time (Years)") +
-  scale_y_continuous(name = "Rugosity") +
-  theme(text = element_text(size = 27),
-        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
-        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
-        panel.background = element_blank(), 
-        axis.line = element_line(colour = "black"))
-
-# Figure 16. Relationship between time and coral richness.
-ggplot(data = variables, aes(x = True_Year, y = Coral_Richness)) + 
-  geom_point(size = 3) +
-  scale_x_continuous(name = "Time (Years)") +
-  scale_y_continuous(name = "Coral Richness") +
-  theme(text = element_text(size = 27),
-        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
-        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
-        panel.background = element_blank(), 
-        axis.line = element_line(colour = "black"))
-
-# Figure 17. Relationship between time and sponge richness.
-ggplot(data = variables, aes(x = True_Year, y = Sponge_Richness)) + 
-  geom_point(size = 3) +
-  scale_x_continuous(name = "Time (Years)") +
-  scale_y_continuous(name = "Sponge Richness") +
-  theme(text = element_text(size = 27),
-        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
-        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
-        panel.background = element_blank(), 
-        axis.line = element_line(colour = "black"))
-# Resulting warning message same as that from figure 2.
-
-# Figure 18. Relationship between time and fish richness.
-ggplot(data = variables, aes(x = True_Year, y = Fish_Richness)) + 
-  geom_point(size = 3) +
-  scale_x_continuous(name = "Time (Years)") +
-  scale_y_continuous(name = "Fish Richness") +
-  theme(text = element_text(size = 27),
-        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
-        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
-        panel.background = element_blank(), 
-        axis.line = element_line(colour = "black"))
-
-# Figure 19. Relationship between time and combined richness.
-ggplot(data = variables, aes(x = True_Year, y = Combined_Richness)) + 
-  geom_point(size = 3) +
-  scale_x_continuous(name = "Time (Years)") +
-  scale_y_continuous(name = "Combined Richness") +
-  theme(text = element_text(size = 27),
-        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
-        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
-        panel.background = element_blank(), 
-        axis.line = element_line(colour = "black"))
-# Resulting warning message same as that from figure 4.
-
-
-
-########################################################################
-
-
-
-# Create new columns for true year values of different types for use in figures
-# Note that the column True_Year is type integer
-variables$True_Year_Factor <- as.factor(x = variables$True_Year)
-variables$True_Year_Numeric <- as.numeric(x = variables$True_Year)
-
-## Figures of basic relationships between time (x) and surrogates/targets (y) by site (legend)
-
-# Create color palette that is friendly to viewers with color blindness (from https://socviz.co/refineplots.html)
-cb_palette <- c("#999999", "#E69F00", "#56B4E9", "#009E73",
-                "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
-
-# Figure 20. Relationship between time and coral cover by site.
-ggplot(data = variables, aes(x = True_Year_Factor, y = Percent_Coral_Cover, group = Site, color = Site)) + 
-  geom_line(size = 1.1) +
-  scale_x_discrete(name = "Time (Years)") +
-  scale_y_continuous(name = "Coral Cover (%)") +
-  scale_color_manual(values = cb_palette) +
-  theme(text = element_text(size = 18), 
-        axis.text.x = element_text(angle = +90, hjust = 0),
-        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
-        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
-        panel.background = element_blank(), 
-        axis.line = element_line(colour = "black"))
-
-# Figure 21. Relationship between time and sponge cover by site.
-ggplot(data = variables, aes(x = True_Year_Factor, y = Percent_Sponge_Cover, group = Site, color = Site)) + 
-  geom_line(size = 1.1) +
-  scale_x_discrete(name = "Time (Years)") +
-  scale_y_continuous(name = "Sponge Cover (%)") +
-  scale_color_manual(values = cb_palette) +
-  theme(text = element_text(size= 18), 
-        axis.text.x = element_text(angle = +90, hjust = 0),
-        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
-        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
-        panel.background = element_blank(), 
-        axis.line = element_line(colour = "black"))
-
-# Figure 22. Relationship between time and rugosity by site.
-ggplot(data = variables, aes(x = True_Year_Factor, y = Rugosity, group = Site, color = Site)) + 
-  geom_line(size = 1.1) +
-  scale_x_discrete(name = "Time (Years)") +
-  scale_y_continuous(name = "Rugosity") +
-  scale_color_manual(values = cb_palette) +
-  theme(text = element_text(size = 18), 
-        axis.text.x = element_text(angle = +90, hjust = 0),
-        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
-        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
-        panel.background = element_blank(), 
-        axis.line = element_line(colour = "black"))
-
-# Figure 23. Relationship between time and coral richness by site.
-ggplot(data = variables, aes(x = True_Year_Factor, y = Coral_Richness, group = Site, color = Site)) + 
-  geom_line(size = 1.1) +
-  scale_x_discrete(name = "Time (Years)") +
-  scale_y_continuous(name = "Coral Richness") +
-  scale_color_manual(values = cb_palette) +
-  theme(text = element_text(size = 18), 
-        axis.text.x = element_text(angle = +90, hjust = 0),
-        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
-        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
-        panel.background = element_blank(), 
-        axis.line = element_line(colour = "black"))
-
-# Figure 24. Relationship between time and sponge richness by site.
-ggplot(data = variables, aes(x = True_Year_Factor, y = Sponge_Richness, group = Site, color = Site)) + 
-  geom_line(size = 1.1) +
-  scale_x_discrete(name = "Time (Years)") +
-  scale_y_continuous(name = "Sponge Richness") +
-  scale_color_manual(values = cb_palette) +
-  theme(text = element_text(size = 18), 
-        axis.text.x = element_text(angle = +90, hjust = 0),
-        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
-        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
-        panel.background = element_blank(), 
-        axis.line = element_line(colour = "black"))
-# Resulting warning message same as that from figure 2.
-# The gaps are more apparent in these figures because they have lines instead of points.
-
-# Figure 25. Relationship between time and fish richness by site.
-ggplot(data = variables, aes(x = True_Year_Factor, y = Fish_Richness, group = Site, color = Site)) + 
-  geom_line(size = 1.1) +
-  scale_x_discrete(name = "Time (Years)") +
-  scale_y_continuous(name = "Fish Richness") +
-  scale_color_manual(values = cb_palette) +
-  theme(text = element_text(size = 18), 
-        axis.text.x = element_text(angle = +90, hjust = 0),
-        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
-        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
-        panel.background = element_blank(), 
-        axis.line = element_line(colour = "black"))
-
-# Figure 26. Relationship between time and combined richness by site.
-ggplot(data = variables, aes(x = True_Year_Factor, y = Combined_Richness, group = Site, color = Site)) + 
-  geom_line(size = 1.1) +
-  scale_x_discrete(name = "Time (Years)") +
-  scale_y_continuous(name = "Combined Richness") +
-  scale_color_manual(values = cb_palette) +
-  theme(text = element_text(size = 18), 
-        axis.text.x = element_text(angle = +90, hjust = 0),
-        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
-        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
-        panel.background = element_blank(), 
-        axis.line = element_line(colour = "black"))
-# Resulting warning message same as that from figure 4.
-# The gaps are more apparent in these figures because they have lines instead of points.
-
-
-
-########################################################################
-
-
-
-## Figures of basic relationships between time (x) and surrogates/targets (y) by site (panels)
-
-# Figure 27. Relationship between time and coral cover with sites distinguished by panels.
-ggplot(data = variables, aes(x = True_Year, y = Percent_Coral_Cover)) + 
-  geom_point(size = 3) +
-  scale_x_continuous(name = "Time (Years)") +
-  scale_y_continuous(name = "Coral Cover (%)") +
-  theme(text = element_text(size = 18), 
-        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
-        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
-        panel.background = element_blank(), 
-        axis.line = element_line(colour = "black")) +
-  facet_wrap(facets = ~ Site)
-
-# Figure 28. Relationship between time and sponge cover with sites distinguished by panels.
-ggplot(data = variables, aes(x = True_Year, y = Percent_Sponge_Cover)) + 
-  geom_point(size = 3) +
-  scale_x_continuous(name = "Time (Years)") +
-  scale_y_continuous(name = "Sponge Cover (%)") +
-  theme(text = element_text(size = 18), 
-        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
-        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
-        panel.background = element_blank(), 
-        axis.line = element_line(colour = "black")) +
-  facet_wrap(facets = ~ Site)
-
-# Figure 29. Relationship between time and rugosity with sites distinguished by panels.
-ggplot(data = variables, aes(x = True_Year, y = Rugosity)) + 
-  geom_point(size = 3) +
-  scale_x_continuous(name = "Time (Years)") +
-  scale_y_continuous(name = "Rugosity") +
-  theme(text = element_text(size = 18), 
-        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
-        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
-        panel.background = element_blank(), 
-        axis.line = element_line(colour = "black")) +
-  facet_wrap(facets = ~ Site)
-
-# Figure 30. Relationship between time and coral richness with sites distinguished by panels.
-ggplot(data = variables, aes(x = True_Year, y = Coral_Richness)) + 
-  geom_point(size = 3) +
-  scale_x_continuous(name = "Time (Years)") +
-  scale_y_continuous(name = "Coral Richness") +
-  theme(text = element_text(size = 18), 
-        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
-        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
-        panel.background = element_blank(), 
-        axis.line = element_line(colour = "black")) +
-  facet_wrap(facets = ~ Site)
-
-# Figure 31. Relationship between time and sponge richness with sites distinguished by panels.
-ggplot(data = variables, aes(x = True_Year, y = Sponge_Richness)) + 
-  geom_point(size = 3) +
-  scale_x_continuous(name = "Time (Years)") +
-  scale_y_continuous(name = "Sponge Richness") +
-  theme(text = element_text(size = 18), 
-        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
-        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
-        panel.background = element_blank(), 
-        axis.line = element_line(colour = "black")) +
-  facet_wrap(facets = ~ Site)
-# Resulting warning message same as that from figure 2.
-
-# Figure 32. Relationship between time and fish richness with sites distinguished by panels.
-ggplot(data = variables, aes(x = True_Year, y = Fish_Richness)) + 
-  geom_point(size = 3) +
-  scale_x_continuous(name = "Time (Years)") +
-  scale_y_continuous(name = "Fish Richness") +
-  theme(text = element_text(size = 18), 
-        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
-        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
-        panel.background = element_blank(), 
-        axis.line = element_line(colour = "black")) +
-  facet_wrap(facets = ~ Site)
-
-# Figure 33. Relationship between time and combined richness with sites distinguished by panels.
-ggplot(data = variables, aes(x = True_Year, y = Combined_Richness)) + 
-  geom_point(size = 3) +
-  scale_x_continuous(name = "Time (Years)") +
-  scale_y_continuous(name = "Combined Richness") +
-  theme(text = element_text(size = 18), 
-        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
-        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
-        panel.background = element_blank(), 
-        axis.line = element_line(colour = "black")) +
-  facet_wrap(facets = ~ Site)
-# Resulting warning message same as that from figure 4.
-
-
-
-########################################################################
-#######################CORAL RICHNESS###################################
+#######################CORAL RICHNESS###################################***
 
 
 
 ## Figures of competitive models (<2.0 deltaAIC)
 
-# The most parsimonious model for coral richness is coral_cc_yr.
-# The function of this model is Coral_Richness ~ Percent_Coral_Cover + Year.
-# Create year vector
-Year <- rep(seq(from = min(variables$Year), to = max(variables$Year), length.out = 100), 8)
-# Create coral cover vector
-Percent_Coral_Cover <- rep(seq(from = min(variables$Percent_Coral_Cover), to = max(variables$Percent_Coral_Cover), length.out = 100), 8)
-# Make a grid using these vectors
-coral_pred_grid <- expand.grid(Year = Year, Percent_Coral_Cover = Percent_Coral_Cover)
-coral_pred_grid$Predicted_Coral_Richness <-predict(coral_cc_yr, new = coral_pred_grid)
-# Unsure as to why coral richness predictions are limited between 2 and 4 ***
-predicted_coral_plot <- scatterplot3d(x = coral_pred_grid$Year, y = coral_pred_grid$Percent_Coral_Cover, z = coral_pred_grid$Predicted_Coral_Richness,
-                                      angle = 60,
-                                      color = "dodgerblue",
-                                      pch = 1,
-                                      xlab = "Time (Year)",
-                                      ylab = "Coral Cover (%)",
-                                      zlab = "Coral Richness" )
-# Figure 34. Relationship between coral cover and coral richness and time shown in 3 dimensions. Negative binomial distribution used.
-predicted_coral_plot
-# Add a column so the plot will have the true values compared to the predicted
-#predicted_coral_plot$points3d(x = variables$Year, y = variables$Percent_Coral_Cover, z = variables$Coral_Richness, pch = 16)
+# The most parsimonious model for coral richness is .
+# The function of this model is .
+# Model averages?
+
 
 
 ########################################################################
-#######################SPONGE RICHNESS##################################
+#######################SPONGE RICHNESS##################################***
 
 
 
 ## Figures of competitive models (<2.0 deltaAIC)
 
-# The most parsimonious model for sponge richness is sponge_yr_site.
-# The function of this model is Sponge_Richness ~ Year + Site.
-# Create new dataframe of predicted values from this model
-sponge_predictions <- data.frame(
-  Year = rep(seq(from = min(variables$Year), to = max(variables$Year), length.out = 100), 8),
-  Site = factor(rep(1:8, each = 100), levels = 1:8, labels =
-                  levels(variables$Site)))
-sponge_predictions <- cbind(sponge_predictions, predict(sponge_yr_site, sponge_predictions, type = "link", se.fit = TRUE))
-sponge_predictions <- within(sponge_predictions, {
-  Predicted_Sponge_Richness <- exp(fit)
-  LL <- exp(fit - 1.96 * se.fit)
-  UL <- exp(fit + 1.96 * se.fit)
-})
-# Figure 35. Predicted relationship between time and sponge richness by site. Negative binomial distribution used.
-ggplot(data = sponge_predictions, aes(x = Year, y = Predicted_Sponge_Richness)) +
-  geom_ribbon(aes(ymin = LL, ymax = UL, fill = Site), alpha = 0.25) +
-  geom_line(aes(color = Site), size = 2) +
-  labs(x = "Time (Year)", y = "Predicted Sponge Richness") +
-  scale_color_manual(values = cb_palette) +
-  theme(text = element_text(size = 18), 
-        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
-        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
-        panel.background = element_blank(), 
-        axis.line = element_line(colour = "black"))
-# Figure 36. Relationship between time and sponge richness by site. Negative binomial distribution used.
-ggplot(data = variables, aes(x = Year, y = Sponge_Richness)) + 
-  geom_point(size = 3)+
-  scale_x_continuous(name = "Time (Year)") +
-  scale_y_continuous(name = "Sponge Richness") +
-  geom_smooth(size = 1.2, method = "glm.nb", formula = y ~ x, aes(color = Site)) +
-  scale_color_manual(values = cb_palette) +
-  theme(text = element_text(size=27), 
-        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
-        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
-        panel.background = element_blank(), 
-        axis.line = element_line(colour = "black"))
+# The most parsimonious model for sponge richness is .
+# The function of this model is .
+# Model averages?
 
 
 
 ########################################################################
-#######################FISH RICHNESS####################################
+#######################FISH RICHNESS####################################***
 
 
 
 ## Figures of competitive models (<2.0 deltaAIC)
 
-# The most parsimonious model for fish richness is fish_site.
-# The function of this model is Fish_Richness ~ Site.
-# Create new dataframe of predicted values from this model
-fish_predictions <- data.frame(
-  Year = rep(seq(from = min(variables$Year), to = max(variables$Year), length.out = 100), 8),
-  Site = factor(rep(1:8, each = 100), levels = 1:8, labels =
-                  levels(variables$Site)))
-fish_predictions <- cbind(fish_predictions, predict(fish_site, fish_predictions, type = "link", se.fit = TRUE))
-fish_predictions <- within(fish_predictions, {
-  Predicted_Fish_Richness <- exp(fit)
-  LL <- exp(fit - 1.96 * se.fit)
-  UL <- exp(fit + 1.96 * se.fit)
-})
-# Figure 37. Predicted relationship between time and fish richness by site. Negative binomial distribution used.
-ggplot(data = fish_predictions, aes(x = Year, y = Predicted_Fish_Richness)) +
-  geom_ribbon(aes(ymin = LL, ymax = UL, fill = Site), alpha = 0.25) +
-  geom_line(aes(color = Site), size = 2) +
-  labs(x = "Time (Year)", y = "Predicted Fish Richness") +
-  scale_color_manual(values = cb_palette) +
-  theme(text = element_text(size = 18), 
-        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
-        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
-        panel.background = element_blank(), 
-        axis.line = element_line(colour = "black"))
-# Figure 38. Relationship between time and fish richness by site. Negative binomial distribution used.
-ggplot(data = variables, aes(x = Year, y = Fish_Richness)) + 
-  geom_point(size = 3)+
-  scale_x_continuous(name = "Time (Year)") +
-  scale_y_continuous(name = "Fish Richness") +
-  geom_smooth(size = 1.2, method = "glm.nb", formula = y ~ x, aes(color = Site)) +
-  scale_color_manual(values = cb_palette) +
-  theme(text = element_text(size=27), 
-        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
-        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
-        panel.background = element_blank(), 
-        axis.line = element_line(colour = "black"))
+# The most parsimonious model for fish richness is .
+# The function of this model is .
+# Model averages?
 
 
 
 ########################################################################
-#######################COMBINED RICHNESS################################
+#######################COMBINED RICHNESS################################***
 
 
 
 ## Figures of competitive models (<2.0 deltaAIC)
 
-# The most parsimonious model for combined richness is combined_cc_yr_site.
-# The function of this model is Combined_Richness ~ Percent_Coral_Cover + Year + Site.
-# Figure 39. Relationship between coral cover and coral richness and time and site. Negative binomial distribution used.
-# ***
+# The most parsimonious model for sponge richness is .
+# The function of this model is .
+# Model averages?
 
 
 
@@ -965,51 +520,9 @@ ggplot(data = variables, aes(x = Year, y = Fish_Richness)) +
 ########################END OF CLEANED CODE#############################
 ##################THE FOLLOWING IS FOR REFERENCE########################
 
-
-
-#*7* = need on 3/26 OR errors OR extraneous code
-## Use *** to search for errors in the code or areas that need more work
-## Use ***AIC to search for beginning of AIC code
-## Use ***Simple Figures with Models to search for beginning of this figure code
-## Use ***Simple Figures for Fish Richness to search for beginning of this figure code
-## Use ***Simple Figures for Sponge Richness to search for beginning of this figure code
-## Use ***Simple Figures for Coral Richness to search for beginning of this figure code
-## Use ***Simple Figures for Combined Richness to search for beginning of this figure code
-
-
-# For Poisson distribution:
-#fish_year_p = glm(Fish_Richness ~ Year, data = variables, family = poisson)
-
-# Compare log liklihoods between negative binomial (m1; df=2) and Poisson (m2; df=1)
-m1 = glm.nb(Fish_Richness ~ 1, data = variables)
-m2 = glm(Fish_Richness ~ 1, data = variables, family = poisson)
-logLik(m1)
-logLik(m2)
-# Found this on 2 different websites, but I don't know how to interpret the result
-#pchisq(2 * (logLik(m1) - logLik(m2)), df = 1, lower.tail = FALSE)
-
-m1 = glm.nb(Coral_Richness ~ 1, data = variables)
-m2 = glm(Coral_Richness ~ 1, data = variables, family = poisson)
-logLik(m1)
-logLik(m2)
-m1 = glm.nb(Sponge_Richness ~ 1, data = variables)
-m2 = glm(Sponge_Richness ~ 1, data = variables, family = poisson)
-logLik(m1)
-logLik(m2)
-m1 = glm.nb(Sponge_and_Fish_Richness ~ 1, data = sponge_complete)
-m2 = glm(Sponge_and_Fish_Richness ~ 1, data = variables, family = poisson)
-logLik(m1)
-logLik(m2)
-m1 = glm.nb(Combined_Richness ~ 1, data = variables)
-m2 = glm(Combined_Richness ~ 1, data = variables, family = poisson)
-logLik(m1)
-logLik(m2)
-
-
-
-# ***When feel comfortable regarding models, review again with year as categorical for more support
-
 # ***Simple Figures with Models
+
+
 
 # Figure. Rugosity as a surrogate for fish richness with simple linear, logarithmic, and power models.
 ggplot(variables, aes(x = Rugosity, y = Fish_Richness)) + 
