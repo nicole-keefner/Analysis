@@ -3,9 +3,8 @@
 
 
 
-#*obj* for completing clear objectives
 ## Use *** to search for errors in the code or areas that need more work
-
+## Use END OF CLEANED CODE to search for the end of the updated/cleaned code
 
 
 ## Set Working Directory
@@ -265,7 +264,7 @@ obj_three_modnames <- c("yr", "site", "yr_site", "yr_site_yrxsite",
                   "r", "r_yr", "r_site", "r_yr_site") 
 # *** I'm unsure as to why, but the next 4 AIC tables can only be produced if I close the script,
 # ***re-run the code, but DO NOT run any of the AIC tables above
-# ***That is why these tables will be saved in separate .csv files.
+# ***That is why these tables are saved in separate .csv files.
 # AIC to compare all coral models
 coral_all <- aictab(cand.set = list(coral_yr, coral_site, coral_yr_site, coral_yr_site_yrxsite,
                                     coral_cc, coral_cc_yr, coral_cc_site, coral_cc_yr_site,
@@ -338,12 +337,47 @@ summary(combined_cc_yr_site)
 
 
 
-#*obj* Really consider how to evaluate the models for objective 2
-#*obj* Really figure out what the top models mean for objective 3
-#*obj* Test model assumptions and normality of residuals (Bird_regression files and logistic_lab)
-#*obj* Objective 4: Create new script for linear models with log and power models
-#*obj* Work on figures of top models (see image on phone)
-#*obj* Make sure to include prediction lines on model figures
+########################################################################
+
+
+
+## Checking model assumption of negative binomial***
+# Negative binomial models assume the conditional means are not equal to the conditional variances.
+# This inequality is captured by estimating a dispersion parameter that is held constant in a Poisson model.
+# Thus, the Poisson model is actually nested in the negative binomial model. 
+# We can then use a likelihood ratio test to compare these two and test this model assumption. 
+# To do this, we will run our model as a Poisson.
+# (https://stats.idre.ucla.edu/r/dae/negative-binomial-regression/)
+
+# These are the most complex models in the candidate set:
+# coral_cc_yr_site; coral_sc_yr_site; coral_r_yr_site
+# sponge_cc_yr_site; sponge_sc_yr_site; sponge_r_yr_site
+# fish_cc_yr_site; fish_sc_yr_site; fish_r_yr_site
+# combined_cc_yr_site; combined_sc_yr_site; combined_r_yr_site
+
+# Create set of Poisson models for comparison
+coral_cc_yr_site_pn <- glm(formula = Coral_Richness ~ Percent_Coral_Cover + Year + Site, family = "poisson", data = variables)
+coral_sc_yr_site_pn <- glm(formula = Coral_Richness ~ Percent_Sponge_Cover + Year + Site, family = "poisson", data = variables)
+coral_r_yr_site_pn <- glm(formula = Coral_Richness ~ Rugosity + Year + Site, family = "poisson", data = variables)
+sponge_cc_yr_site_pn <- glm(formula = Sponge_Richness ~ Percent_Coral_Cover + Year + Site, family = "poisson", data = variables)
+sponge_sc_yr_site_pn <- glm(formula = Sponge_Richness ~ Percent_Sponge_Cover + Year + Site, family = "poisson", data = variables)
+sponge_r_yr_site_pn <- glm(formula = Sponge_Richness ~ Rugosity + Year + Site, family = "poisson", data = variables)
+fish_cc_yr_site_pn <- glm(formula = Fish_Richness ~ Percent_Coral_Cover + Year + Site, family = "poisson", data = variables)
+fish_sc_yr_site_pn <- glm(formula = Fish_Richness ~ Percent_Sponge_Cover + Year + Site, family = "poisson", data = variables)
+fish_r_yr_site_pn <- glm(formula = Fish_Richness ~ Rugosity + Year + Site, family = "poisson", data = variables)
+combined_cc_yr_site_pn <- glm(formula = Combined_Richness ~ Percent_Coral_Cover + Year + Site, family = "poisson", data = variables)
+combined_sc_yr_site_pn <- glm(formula = Combined_Richness ~ Percent_Sponge_Cover + Year + Site, family = "poisson", data = variables)
+combined_r_yr_site_pn <- glm(formula = Combined_Richness ~ Rugosity + Year + Site, family = "poisson", data = variables)
+
+# ***
+pchisq(2 * (logLik(coral_cc_yr_site) - logLik(coral_cc_yr_site_pn)), df = 1, lower.tail = FALSE)
+# 'log Lik.' 1 (df=10)
+
+# Below are the results in the example at https://stats.idre.ucla.edu/r/dae/negative-binomial-regression/ 
+# However, I don't understand how they got 926.03...
+# ## 'log Lik.' 2.157e-203 (df=5)
+# In this example the associated chi-squared value estimated from 2*(logLik(m1) - logLik(m3)) is 926.03 with one degree of freedom. 
+# This strongly suggests the negative binomial model, estimating the dispersion parameter, is more appropriate than the Poisson model.
 
 
 
@@ -797,9 +831,25 @@ ggplot(data = variables, aes(x = True_Year, y = Combined_Richness)) +
 
 # The most parsimonious model for coral richness is coral_cc_yr.
 # The function of this model is Coral_Richness ~ Percent_Coral_Cover + Year.
-# Figure 34. Relationship between coral cover and coral richness and time. Negative binomial distribution used.
-# ***
-
+# Create year vector
+Year <- rep(seq(from = min(variables$Year), to = max(variables$Year), length.out = 100), 8)
+# Create coral cover vector
+Percent_Coral_Cover <- rep(seq(from = min(variables$Percent_Coral_Cover), to = max(variables$Percent_Coral_Cover), length.out = 100), 8)
+# Make a grid using these vectors
+coral_pred_grid <- expand.grid(Year = Year, Percent_Coral_Cover = Percent_Coral_Cover)
+coral_pred_grid$Predicted_Coral_Richness <-predict(coral_cc_yr, new = coral_pred_grid)
+# Unsure as to why coral richness predictions are limited between 2 and 4 ***
+predicted_coral_plot <- scatterplot3d(x = coral_pred_grid$Year, y = coral_pred_grid$Percent_Coral_Cover, z = coral_pred_grid$Predicted_Coral_Richness,
+                                      angle = 60,
+                                      color = "dodgerblue",
+                                      pch = 1,
+                                      xlab = "Time (Year)",
+                                      ylab = "Coral Cover (%)",
+                                      zlab = "Coral Richness" )
+# Figure 34. Relationship between coral cover and coral richness and time shown in 3 dimensions. Negative binomial distribution used.
+predicted_coral_plot
+# Add a column so the plot will have the true values compared to the predicted
+#predicted_coral_plot$points3d(x = variables$Year, y = variables$Percent_Coral_Cover, z = variables$Coral_Richness, pch = 16)
 
 
 ########################################################################
@@ -909,6 +959,8 @@ ggplot(data = variables, aes(x = Year, y = Fish_Richness)) +
 
 
 ########################################################################
+########################END OF CLEANED CODE#############################
+##################THE FOLLOWING IS FOR REFERENCE########################
 
 
 
