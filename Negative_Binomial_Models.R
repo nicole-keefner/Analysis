@@ -4,6 +4,7 @@
 
 
 #*obj* for completing clear objectives
+## Use *** to search for errors in the code or areas that need more work
 
 
 
@@ -78,6 +79,9 @@ hist(x = variables$Combined_Richness, breaks = 25)
 
 ### Objective 1: Create models that only include terms for surrogates 
 ### in order to determine which of the 3 candidate surrogates is the best at predicting each target. 
+# glm.nb produces warning messages because the data is often underdispersed relative to a negative binomial distribution. 
+# Poisson might be more appropriate. However, when the mean = variance the NB distribution will provide similar results as the Poisson.
+# Negative binomial distribution is used to model count data with overdispersion; richness is count data.
 # Negative binomial distribution models and aic tables for each target with one surrogate
 # For each target, compare models in aic table
 coral_cc = glm.nb(formula = Coral_Richness ~ Percent_Coral_Cover, data = variables)
@@ -259,6 +263,9 @@ obj_three_modnames <- c("yr", "site", "yr_site", "yr_site_yrxsite",
                   "cc", "cc_yr", "cc_site", "cc_yr_site",
                   "sc", "sc_yr", "sc_site", "sc_yr_site",
                   "r", "r_yr", "r_site", "r_yr_site") 
+# *** I'm unsure as to why, but the next 4 AIC tables can only be produced if I close the script,
+# ***re-run the code, but DO NOT run any of the AIC tables above
+# ***That is why these tables will be saved in separate .csv files.
 # AIC to compare all coral models
 coral_all <- aictab(cand.set = list(coral_yr, coral_site, coral_yr_site, coral_yr_site_yrxsite,
                                     coral_cc, coral_cc_yr, coral_cc_site, coral_cc_yr_site,
@@ -283,6 +290,12 @@ combined_all <- aictab(cand.set = list(combined_yr, combined_site, combined_yr_s
                                     combined_sc, combined_sc_yr, combined_sc_site, combined_sc_yr_site,
                                     combined_r, combined_r_yr, combined_r_site, combined_r_yr_site), 
                     modnames = obj_three_modnames, digits = 4)
+
+## Save these AIC tables as .csv files
+#write.table(coral_all, file="coral_all.csv", sep=",", col.names=TRUE,row.names=FALSE)
+#write.table(sponge_all, file="sponge_all.csv", sep=",", col.names=TRUE,row.names=FALSE)
+#write.table(fish_all, file="fish_all.csv", sep=",", col.names=TRUE,row.names=FALSE)
+#write.table(combined_all, file="combined_all.csv", sep=",", col.names=TRUE,row.names=FALSE)
 
 ## Model output for competitive models (<2.0 deltaAIC)
 # Look at significance of model coefficients
@@ -331,7 +344,6 @@ summary(combined_cc_yr_site)
 #*obj* Objective 4: Create new script for linear models with log and power models
 #*obj* Work on figures of top models (see image on phone)
 #*obj* Make sure to include prediction lines on model figures
-#*obj* Basic graphs
 
 
 
@@ -574,13 +586,23 @@ ggplot(data = variables, aes(x = True_Year, y = Combined_Richness)) +
 
 
 
+# Create new columns for true year values of different types for use in figures
+# Note that the column True_Year is type integer
+variables$True_Year_Factor <- as.factor(x = variables$True_Year)
+variables$True_Year_Numeric <- as.numeric(x = variables$True_Year)
+
 ## Figures of basic relationships between time (x) and surrogates/targets (y) by site (legend)
 
+# Create color palette that is friendly to viewers with color blindness (from https://socviz.co/refineplots.html)
+cb_palette <- c("#999999", "#E69F00", "#56B4E9", "#009E73",
+                "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+
 # Figure 20. Relationship between time and coral cover by site.
-ggplot(data = variables, aes(x = True_Year, y = Percent_Coral_Cover, group = Site, color = Site)) + 
+ggplot(data = variables, aes(x = True_Year_Factor, y = Percent_Coral_Cover, group = Site, color = Site)) + 
   geom_line(size = 1.1) +
   scale_x_discrete(name = "Time (Years)") +
   scale_y_continuous(name = "Coral Cover (%)") +
+  scale_color_manual(values = cb_palette) +
   theme(text = element_text(size = 18), 
         axis.text.x = element_text(angle = +90, hjust = 0),
         panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
@@ -589,10 +611,11 @@ ggplot(data = variables, aes(x = True_Year, y = Percent_Coral_Cover, group = Sit
         axis.line = element_line(colour = "black"))
 
 # Figure 21. Relationship between time and sponge cover by site.
-ggplot(data = variables, aes(x = True_Year, y = Percent_Sponge_Cover, group = Site, color = Site)) + 
+ggplot(data = variables, aes(x = True_Year_Factor, y = Percent_Sponge_Cover, group = Site, color = Site)) + 
   geom_line(size = 1.1) +
   scale_x_discrete(name = "Time (Years)") +
   scale_y_continuous(name = "Sponge Cover (%)") +
+  scale_color_manual(values = cb_palette) +
   theme(text = element_text(size= 18), 
         axis.text.x = element_text(angle = +90, hjust = 0),
         panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
@@ -601,10 +624,11 @@ ggplot(data = variables, aes(x = True_Year, y = Percent_Sponge_Cover, group = Si
         axis.line = element_line(colour = "black"))
 
 # Figure 22. Relationship between time and rugosity by site.
-ggplot(data = variables, aes(x = True_Year, y = Rugosity, group = Site, color = Site)) + 
+ggplot(data = variables, aes(x = True_Year_Factor, y = Rugosity, group = Site, color = Site)) + 
   geom_line(size = 1.1) +
   scale_x_discrete(name = "Time (Years)") +
   scale_y_continuous(name = "Rugosity") +
+  scale_color_manual(values = cb_palette) +
   theme(text = element_text(size = 18), 
         axis.text.x = element_text(angle = +90, hjust = 0),
         panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
@@ -613,10 +637,11 @@ ggplot(data = variables, aes(x = True_Year, y = Rugosity, group = Site, color = 
         axis.line = element_line(colour = "black"))
 
 # Figure 23. Relationship between time and coral richness by site.
-ggplot(data = variables, aes(x = True_Year, y = Coral_Richness, group = Site, color = Site)) + 
+ggplot(data = variables, aes(x = True_Year_Factor, y = Coral_Richness, group = Site, color = Site)) + 
   geom_line(size = 1.1) +
   scale_x_discrete(name = "Time (Years)") +
   scale_y_continuous(name = "Coral Richness") +
+  scale_color_manual(values = cb_palette) +
   theme(text = element_text(size = 18), 
         axis.text.x = element_text(angle = +90, hjust = 0),
         panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
@@ -625,10 +650,11 @@ ggplot(data = variables, aes(x = True_Year, y = Coral_Richness, group = Site, co
         axis.line = element_line(colour = "black"))
 
 # Figure 24. Relationship between time and sponge richness by site.
-ggplot(data = variables, aes(x = True_Year, y = Sponge_Richness, group = Site, color = Site)) + 
+ggplot(data = variables, aes(x = True_Year_Factor, y = Sponge_Richness, group = Site, color = Site)) + 
   geom_line(size = 1.1) +
   scale_x_discrete(name = "Time (Years)") +
   scale_y_continuous(name = "Sponge Richness") +
+  scale_color_manual(values = cb_palette) +
   theme(text = element_text(size = 18), 
         axis.text.x = element_text(angle = +90, hjust = 0),
         panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
@@ -639,10 +665,11 @@ ggplot(data = variables, aes(x = True_Year, y = Sponge_Richness, group = Site, c
 # The gaps are more apparent in these figures because they have lines instead of points.
 
 # Figure 25. Relationship between time and fish richness by site.
-ggplot(data = variables, aes(x = True_Year, y = Fish_Richness, group = Site, color = Site)) + 
+ggplot(data = variables, aes(x = True_Year_Factor, y = Fish_Richness, group = Site, color = Site)) + 
   geom_line(size = 1.1) +
   scale_x_discrete(name = "Time (Years)") +
   scale_y_continuous(name = "Fish Richness") +
+  scale_color_manual(values = cb_palette) +
   theme(text = element_text(size = 18), 
         axis.text.x = element_text(angle = +90, hjust = 0),
         panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
@@ -651,10 +678,11 @@ ggplot(data = variables, aes(x = True_Year, y = Fish_Richness, group = Site, col
         axis.line = element_line(colour = "black"))
 
 # Figure 26. Relationship between time and combined richness by site.
-ggplot(data = variables, aes(x = True_Year, y = Combined_Richness, group = Site, color = Site)) + 
+ggplot(data = variables, aes(x = True_Year_Factor, y = Combined_Richness, group = Site, color = Site)) + 
   geom_line(size = 1.1) +
   scale_x_discrete(name = "Time (Years)") +
   scale_y_continuous(name = "Combined Richness") +
+  scale_color_manual(values = cb_palette) +
   theme(text = element_text(size = 18), 
         axis.text.x = element_text(angle = +90, hjust = 0),
         panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
@@ -757,6 +785,126 @@ ggplot(data = variables, aes(x = True_Year, y = Combined_Richness)) +
         axis.line = element_line(colour = "black")) +
   facet_wrap(facets = ~ Site)
 # Resulting warning message same as that from figure 4.
+
+
+
+########################################################################
+#######################CORAL RICHNESS###################################
+
+
+
+## Figures of competitive models (<2.0 deltaAIC)
+
+# The most parsimonious model for coral richness is coral_cc_yr.
+# The function of this model is Coral_Richness ~ Percent_Coral_Cover + Year.
+# Figure 34. Relationship between coral cover and coral richness and time. Negative binomial distribution used.
+# ***
+
+
+
+########################################################################
+#######################SPONGE RICHNESS##################################
+
+
+
+## Figures of competitive models (<2.0 deltaAIC)
+
+# The most parsimonious model for sponge richness is sponge_yr_site.
+# The function of this model is Sponge_Richness ~ Year + Site.
+# Create new dataframe of predicted values from this model
+sponge_predictions <- data.frame(
+  Year = rep(seq(from = min(variables$Year), to = max(variables$Year), length.out = 100), 8),
+  Site = factor(rep(1:8, each = 100), levels = 1:8, labels =
+                  levels(variables$Site)))
+sponge_predictions <- cbind(sponge_predictions, predict(sponge_yr_site, sponge_predictions, type = "link", se.fit = TRUE))
+sponge_predictions <- within(sponge_predictions, {
+  Predicted_Sponge_Richness <- exp(fit)
+  LL <- exp(fit - 1.96 * se.fit)
+  UL <- exp(fit + 1.96 * se.fit)
+})
+# Figure 35. Predicted relationship between time and sponge richness by site. Negative binomial distribution used.
+ggplot(data = sponge_predictions, aes(x = Year, y = Predicted_Sponge_Richness)) +
+  geom_ribbon(aes(ymin = LL, ymax = UL, fill = Site), alpha = 0.25) +
+  geom_line(aes(color = Site), size = 2) +
+  labs(x = "Time (Year)", y = "Predicted Sponge Richness") +
+  scale_color_manual(values = cb_palette) +
+  theme(text = element_text(size = 18), 
+        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
+        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
+        panel.background = element_blank(), 
+        axis.line = element_line(colour = "black"))
+# Figure 36. Relationship between time and sponge richness by site. Negative binomial distribution used.
+ggplot(data = variables, aes(x = Year, y = Sponge_Richness)) + 
+  geom_point(size = 3)+
+  scale_x_continuous(name = "Time (Year)") +
+  scale_y_continuous(name = "Sponge Richness") +
+  geom_smooth(size = 1.2, method = "glm.nb", formula = y ~ x, aes(color = Site)) +
+  scale_color_manual(values = cb_palette) +
+  theme(text = element_text(size=27), 
+        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
+        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
+        panel.background = element_blank(), 
+        axis.line = element_line(colour = "black"))
+
+
+
+########################################################################
+#######################FISH RICHNESS####################################
+
+
+
+## Figures of competitive models (<2.0 deltaAIC)
+
+# The most parsimonious model for fish richness is fish_site.
+# The function of this model is Fish_Richness ~ Site.
+# Create new dataframe of predicted values from this model
+fish_predictions <- data.frame(
+  Year = rep(seq(from = min(variables$Year), to = max(variables$Year), length.out = 100), 8),
+  Site = factor(rep(1:8, each = 100), levels = 1:8, labels =
+                  levels(variables$Site)))
+fish_predictions <- cbind(fish_predictions, predict(fish_site, fish_predictions, type = "link", se.fit = TRUE))
+fish_predictions <- within(fish_predictions, {
+  Predicted_Fish_Richness <- exp(fit)
+  LL <- exp(fit - 1.96 * se.fit)
+  UL <- exp(fit + 1.96 * se.fit)
+})
+# Figure 37. Predicted relationship between time and fish richness by site. Negative binomial distribution used.
+ggplot(data = fish_predictions, aes(x = Year, y = Predicted_Fish_Richness)) +
+  geom_ribbon(aes(ymin = LL, ymax = UL, fill = Site), alpha = 0.25) +
+  geom_line(aes(color = Site), size = 2) +
+  labs(x = "Time (Year)", y = "Predicted Fish Richness") +
+  scale_color_manual(values = cb_palette) +
+  theme(text = element_text(size = 18), 
+        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
+        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
+        panel.background = element_blank(), 
+        axis.line = element_line(colour = "black"))
+# Figure 38. Relationship between time and fish richness by site. Negative binomial distribution used.
+ggplot(data = variables, aes(x = Year, y = Fish_Richness)) + 
+  geom_point(size = 3)+
+  scale_x_continuous(name = "Time (Year)") +
+  scale_y_continuous(name = "Fish Richness") +
+  geom_smooth(size = 1.2, method = "glm.nb", formula = y ~ x, aes(color = Site)) +
+  scale_color_manual(values = cb_palette) +
+  theme(text = element_text(size=27), 
+        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
+        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
+        panel.background = element_blank(), 
+        axis.line = element_line(colour = "black"))
+
+
+
+########################################################################
+#######################COMBINED RICHNESS################################
+
+
+
+## Figures of competitive models (<2.0 deltaAIC)
+
+# The most parsimonious model for combined richness is combined_cc_yr_site.
+# The function of this model is Combined_Richness ~ Percent_Coral_Cover + Year + Site.
+# Figure 39. Relationship between coral cover and coral richness and time and site. Negative binomial distribution used.
+# ***
 
 
 
