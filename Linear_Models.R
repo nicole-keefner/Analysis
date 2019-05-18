@@ -44,6 +44,10 @@ sponge_complete <- variables[complete.cases(variables$Sponge_Richness), ]
 
 ### Objective 1 for Linear: Create models that only include terms for surrogates 
 ### in order to determine which of the 3 candidate surrogates is the best at predicting each target. 
+
+# For model names: first word refers to the target, cc represents coral cover, sc represents sponge cover, r represents rugosity
+# (e.g. coral_cc is a model with coral cover as the predictor for coral richness)
+
 # For each target, compare models in aic table
 coral_cc = lm(formula = Coral_Richness ~ Percent_Coral_Cover, data = variables)
 coral_sc = lm(formula = Coral_Richness ~ Percent_Sponge_Cover, data = variables)
@@ -139,6 +143,36 @@ coral_r_yr_site = lm(formula = Coral_Richness ~ Rugosity + Year + Site, data = v
 sponge_r_yr_site = lm(formula = Sponge_Richness ~ Rugosity + Year + Site, data = variables)
 fish_r_yr_site = lm(formula = Fish_Richness ~ Rugosity + Year + Site, data = variables)
 combined_r_yr_site = lm(formula = Combined_Richness ~ Rugosity + Year + Site, data = variables)
+# CC + Year + YearxCC
+coral_cc_yr_yrxcc = lm(formula = Coral_Richness ~ Percent_Coral_Cover + Year + Year*Percent_Coral_Cover, data = variables)
+sponge_cc_yr_yrxcc = lm(formula = Sponge_Richness ~ Percent_Coral_Cover + Year + Year*Percent_Coral_Cover, data = variables)
+fish_cc_yr_yrxcc = lm(formula = Fish_Richness ~ Percent_Coral_Cover + Year + Year*Percent_Coral_Cover, data = variables)
+combined_cc_yr_yrxcc = lm(formula = Combined_Richness ~ Percent_Coral_Cover + Year + Year*Percent_Coral_Cover, data = variables)
+# SC + Year + YearxSC
+coral_sc_yr_yrxsc = lm(formula = Coral_Richness ~ Percent_Sponge_Cover + Year + Year*Percent_Sponge_Cover, data = variables)
+sponge_sc_yr_yrxsc = lm(formula = Sponge_Richness ~ Percent_Sponge_Cover + Year + Year*Percent_Sponge_Cover, data = variables)
+fish_sc_yr_yrxsc = lm(formula = Fish_Richness ~ Percent_Sponge_Cover + Year + Year*Percent_Sponge_Cover, data = variables)
+combined_sc_yr_yrxsc = lm(formula = Combined_Richness ~ Percent_Sponge_Cover + Year + Year*Percent_Sponge_Cover, data = variables)
+# R + Year + YearxR
+coral_r_yr_yrxr = lm(formula = Coral_Richness ~ Rugosity + Year + Year*Rugosity, data = variables)
+sponge_r_yr_yrxr = lm(formula = Sponge_Richness ~ Rugosity + Year + Year*Rugosity, data = variables)
+fish_r_yr_yrxr = lm(formula = Fish_Richness ~ Rugosity + Year + Year*Rugosity, data = variables)
+combined_r_yr_yrxr = lm(formula = Combined_Richness ~ Rugosity + Year + Year*Rugosity, data = variables)
+# CC + Site + SitexCC
+coral_cc_site_sitexcc = lm(formula = Coral_Richness ~ Percent_Coral_Cover + Site + Site*Percent_Coral_Cover, data = variables)
+sponge_cc_site_sitexcc = lm(formula = Sponge_Richness ~ Percent_Coral_Cover + Site + Site*Percent_Coral_Cover, data = variables)
+fish_cc_site_sitexcc = lm(formula = Fish_Richness ~ Percent_Coral_Cover + Site + Site*Percent_Coral_Cover, data = variables)
+combined_cc_site_sitexcc = lm(formula = Combined_Richness ~ Percent_Coral_Cover + Site + Site*Percent_Coral_Cover, data = variables)
+# SC + Site + SitexSC
+coral_sc_site_sitexsc = lm(formula = Coral_Richness ~ Percent_Sponge_Cover + Site + Site*Percent_Sponge_Cover, data = variables)
+sponge_sc_site_sitexsc = lm(formula = Sponge_Richness ~ Percent_Sponge_Cover + Site + Site*Percent_Sponge_Cover, data = variables)
+fish_sc_site_sitexsc = lm(formula = Fish_Richness ~ Percent_Sponge_Cover + Site + Site*Percent_Sponge_Cover, data = variables)
+combined_sc_site_sitexsc = lm(formula = Combined_Richness ~ Percent_Sponge_Cover + Site + Site*Percent_Sponge_Cover, data = variables)
+# R + Site + SitexR
+coral_r_site_sitexr = lm(formula = Coral_Richness ~ Rugosity + Site + Site*Rugosity, data = variables)
+sponge_r_site_sitexr = lm(formula = Sponge_Richness ~ Rugosity + Site + Site*Rugosity, data = variables)
+fish_r_site_sitexr = lm(formula = Fish_Richness ~ Rugosity + Site + Site*Rugosity, data = variables)
+combined_r_site_sitexr = lm(formula = Combined_Richness ~ Rugosity + Site + Site*Rugosity, data = variables)
 # # The following models are not included in AIC tables or interpretations
 # # CC + Year + Site + YearxSite
 # coral_cc_yr_site_yrxsite = lm(formula = Coral_Richness ~ Percent_Coral_Cover + Year + Site + Year*Site, data = variables)
@@ -273,84 +307,101 @@ combined_r_power = lm(formula = Combined_Richness ~ exp(3.2614 + 0.2155*log(Rugo
 ## AIC tables to evaluate surrogate effectiveness over space and time
 # Names of coral cover models in order they are listed for the AIC tables
 cc_modnames <- c("yr", "site", "yr_site", "yr_site_yrxsite", "cc", "cc_yr", "cc_site", "cc_yr_site",
-                 "cc_log", "cc_yr_log", "cc_site_log", "cc_yr_site_log", "cc_power") 
+                 "cc_log", "cc_yr_log", "cc_site_log", "cc_yr_site_log", "cc_power",
+                 "cc_yr_yrxcc", "cc_site_sitexcc") 
 # AIC to compare coral_cc models
 coral_cc <- aictab(cand.set = list(coral_yr, coral_site, coral_yr_site, coral_yr_site_yrxsite, 
                                    coral_cc, coral_cc_yr, coral_cc_site, coral_cc_yr_site,
                                    coral_cc_log, coral_cc_yr_log, coral_cc_site_log, coral_cc_yr_site_log,
-                                   coral_cc_power), 
+                                   coral_cc_power,
+                                   coral_cc_yr_yrxcc, coral_cc_site_sitexcc), 
                    modnames = cc_modnames, digits = 4)
 # AIC to compare sponge_cc models
 sponge_cc <- aictab(cand.set = list(sponge_yr, sponge_site, sponge_yr_site, sponge_yr_site_yrxsite, 
                                     sponge_cc, sponge_cc_yr, sponge_cc_site, sponge_cc_yr_site,
                                     sponge_cc_log, sponge_cc_yr_log, sponge_cc_site_log, sponge_cc_yr_site_log,
-                                    sponge_cc_power),
+                                    sponge_cc_power,
+                                    sponge_cc_yr_yrxcc, sponge_cc_site_sitexcc), 
                     modnames = cc_modnames, digits = 4)
 # AIC to compare fish_cc models
 fish_cc <- aictab(cand.set = list(fish_yr, fish_site, fish_yr_site, fish_yr_site_yrxsite, 
                                   fish_cc, fish_cc_yr, fish_cc_site, fish_cc_yr_site,
                                   fish_cc_log, fish_cc_yr_log, fish_cc_site_log, fish_cc_yr_site_log,
-                                  fish_cc_power),
+                                  fish_cc_power,
+                                  fish_cc_yr_yrxcc, fish_cc_site_sitexcc), 
                   modnames = cc_modnames, digits = 4)
 # AIC to compare combined_cc models
 combined_cc <- aictab(cand.set = list(combined_yr, combined_site, combined_yr_site, combined_yr_site_yrxsite, 
                                       combined_cc, combined_cc_yr, combined_cc_site, combined_cc_yr_site,
                                       combined_cc_log, combined_cc_yr_log, combined_cc_site_log, combined_cc_yr_site_log,
-                                      combined_cc_power),
+                                      combined_cc_power,
+                                      combined_cc_yr_yrxcc, combined_cc_site_sitexcc), 
                       modnames = cc_modnames, digits = 4)
+
 # Names of sponge cover models in order they are listed for the AIC tables
 sc_modnames <- c("yr", "site", "yr_site", "yr_site_yrxsite", "sc", "sc_yr", "sc_site", "sc_yr_site",
-                 "sc_log", "sc_yr_log", "sc_site_log", "sc_yr_site_log", "sc_power") 
+                 "sc_log", "sc_yr_log", "sc_site_log", "sc_yr_site_log", "sc_power",
+                 "sc_yr_yrxsc", "sc_site_sitexsc") 
 # AIC to compare coral_sc models
 coral_sc <- aictab(cand.set = list(coral_yr, coral_site, coral_yr_site, coral_yr_site_yrxsite, 
                                    coral_sc, coral_sc_yr, coral_sc_site, coral_sc_yr_site,
                                    coral_sc_log, coral_sc_yr_log, coral_sc_site_log, coral_sc_yr_site_log,
-                                   coral_sc_power), 
+                                   coral_sc_power,
+                                   coral_sc_yr_yrxsc, coral_sc_site_sitexsc), 
                    modnames = sc_modnames, digits = 4)
 # AIC to compare sponge_sc models
 sponge_sc <- aictab(cand.set = list(sponge_yr, sponge_site, sponge_yr_site, sponge_yr_site_yrxsite, 
                                     sponge_sc, sponge_sc_yr, sponge_sc_site, sponge_sc_yr_site,
                                     sponge_sc_log, sponge_sc_yr_log, sponge_sc_site_log, sponge_sc_yr_site_log,
-                                    sponge_sc_power), 
+                                    sponge_sc_power,
+                                    sponge_sc_yr_yrxsc, sponge_sc_site_sitexsc), 
                     modnames = sc_modnames, digits = 4)
 # AIC to compare fish_sc models
 fish_sc <- aictab(cand.set = list(fish_yr, fish_site, fish_yr_site, fish_yr_site_yrxsite, 
                                   fish_sc, fish_sc_yr, fish_sc_site, fish_sc_yr_site,
                                   fish_sc_log, fish_sc_yr_log, fish_sc_site_log, fish_sc_yr_site_log,
-                                  fish_sc_power), 
+                                  fish_sc_power,
+                                  fish_sc_yr_yrxsc, fish_sc_site_sitexsc), 
                   modnames = sc_modnames, digits = 4)
 # AIC to compare combined_sc models
 combined_sc <- aictab(cand.set = list(combined_yr, combined_site, combined_yr_site, combined_yr_site_yrxsite, 
                                       combined_sc, combined_sc_yr, combined_sc_site, combined_sc_yr_site,
                                       combined_sc_log, combined_sc_yr_log, combined_sc_site_log, combined_sc_yr_site_log,
-                                      combined_sc_power), 
+                                      combined_sc_power,
+                                      combined_sc_yr_yrxsc, combined_sc_site_sitexsc), 
                       modnames = sc_modnames, digits = 4)
+
 # Names of rugosity models in order they are listed for the AIC tables
 r_modnames <- c("yr", "site", "yr_site", "yr_site_yrxsite", "r", "r_yr", "r_site", "r_yr_site",
-                "r_log", "r_yr_log", "r_site_log", "r_yr_site_log", "r_power")  
+                "r_log", "r_yr_log", "r_site_log", "r_yr_site_log", "r_power",
+                "r_yr_yrxr", "r_site_sitexr")  
 # AIC to compare coral_r models
 coral_r <- aictab(cand.set = list(coral_yr, coral_site, coral_yr_site, coral_yr_site_yrxsite, 
                                   coral_r, coral_r_yr, coral_r_site, coral_r_yr_site,
                                   coral_r_log, coral_r_yr_log, coral_r_site_log, coral_r_yr_site_log,
-                                  coral_r_power), 
+                                  coral_r_power,
+                                  coral_r_yr_yrxr, coral_r_site_sitexr), 
                   modnames = r_modnames, digits = 4)
 # AIC to compare sponge_r models
 sponge_r <- aictab(cand.set = list(sponge_yr, sponge_site, sponge_yr_site, sponge_yr_site_yrxsite, 
                                    sponge_r, sponge_r_yr, sponge_r_site, sponge_r_yr_site,
                                    sponge_r_log, sponge_r_yr_log, sponge_r_site_log, sponge_r_yr_site_log,
-                                   sponge_r_power), 
+                                   sponge_r_power,
+                                   sponge_r_yr_yrxr, sponge_r_site_sitexr), 
                    modnames = r_modnames, digits = 4)
 # AIC to compare fish_r models
 fish_r <- aictab(cand.set = list(fish_yr, fish_site, fish_yr_site, fish_yr_site_yrxsite, 
                                  fish_r, fish_r_yr, fish_r_site, fish_r_yr_site,
                                  fish_r_log, fish_r_yr_log, fish_r_site_log, fish_r_yr_site_log,
-                                 fish_r_power), 
+                                 fish_r_power,
+                                 fish_r_yr_yrxr, fish_r_site_sitexr), 
                  modnames = r_modnames, digits = 4)
 # AIC to compare combined_r models
 combined_r <- aictab(cand.set = list(combined_yr, combined_site, combined_yr_site, combined_yr_site_yrxsite, 
                                      combined_r, combined_r_yr, combined_r_site, combined_r_yr_site,
                                      combined_r_log, combined_r_yr_log, combined_r_site_log, combined_r_yr_site_log,
-                                     combined_r_power), 
+                                     combined_r_power,
+                                     combined_r_yr_yrxr, combined_r_site_sitexr), 
                      modnames = r_modnames, digits = 4)
 
 
@@ -366,9 +417,12 @@ obj_three_modnames <- c("yr", "site", "yr_site", "yr_site_yrxsite",
                         "r", "r_yr", "r_site", "r_yr_site",
                         "cc_log", "cc_yr_log", "cc_site_log", "cc_yr_site_log", "cc_power",
                         "sc_log", "sc_yr_log", "sc_site_log", "sc_yr_site_log", "sc_power",
-                        "r_log", "r_yr_log", "r_site_log", "r_yr_site_log", "r_power") 
+                        "r_log", "r_yr_log", "r_site_log", "r_yr_site_log", "r_power",
+                        "cc_yr_yrxcc", "cc_site_sitexcc",
+                        "sc_yr_yrxsc", "sc_site_sitexsc",
+                        "r_yr_yrxr", "r_site_sitexr") 
 # *** I'm unsure as to why, but the next 4 AIC tables can only be produced if I close the script,
-# ***re-run the code, but DO NOT run any of the AIC tables above
+# ***re-run the code, and DO NOT run any of the AIC tables above
 # ***That is why these tables are saved in separate .csv files.
 # AIC to compare all coral models
 coral_all <- aictab(cand.set = list(coral_yr, coral_site, coral_yr_site, coral_yr_site_yrxsite,
@@ -380,7 +434,10 @@ coral_all <- aictab(cand.set = list(coral_yr, coral_site, coral_yr_site, coral_y
                                     coral_sc_log, coral_sc_yr_log, coral_sc_site_log, coral_sc_yr_site_log,
                                     coral_sc_power,
                                     coral_r_log, coral_r_yr_log, coral_r_site_log, coral_r_yr_site_log,
-                                    coral_r_power), 
+                                    coral_r_power,
+                                    coral_cc_yr_yrxcc, coral_cc_site_sitexcc,
+                                    coral_sc_yr_yrxsc, coral_sc_site_sitexsc,
+                                    coral_r_yr_yrxr, coral_r_site_sitexr), 
                     modnames = obj_three_modnames, digits = 4)
 # AIC to compare all sponge models
 sponge_all <- aictab(cand.set = list(sponge_yr, sponge_site, sponge_yr_site, sponge_yr_site_yrxsite,
@@ -392,7 +449,10 @@ sponge_all <- aictab(cand.set = list(sponge_yr, sponge_site, sponge_yr_site, spo
                                      sponge_sc_log, sponge_sc_yr_log, sponge_sc_site_log, sponge_sc_yr_site_log,
                                      sponge_sc_power,
                                      sponge_r_log, sponge_r_yr_log, sponge_r_site_log, sponge_r_yr_site_log,
-                                     sponge_r_power), 
+                                     sponge_r_power,
+                                     sponge_cc_yr_yrxcc, sponge_cc_site_sitexcc,
+                                     sponge_sc_yr_yrxsc, sponge_sc_site_sitexsc,
+                                     sponge_r_yr_yrxr, sponge_r_site_sitexr), 
                      modnames = obj_three_modnames, digits = 4)
 # AIC to compare all fish models
 fish_all <- aictab(cand.set = list(fish_yr, fish_site, fish_yr_site, fish_yr_site_yrxsite,
@@ -404,7 +464,10 @@ fish_all <- aictab(cand.set = list(fish_yr, fish_site, fish_yr_site, fish_yr_sit
                                    fish_sc_log, fish_sc_yr_log, fish_sc_site_log, fish_sc_yr_site_log,
                                    fish_sc_power,
                                    fish_r_log, fish_r_yr_log, fish_r_site_log, fish_r_yr_site_log,
-                                   fish_r_power),
+                                   fish_r_power,
+                                   fish_cc_yr_yrxcc, fish_cc_site_sitexcc,
+                                   fish_sc_yr_yrxsc, fish_sc_site_sitexsc,
+                                   fish_r_yr_yrxr, fish_r_site_sitexr), 
                    modnames = obj_three_modnames, digits = 4)
 # AIC to compare all "combined" models
 combined_all <- aictab(cand.set = list(combined_yr, combined_site, combined_yr_site, combined_yr_site_yrxsite,
@@ -416,7 +479,10 @@ combined_all <- aictab(cand.set = list(combined_yr, combined_site, combined_yr_s
                                        combined_sc_log, combined_sc_yr_log, combined_sc_site_log, combined_sc_yr_site_log,
                                        combined_sc_power,
                                        combined_r_log, combined_r_yr_log, combined_r_site_log, combined_r_yr_site_log,
-                                       combined_r_power), 
+                                       combined_r_power,
+                                       combined_cc_yr_yrxcc, combined_cc_site_sitexcc,
+                                       combined_sc_yr_yrxsc, combined_sc_site_sitexsc,
+                                       combined_r_yr_yrxr, combined_r_site_sitexr),  
                        modnames = obj_three_modnames, digits = 4)
 
 ## Save these AIC tables as .csv files
@@ -424,22 +490,6 @@ combined_all <- aictab(cand.set = list(combined_yr, combined_site, combined_yr_s
 # write.table(x = sponge_all, file = "sponge_all_linear.csv", sep = ",", col.names = TRUE,row.names = FALSE)
 # write.table(x = fish_all, file = "fish_all_linear.csv", sep = ",", col.names = TRUE,row.names = FALSE)
 # write.table(x = combined_all, file = "combined_all_linear.csv", sep = ",", col.names = TRUE,row.names = FALSE)
-
-## Model output for competitive models (<2.0 deltaAIC)***
-# Look at significance of model coefficients
-# For coral richness
-summary(coral_cc_yr_site_log)
-summary(coral_cc_yr_log)
-# For sponge richness
-summary(sponge_r_yr_site_log)
-summary(sponge_yr_site_yrxsite)
-# For fish richness
-summary(fish_r_site)
-summary(fish_r_site_log)
-summary(fish_site)
-summary(fish_yr_site) #yr coefficient not significant
-# For combined richness
-summary(combined_cc_yr_site_log)
 
 
 
