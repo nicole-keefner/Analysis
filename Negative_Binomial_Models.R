@@ -14,8 +14,8 @@
 
 
 ## Load packages
-# First used for model output in HTML table format using function tab_model
-library(sjPlot)
+# # First used for model output in HTML table format using function tab_model***
+# library(sjPlot)
 # First used for aic function, aictab
 library(AICcmodavg)
 # First used to make figures using function ggplot
@@ -24,6 +24,15 @@ library(ggplot2)
 library(MASS)
 # First used to make 3D model using function scatterplot3d
 library(scatterplot3d)
+
+
+
+## Cite R software and packages used
+# citation()
+# citation(package = "AICcmodavg")
+# citation(package = "ggplot2")
+# citation(package = "MASS")
+# citation(package = "scatterplot3d")
 
 
 
@@ -445,7 +454,7 @@ summary(combined_cc_yr_site)
 # To do this, we will run our model as a Poisson.
 # (https://stats.idre.ucla.edu/r/dae/negative-binomial-regression/)
 
-# These are the most complex models in the candidate set:
+# These are the full models in the candidate set:
 # coral_cc_yr_site; coral_sc_yr_site; coral_r_yr_site
 # sponge_cc_yr_site; sponge_sc_yr_site; sponge_r_yr_site
 # fish_cc_yr_site; fish_sc_yr_site; fish_r_yr_site
@@ -465,8 +474,53 @@ combined_cc_yr_site_pn <- glm(formula = Combined_Richness ~ Percent_Coral_Cover 
 combined_sc_yr_site_pn <- glm(formula = Combined_Richness ~ Percent_Sponge_Cover + Year + Site, family = "poisson", data = variables)
 combined_r_yr_site_pn <- glm(formula = Combined_Richness ~ Rugosity + Year + Site, family = "poisson", data = variables)
 
-# ***
-pchisq(2 * (logLik(coral_cc_yr_site) - logLik(coral_cc_yr_site_pn)), df = 1, lower.tail = FALSE)
+
+# From "Mixed Effects Models and Extensions in Ecology with R" by, Zuur, Ieno, et al. pg. 236
+## For negative binomial
+summary(coral_cc_yr_site)
+# Drop each term in turn and compare the full model with the nested model using the drop1() command
+drop1(coral_cc_yr_site, test = "Chi")
+# Set up plot window, so I can view all diagnostic plots simultaneously
+op <- par(mfrow = c(2,2))
+# Plot residuals
+plot(coral_cc_yr_site)
+par(op)
+
+## For Poisson
+plot(coral_cc_yr_site_pn)
+
+## Residual graphs do not show a clear winner, so compare negative binomial and poisson
+# Log-likelihood for negative binomial
+llhNB = logLik(coral_cc_yr_site)
+# Log-likelihood for Poisson
+llhPoisson = logLik(coral_cc_yr_site_pn)
+d <- 2 * (llhNB - llhPoisson)
+# Determine p-value for chi-square test; multiply by 0.5 p. 238 *** still unsure as to why divide by 2 here
+pval <- 0.5 * pchisq(q = as.numeric(x = d), df = 1, lower.tail = FALSE)
+# p = 0.5, so there is no significant difference between using the neg. bin. and the Poisson***
+# I looked at all 12 comparisons and for all of them, p = 0.5 suggesting there is no significant dif between neg. bin. and Poisson
+
+# Plot residuals of all full models
+# None of these models have patterns in the residuals, 
+# suggesting the models are appropriate
+op <- par(mfrow = c(2,2))
+plot(coral_cc_yr_site)
+plot(coral_sc_yr_site)
+plot(coral_r_yr_site)
+plot(sponge_cc_yr_site)
+plot(sponge_sc_yr_site)
+plot(sponge_r_yr_site)
+plot(fish_cc_yr_site)
+plot(fish_sc_yr_site)
+plot(fish_r_yr_site)
+plot(combined_cc_yr_site)
+plot(combined_sc_yr_site)
+plot(combined_r_yr_site)
+par(op)
+
+
+# ***Following notes in this section from before
+#pchisq(2 * (logLik(coral_cc_yr_site) - logLik(coral_cc_yr_site_pn)), df = 1, lower.tail = FALSE)
 # 'log Lik.' 1 (df=10)
 
 # Below are the results in the example at https://stats.idre.ucla.edu/r/dae/negative-binomial-regression/ 
