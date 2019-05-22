@@ -489,7 +489,7 @@ par(op)
 ## For Poisson
 plot(coral_cc_yr_site_pn)
 
-## Residual graphs do not show a clear winner, so compare negative binomial and poisson
+## Residual graphs do not show a clear winner, so compare negative binomial and poisson using likelihood ratio test
 # Log-likelihood for negative binomial
 llhNB = logLik(coral_cc_yr_site)
 # Log-likelihood for Poisson
@@ -1108,123 +1108,149 @@ ggplot(data = variables, aes(x = Year, y = Fish_Richness)) +
 # The most parsimonious model for combined richness is combined_cc_yr_site.
 # The function of this model is Combined_Richness ~ Percent_Coral_Cover + Year + Site.
 
+# Because there are NA's in the Combined_Richness column, R will be unable to calculate summary values
+# Create subset of data called "combined_complete" that retains only complete cases for Combined_Richness
+combined_complete <- variables[complete.cases(variables$Combined_Richness), ]
+
 # Create new dataframes, subsets of the 8 main sites:
 # Pelican Ghut, Grand Ghut, Crab Cove, Muskmelon, Bigelow, White Bay, Monkey Point, and Guana Head
-Pelican_Ghut <- variables[which(variables$Site == "pelican"),]
-Grand_Ghut <- variables[which(variables$Site == "grand"),]
-Crab_Cove <- variables[which(variables$Site == "crab"),]
-Muskmelon <- variables[which(variables$Site == "muskN"),]
-Bigelow <- variables[which(variables$Site == "bigelow"),]
-White_Bay <- variables[which(variables$Site == "white"),]
-Monkey_Point <- variables[which(variables$Site == "monkey"),]
-Guana_Head <- variables[which(variables$Site == "iguana"),]
+Pelican_Ghut <- combined_complete[which(combined_complete$Site == "pelican"),]
+Grand_Ghut <- combined_complete[which(combined_complete$Site == "grand"),]
+Crab_Cove <- combined_complete[which(combined_complete$Site == "crab"),]
+Muskmelon <- combined_complete[which(combined_complete$Site == "muskN"),]
+Bigelow <- combined_complete[which(combined_complete$Site == "bigelow"),]
+White_Bay <- combined_complete[which(combined_complete$Site == "white"),]
+Monkey_Point <- combined_complete[which(combined_complete$Site == "monkey"),]
+Guana_Head <- combined_complete[which(combined_complete$Site == "iguana"),]
+
+# Determine ranges of variables used to set consistent axes
+summary(variables$Year)
+# Ranges from 0-26, so x axes from 0-30
+summary(variables$Rugosity)
+# Ranges from 17-78, so y axes from 10-80
+summary(variables$Combined_Richness)
+# Ranges from 39-75, so z axes should be from 35-80. However,
+# note that variables$Combined_Richness ranges from 39-75, 
+# but pred_grid$Predicted_Combined_Richness for all sites ranges from 50.77-66.34
+# so z axes from 50-70
 
 # Figure 39. Relationship between coral cover and coral richness and time and site. Negative binomial distribution used.
 # ***
-
-
 par(mfrow = c(3,3))
-Year <- rep(seq(from = min(Pelican_Ghut$Year), to = max(Pelican_Ghut$Year), length.out = 100))
-Percent_Coral_Cover <- rep(seq(from = min(Pelican_Ghut$Percent_Coral_Cover), to = max(Pelican_Ghut$Percent_Coral_Cover), length.out = 100))
-combined_pred_grid <- expand.grid(Year = Year, Percent_Coral_Cover = Percent_Coral_Cover)
-combined_pred_grid$Predicted_Combined_Richness <-predict(object = combined_cc_yr, newdata = combined_pred_grid, type = "response")
-predicted_combined_plot <- scatterplot3d(x = combined_pred_grid$Year, y = combined_pred_grid$Percent_Coral_Cover, z = combined_pred_grid$Predicted_Coral_Richness,
-                                      angle = 60,
-                                      color = cb_palette[1],
-                                      pch = 1,
-                                      xlab = "Time (Year) - Pelican Ghut",
-                                      ylab = "Coral Cover (%)",
-                                      zlab = "Combined Richness")
-
-## Another way 
-# xlim = c(0, 30), 
-# ylim = c(0, 70), 
-# zlim = c(0, 80)
-##One way
-#xlim = c(floor(min(variables$Year)), ceiling(max(variables$Year))), 
-#ylim = c(floor(min(variables$Percent_Coral_Cover)), ceiling(max(variables$Percent_Coral_Cover))), 
-#zlim = c(floor(min(variables$Combined_Richness)), ceiling(max(variables$Combined_Richness))))
-
-
-
-Year <- rep(seq(from = min(Grand_Ghut$Year), to = max(Grand_Ghut$Year), length.out = 100))
-Percent_Coral_Cover <- rep(seq(from = min(Grand_Ghut$Percent_Coral_Cover), to = max(Grand_Ghut$Percent_Coral_Cover), length.out = 100))
-combined_pred_grid <- expand.grid(Year = Year, Percent_Coral_Cover = Percent_Coral_Cover)
-combined_pred_grid$Predicted_Combined_Richness <-predict(object = combined_cc_yr, newdata = combined_pred_grid, type = "response")
-predicted_combined_plot <- scatterplot3d(x = combined_pred_grid$Year, y = combined_pred_grid$Percent_Coral_Cover, z = combined_pred_grid$Predicted_Coral_Richness,
+Yeartest <- seq(from = min(Pelican_Ghut$Year), to = max(Pelican_Ghut$Year), length.out = 100)
+Rugositytest <- seq(from = min(Pelican_Ghut$Rugosity), to = max(Pelican_Ghut$Rugosity), length.out = 100)
+pred_grid <- expand.grid(Yeartest = Yeartest, Rugositytest = Rugositytest)
+pred_grid$Predicted_Combined_Richness <-predict(object = combined_cc_yr, newdata = pred_grid, type = "response")
+predicted_combined_plot <- scatterplot3d(x = pred_grid$Yeartest, y = pred_grid$Rugositytest, z = pred_grid$Predicted_Combined_Richness,
+                                         angle = 60,
+                                         color = cb_palette[1],
+                                         pch = 1,
+                                         xlab = "Time (Year) - Pelican Ghut",
+                                         ylab = "Rugosity",
+                                         zlab = "Combined Richness",
+                                         xlim = c(0, 30),
+                                         ylim = c(10, 80),
+                                         zlim = c(50, 70))
+Yeartest <- seq(from = min(Grand_Ghut$Year), to = max(Grand_Ghut$Year), length.out = 100)
+Rugositytest <- seq(from = min(Grand_Ghut$Rugosity), to = max(Grand_Ghut$Rugosity), length.out = 100)
+pred_grid <- expand.grid(Yeartest = Yeartest, Rugositytest = Rugositytest)
+pred_grid$Predicted_Combined_Richness <-predict(object = combined_cc_yr, newdata = pred_grid, type = "response")
+predicted_combined_plot <- scatterplot3d(x = pred_grid$Yeartest, y = pred_grid$Rugositytest, z = pred_grid$Predicted_Combined_Richness,
                                          angle = 60,
                                          color = cb_palette[2],
                                          pch = 1,
                                          xlab = "Time (Year) - Grand Ghut",
-                                         ylab = "Coral Cover (%)",
-                                         zlab = "Combined Richness")
-Year <- rep(seq(from = min(Crab_Cove$Year), to = max(Crab_Cove$Year), length.out = 100))
-Percent_Coral_Cover <- rep(seq(from = min(Crab_Cove$Percent_Coral_Cover), to = max(Crab_Cove$Percent_Coral_Cover), length.out = 100))
-combined_pred_grid <- expand.grid(Year = Year, Percent_Coral_Cover = Percent_Coral_Cover)
-combined_pred_grid$Predicted_Combined_Richness <-predict(object = combined_cc_yr, newdata = combined_pred_grid, type = "response")
-predicted_combined_plot <- scatterplot3d(x = combined_pred_grid$Year, y = combined_pred_grid$Percent_Coral_Cover, z = combined_pred_grid$Predicted_Coral_Richness,
+                                         ylab = "Rugosity",
+                                         zlab = "Combined Richness",
+                                         xlim = c(0, 30),
+                                         ylim = c(10, 80),
+                                         zlim = c(50, 70))
+Yeartest <- seq(from = min(Crab_Cove$Year), to = max(Crab_Cove$Year), length.out = 100)
+Rugositytest <- seq(from = min(Crab_Cove$Rugosity), to = max(Crab_Cove$Rugosity), length.out = 100)
+pred_grid <- expand.grid(Yeartest = Yeartest, Rugositytest = Rugositytest)
+pred_grid$Predicted_Combined_Richness <-predict(object = combined_cc_yr, newdata = pred_grid, type = "response")
+predicted_combined_plot <- scatterplot3d(x = pred_grid$Yeartest, y = pred_grid$Rugositytest, z = pred_grid$Predicted_Combined_Richness,
                                          angle = 60,
                                          color = cb_palette[3],
                                          pch = 1,
                                          xlab = "Time (Year) - Crab Cove",
-                                         ylab = "Coral Cover (%)",
-                                         zlab = "Combined Richness")
-Year <- rep(seq(from = min(Muskmelon$Year), to = max(Muskmelon$Year), length.out = 100))
-Percent_Coral_Cover <- rep(seq(from = min(Muskmelon$Percent_Coral_Cover), to = max(Muskmelon$Percent_Coral_Cover), length.out = 100))
-combined_pred_grid <- expand.grid(Year = Year, Percent_Coral_Cover = Percent_Coral_Cover)
-combined_pred_grid$Predicted_Combined_Richness <-predict(object = combined_cc_yr, newdata = combined_pred_grid, type = "response")
-predicted_combined_plot <- scatterplot3d(x = combined_pred_grid$Year, y = combined_pred_grid$Percent_Coral_Cover, z = combined_pred_grid$Predicted_Coral_Richness,
+                                         ylab = "Rugosity",
+                                         zlab = "Combined Richness",
+                                         xlim = c(0, 30),
+                                         ylim = c(10, 80),
+                                         zlim = c(50, 70))
+Yeartest <- seq(from = min(Muskmelon$Year), to = max(Muskmelon$Year), length.out = 100)
+Rugositytest <- seq(from = min(Muskmelon$Rugosity), to = max(Muskmelon$Rugosity), length.out = 100)
+pred_grid <- expand.grid(Yeartest = Yeartest, Rugositytest = Rugositytest)
+pred_grid$Predicted_Combined_Richness <-predict(object = combined_cc_yr, newdata = pred_grid, type = "response")
+predicted_combined_plot <- scatterplot3d(x = pred_grid$Yeartest, y = pred_grid$Rugositytest, z = pred_grid$Predicted_Combined_Richness,
                                          angle = 60,
                                          color = cb_palette[4],
                                          pch = 1,
                                          xlab = "Time (Year) - Muskmelon",
-                                         ylab = "Coral Cover (%)",
-                                         zlab = "Combined Richness")
-Year <- rep(seq(from = min(Bigelow$Year), to = max(Bigelow$Year), length.out = 100))
-Percent_Coral_Cover <- rep(seq(from = min(Bigelow$Percent_Coral_Cover), to = max(Bigelow$Percent_Coral_Cover), length.out = 100))
-combined_pred_grid <- expand.grid(Year = Year, Percent_Coral_Cover = Percent_Coral_Cover)
-combined_pred_grid$Predicted_Combined_Richness <-predict(object = combined_cc_yr, newdata = combined_pred_grid, type = "response")
-predicted_combined_plot <- scatterplot3d(x = combined_pred_grid$Year, y = combined_pred_grid$Percent_Coral_Cover, z = combined_pred_grid$Predicted_Coral_Richness,
+                                         ylab = "Rugosity",
+                                         zlab = "Combined Richness",
+                                         xlim = c(0, 30),
+                                         ylim = c(10, 80),
+                                         zlim = c(50, 70))
+Yeartest <- seq(from = min(Bigelow$Year), to = max(Bigelow$Year), length.out = 100)
+Rugositytest <- seq(from = min(Bigelow$Rugosity), to = max(Bigelow$Rugosity), length.out = 100)
+pred_grid <- expand.grid(Yeartest = Yeartest, Rugositytest = Rugositytest)
+pred_grid$Predicted_Combined_Richness <-predict(object = combined_cc_yr, newdata = pred_grid, type = "response")
+predicted_combined_plot <- scatterplot3d(x = pred_grid$Yeartest, y = pred_grid$Rugositytest, z = pred_grid$Predicted_Combined_Richness,
                                          angle = 60,
                                          color = cb_palette[5],
                                          pch = 1,
-                                         xlab = "Time (Year)",
-                                         ylab = "Coral Cover (%) - Bigelow",
-                                         zlab = "Combined Richness")
-Year <- rep(seq(from = min(White_Bay$Year), to = max(White_Bay$Year), length.out = 100))
-Percent_Coral_Cover <- rep(seq(from = min(White_Bay$Percent_Coral_Cover), to = max(White_Bay$Percent_Coral_Cover), length.out = 100))
-combined_pred_grid <- expand.grid(Year = Year, Percent_Coral_Cover = Percent_Coral_Cover)
-combined_pred_grid$Predicted_Combined_Richness <-predict(object = combined_cc_yr, newdata = combined_pred_grid, type = "response")
-predicted_combined_plot <- scatterplot3d(x = combined_pred_grid$Year, y = combined_pred_grid$Percent_Coral_Cover, z = combined_pred_grid$Predicted_Coral_Richness,
+                                         xlab = "Time (Year) - Bigelow",
+                                         ylab = "Rugosity",
+                                         zlab = "Combined Richness",
+                                         xlim = c(0, 30),
+                                         ylim = c(10, 80),
+                                         zlim = c(50, 70))
+Yeartest <- seq(from = min(White_Bay$Year), to = max(White_Bay$Year), length.out = 100)
+Rugositytest <- seq(from = min(White_Bay$Rugosity), to = max(White_Bay$Rugosity), length.out = 100)
+pred_grid <- expand.grid(Yeartest = Yeartest, Rugositytest = Rugositytest)
+pred_grid$Predicted_Combined_Richness <-predict(object = combined_cc_yr, newdata = pred_grid, type = "response")
+predicted_combined_plot <- scatterplot3d(x = pred_grid$Yeartest, y = pred_grid$Rugositytest, z = pred_grid$Predicted_Combined_Richness,
                                          angle = 60,
                                          color = cb_palette[6],
                                          pch = 1,
                                          xlab = "Time (Year) - White Bay",
-                                         ylab = "Coral Cover (%)",
-                                         zlab = "Combined Richness")
-Year <- rep(seq(from = min(Monkey_Point$Year), to = max(Monkey_Point$Year), length.out = 100))
-Percent_Coral_Cover <- rep(seq(from = min(Monkey_Point$Percent_Coral_Cover), to = max(Monkey_Point$Percent_Coral_Cover), length.out = 100))
-combined_pred_grid <- expand.grid(Year = Year, Percent_Coral_Cover = Percent_Coral_Cover)
-combined_pred_grid$Predicted_Combined_Richness <-predict(object = combined_cc_yr, newdata = combined_pred_grid, type = "response")
-predicted_combined_plot <- scatterplot3d(x = combined_pred_grid$Year, y = combined_pred_grid$Percent_Coral_Cover, z = combined_pred_grid$Predicted_Coral_Richness,
+                                         ylab = "Rugosity",
+                                         zlab = "Combined Richness",
+                                         xlim = c(0, 30),
+                                         ylim = c(10, 80),
+                                         zlim = c(50, 70))
+Yeartest <- seq(from = min(Monkey_Point$Year), to = max(Monkey_Point$Year), length.out = 100)
+Rugositytest <- seq(from = min(Monkey_Point$Rugosity), to = max(Monkey_Point$Rugosity), length.out = 100)
+pred_grid <- expand.grid(Yeartest = Yeartest, Rugositytest = Rugositytest)
+pred_grid$Predicted_Combined_Richness <-predict(object = combined_cc_yr, newdata = pred_grid, type = "response")
+predicted_combined_plot <- scatterplot3d(x = pred_grid$Yeartest, y = pred_grid$Rugositytest, z = pred_grid$Predicted_Combined_Richness,
                                          angle = 60,
                                          color = cb_palette[7],
                                          pch = 1,
                                          xlab = "Time (Year) - Monkey Point",
-                                         ylab = "Coral Cover (%)",
-                                         zlab = "Combined Richness")
-Year <- rep(seq(from = min(Guana_Head$Year), to = max(Guana_Head$Year), length.out = 100))
-Percent_Coral_Cover <- rep(seq(from = min(Guana_Head$Percent_Coral_Cover), to = max(Guana_Head$Percent_Coral_Cover), length.out = 100))
-combined_pred_grid <- expand.grid(Year = Year, Percent_Coral_Cover = Percent_Coral_Cover)
-combined_pred_grid$Predicted_Combined_Richness <-predict(object = combined_cc_yr, newdata = combined_pred_grid, type = "response")
-predicted_combined_plot <- scatterplot3d(x = combined_pred_grid$Year, y = combined_pred_grid$Percent_Coral_Cover, z = combined_pred_grid$Predicted_Coral_Richness,
+                                         ylab = "Rugosity",
+                                         zlab = "Combined Richness",
+                                         xlim = c(0, 30),
+                                         ylim = c(10, 80),
+                                         zlim = c(50, 70))
+Yeartest <- seq(from = min(Guana_Head$Year), to = max(Guana_Head$Year), length.out = 100)
+Rugositytest <- seq(from = min(Guana_Head$Rugosity), to = max(Guana_Head$Rugosity), length.out = 100)
+pred_grid <- expand.grid(Yeartest = Yeartest, Rugositytest = Rugositytest)
+pred_grid$Predicted_Combined_Richness <-predict(object = combined_cc_yr, newdata = pred_grid, type = "response")
+predicted_combined_plot <- scatterplot3d(x = pred_grid$Yeartest, y = pred_grid$Rugositytest, z = pred_grid$Predicted_Combined_Richness,
                                          angle = 60,
                                          color = cb_palette[8],
                                          pch = 1,
                                          xlab = "Time (Year) - Guana Head",
-                                         ylab = "Coral Cover (%)",
-                                         zlab = "Combined Richness")
+                                         ylab = "Rugosity",
+                                         zlab = "Combined Richness",
+                                         xlim = c(0, 30),
+                                         ylim = c(10, 80),
+                                         zlim = c(50, 70))
 par(mfrow = c(1,1))
+
 
 
 ########################################################################
