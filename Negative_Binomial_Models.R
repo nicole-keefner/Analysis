@@ -24,6 +24,8 @@ library(ggplot2)
 library(MASS)
 # First used to make 3D model using function scatterplot3d
 library(scatterplot3d)
+# First used to fit >1 ggplot on same window using function grid.arrange
+library(gridExtra)
 
 
 
@@ -770,10 +772,11 @@ par(op)
 # 
 # 
 # 
-# Create new columns for true year values of different types for use in figures
+# Create new columns for true year and year values of different types for use in figures
 # Note that the column True_Year is type integer
 variables$True_Year_Factor <- as.factor(x = variables$True_Year)
 variables$True_Year_Numeric <- as.numeric(x = variables$True_Year)
+variables$Year_Factor <- as.factor(x = variables$Year)
 
 ## Figures of basic relationships between time (x) and surrogates/targets (y) by site (legend)
 
@@ -1004,6 +1007,42 @@ predicted_coral_plot
 #predicted_coral_plot$points3d(x = variables$Year, y = variables$Percent_Coral_Cover, z = variables$Coral_Richness, pch = 16)
 
 
+# 2D alternative to 3D figure
+# Note that I created a new model for the sake of creating this figure
+coral_cc_yr_asfactor <- glm.nb(formula = Coral_Richness ~ Percent_Coral_Cover + Year_Factor, data = variables)
+coral_predictions_2d <- data.frame(
+  Percent_Coral_Cover = rep(seq(from = min(variables$Percent_Coral_Cover), to = max(variables$Percent_Coral_Cover), length.out = 100), 27),
+  Year_Factor = factor(rep(1:27, each = 100), levels = 1:27, labels =
+                  levels(variables$Year_Factor)))
+coral_predictions_2d <- cbind(coral_predictions_2d, predict(object = coral_cc_yr_asfactor, newdata = coral_predictions_2d, type = "link", se.fit = TRUE))
+coral_predictions_2d <- within(coral_predictions_2d, {
+  Predicted_Coral_Richness <- exp(fit)
+  LL <- exp(fit - 1.96 * se.fit)
+  UL <- exp(fit + 1.96 * se.fit)
+})
+# Figure . Predicted relationship between coral cover and predicted coral richness by year. Negative binomial distribution used.
+ggplot(data = coral_predictions_2d, aes(x = Percent_Coral_Cover, y = Predicted_Coral_Richness)) +
+  geom_ribbon(aes(ymin = LL, ymax = UL, fill = Year_Factor), alpha = 0.25) +
+  geom_line(aes(color = Year_Factor), size = 2) +
+  labs(x = "Coral Cover (%)", y = "Predicted Coral Richness") +
+  theme(text = element_text(size = 18), 
+        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
+        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
+        panel.background = element_blank(), 
+        axis.line = element_line(colour = "black"))
+# Figure . Relationship between coral cover and coral richness by year. Negative binomial distribution used.
+ggplot(data = variables, aes(x = Percent_Coral_Cover, y = Coral_Richness)) + 
+  geom_point(size = 3)+
+  scale_x_continuous(name = "Coral Cover (%)") +
+  scale_y_continuous(name = "Coral Richness") +
+  geom_smooth(size = 1.2, method = "glm.nb", formula = y ~ x, aes(color = Year_Factor)) +
+  #scale_color_manual(values = cb_palette) +
+  theme(text = element_text(size=27), 
+        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
+        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
+        panel.background = element_blank(), 
+        axis.line = element_line(colour = "black"))
+
 
 ########################################################################
 #######################SPONGE RICHNESS##################################
@@ -1099,7 +1138,7 @@ ggplot(data = variables, aes(x = Year, y = Fish_Richness)) +
 
 
 ########################################################################
-#######################COMBINED RICHNESS################################
+#######################COMBINED RICHNESS 3D#############################
 
 
 
@@ -1129,19 +1168,16 @@ summary(variables$Year)
 summary(variables$Rugosity)
 # Ranges from 17-78, so y axes from 10-80
 summary(variables$Combined_Richness)
-# Ranges from 39-75, so z axes should be from 35-80. However,
-# note that variables$Combined_Richness ranges from 39-75, 
-# but pred_grid$Predicted_Combined_Richness for all sites ranges from 50.77-66.34
-# so z axes from 50-70
+# Ranges from 39-75, so z axes from 30-80.
 
 # Figure 39. Relationship between coral cover and coral richness and time and site. Negative binomial distribution used.
-# ***
+# Note that the model used to predict does not have site as a term***
 par(mfrow = c(3,3))
-Yeartest <- seq(from = min(Pelican_Ghut$Year), to = max(Pelican_Ghut$Year), length.out = 100)
-Rugositytest <- seq(from = min(Pelican_Ghut$Rugosity), to = max(Pelican_Ghut$Rugosity), length.out = 100)
-pred_grid <- expand.grid(Yeartest = Yeartest, Rugositytest = Rugositytest)
-pred_grid$Predicted_Combined_Richness <-predict(object = combined_cc_yr, newdata = pred_grid, type = "response")
-predicted_combined_plot <- scatterplot3d(x = pred_grid$Yeartest, y = pred_grid$Rugositytest, z = pred_grid$Predicted_Combined_Richness,
+Year <- seq(from = min(Pelican_Ghut$Year), to = max(Pelican_Ghut$Year), length.out = 100)
+Rugosity <- seq(from = min(Pelican_Ghut$Rugosity), to = max(Pelican_Ghut$Rugosity), length.out = 100)
+pred_grid <- expand.grid(Year = Year, Rugosity = Rugosity)
+pred_grid$Predicted_Combined_Richness <-predict(object = combined_r_yr, newdata = pred_grid, type = "response")
+predicted_combined_plot <- scatterplot3d(x = pred_grid$Year, y = pred_grid$Rugosity, z = pred_grid$Predicted_Combined_Richness,
                                          angle = 60,
                                          color = cb_palette[1],
                                          pch = 1,
@@ -1150,12 +1186,12 @@ predicted_combined_plot <- scatterplot3d(x = pred_grid$Yeartest, y = pred_grid$R
                                          zlab = "Combined Richness",
                                          xlim = c(0, 30),
                                          ylim = c(10, 80),
-                                         zlim = c(50, 70))
-Yeartest <- seq(from = min(Grand_Ghut$Year), to = max(Grand_Ghut$Year), length.out = 100)
-Rugositytest <- seq(from = min(Grand_Ghut$Rugosity), to = max(Grand_Ghut$Rugosity), length.out = 100)
-pred_grid <- expand.grid(Yeartest = Yeartest, Rugositytest = Rugositytest)
-pred_grid$Predicted_Combined_Richness <-predict(object = combined_cc_yr, newdata = pred_grid, type = "response")
-predicted_combined_plot <- scatterplot3d(x = pred_grid$Yeartest, y = pred_grid$Rugositytest, z = pred_grid$Predicted_Combined_Richness,
+                                         zlim = c(30, 80))
+Year <- seq(from = min(Grand_Ghut$Year), to = max(Grand_Ghut$Year), length.out = 100)
+Rugosity <- seq(from = min(Grand_Ghut$Rugosity), to = max(Grand_Ghut$Rugosity), length.out = 100)
+pred_grid <- expand.grid(Year = Year, Rugosity = Rugosity)
+pred_grid$Predicted_Combined_Richness <-predict(object = combined_r_yr, newdata = pred_grid, type = "response")
+predicted_combined_plot <- scatterplot3d(x = pred_grid$Year, y = pred_grid$Rugosity, z = pred_grid$Predicted_Combined_Richness,
                                          angle = 60,
                                          color = cb_palette[2],
                                          pch = 1,
@@ -1164,12 +1200,12 @@ predicted_combined_plot <- scatterplot3d(x = pred_grid$Yeartest, y = pred_grid$R
                                          zlab = "Combined Richness",
                                          xlim = c(0, 30),
                                          ylim = c(10, 80),
-                                         zlim = c(50, 70))
+                                         zlim = c(30, 80))
 Yeartest <- seq(from = min(Crab_Cove$Year), to = max(Crab_Cove$Year), length.out = 100)
-Rugositytest <- seq(from = min(Crab_Cove$Rugosity), to = max(Crab_Cove$Rugosity), length.out = 100)
-pred_grid <- expand.grid(Yeartest = Yeartest, Rugositytest = Rugositytest)
-pred_grid$Predicted_Combined_Richness <-predict(object = combined_cc_yr, newdata = pred_grid, type = "response")
-predicted_combined_plot <- scatterplot3d(x = pred_grid$Yeartest, y = pred_grid$Rugositytest, z = pred_grid$Predicted_Combined_Richness,
+Rugosity <- seq(from = min(Crab_Cove$Rugosity), to = max(Crab_Cove$Rugosity), length.out = 100)
+pred_grid <- expand.grid(Year = Year, Rugosity = Rugosity)
+pred_grid$Predicted_Combined_Richness <-predict(object = combined_r_yr, newdata = pred_grid, type = "response")
+predicted_combined_plot <- scatterplot3d(x = pred_grid$Year, y = pred_grid$Rugosity, z = pred_grid$Predicted_Combined_Richness,
                                          angle = 60,
                                          color = cb_palette[3],
                                          pch = 1,
@@ -1178,12 +1214,12 @@ predicted_combined_plot <- scatterplot3d(x = pred_grid$Yeartest, y = pred_grid$R
                                          zlab = "Combined Richness",
                                          xlim = c(0, 30),
                                          ylim = c(10, 80),
-                                         zlim = c(50, 70))
-Yeartest <- seq(from = min(Muskmelon$Year), to = max(Muskmelon$Year), length.out = 100)
-Rugositytest <- seq(from = min(Muskmelon$Rugosity), to = max(Muskmelon$Rugosity), length.out = 100)
-pred_grid <- expand.grid(Yeartest = Yeartest, Rugositytest = Rugositytest)
-pred_grid$Predicted_Combined_Richness <-predict(object = combined_cc_yr, newdata = pred_grid, type = "response")
-predicted_combined_plot <- scatterplot3d(x = pred_grid$Yeartest, y = pred_grid$Rugositytest, z = pred_grid$Predicted_Combined_Richness,
+                                         zlim = c(30, 80))
+Year <- seq(from = min(Muskmelon$Year), to = max(Muskmelon$Year), length.out = 100)
+Rugosity <- seq(from = min(Muskmelon$Rugosity), to = max(Muskmelon$Rugosity), length.out = 100)
+pred_grid <- expand.grid(Year = Year, Rugosity = Rugosity)
+pred_grid$Predicted_Combined_Richness <-predict(object = combined_r_yr, newdata = pred_grid, type = "response")
+predicted_combined_plot <- scatterplot3d(x = pred_grid$Year, y = pred_grid$Rugosity, z = pred_grid$Predicted_Combined_Richness,
                                          angle = 60,
                                          color = cb_palette[4],
                                          pch = 1,
@@ -1192,12 +1228,12 @@ predicted_combined_plot <- scatterplot3d(x = pred_grid$Yeartest, y = pred_grid$R
                                          zlab = "Combined Richness",
                                          xlim = c(0, 30),
                                          ylim = c(10, 80),
-                                         zlim = c(50, 70))
-Yeartest <- seq(from = min(Bigelow$Year), to = max(Bigelow$Year), length.out = 100)
-Rugositytest <- seq(from = min(Bigelow$Rugosity), to = max(Bigelow$Rugosity), length.out = 100)
-pred_grid <- expand.grid(Yeartest = Yeartest, Rugositytest = Rugositytest)
-pred_grid$Predicted_Combined_Richness <-predict(object = combined_cc_yr, newdata = pred_grid, type = "response")
-predicted_combined_plot <- scatterplot3d(x = pred_grid$Yeartest, y = pred_grid$Rugositytest, z = pred_grid$Predicted_Combined_Richness,
+                                         zlim = c(30, 80))
+Year <- seq(from = min(Bigelow$Year), to = max(Bigelow$Year), length.out = 100)
+Rugosity <- seq(from = min(Bigelow$Rugosity), to = max(Bigelow$Rugosity), length.out = 100)
+pred_grid <- expand.grid(Year = Year, Rugosity = Rugosity)
+pred_grid$Predicted_Combined_Richness <-predict(object = combined_r_yr, newdata = pred_grid, type = "response")
+predicted_combined_plot <- scatterplot3d(x = pred_grid$Year, y = pred_grid$Rugosity, z = pred_grid$Predicted_Combined_Richness,
                                          angle = 60,
                                          color = cb_palette[5],
                                          pch = 1,
@@ -1206,12 +1242,12 @@ predicted_combined_plot <- scatterplot3d(x = pred_grid$Yeartest, y = pred_grid$R
                                          zlab = "Combined Richness",
                                          xlim = c(0, 30),
                                          ylim = c(10, 80),
-                                         zlim = c(50, 70))
-Yeartest <- seq(from = min(White_Bay$Year), to = max(White_Bay$Year), length.out = 100)
-Rugositytest <- seq(from = min(White_Bay$Rugosity), to = max(White_Bay$Rugosity), length.out = 100)
-pred_grid <- expand.grid(Yeartest = Yeartest, Rugositytest = Rugositytest)
-pred_grid$Predicted_Combined_Richness <-predict(object = combined_cc_yr, newdata = pred_grid, type = "response")
-predicted_combined_plot <- scatterplot3d(x = pred_grid$Yeartest, y = pred_grid$Rugositytest, z = pred_grid$Predicted_Combined_Richness,
+                                         zlim = c(30, 80))
+Year <- seq(from = min(White_Bay$Year), to = max(White_Bay$Year), length.out = 100)
+Rugosity <- seq(from = min(White_Bay$Rugosity), to = max(White_Bay$Rugosity), length.out = 100)
+pred_grid <- expand.grid(Year = Year, Rugosity = Rugosity)
+pred_grid$Predicted_Combined_Richness <-predict(object = combined_r_yr, newdata = pred_grid, type = "response")
+predicted_combined_plot <- scatterplot3d(x = pred_grid$Year, y = pred_grid$Rugosity, z = pred_grid$Predicted_Combined_Richness,
                                          angle = 60,
                                          color = cb_palette[6],
                                          pch = 1,
@@ -1220,12 +1256,12 @@ predicted_combined_plot <- scatterplot3d(x = pred_grid$Yeartest, y = pred_grid$R
                                          zlab = "Combined Richness",
                                          xlim = c(0, 30),
                                          ylim = c(10, 80),
-                                         zlim = c(50, 70))
-Yeartest <- seq(from = min(Monkey_Point$Year), to = max(Monkey_Point$Year), length.out = 100)
-Rugositytest <- seq(from = min(Monkey_Point$Rugosity), to = max(Monkey_Point$Rugosity), length.out = 100)
-pred_grid <- expand.grid(Yeartest = Yeartest, Rugositytest = Rugositytest)
-pred_grid$Predicted_Combined_Richness <-predict(object = combined_cc_yr, newdata = pred_grid, type = "response")
-predicted_combined_plot <- scatterplot3d(x = pred_grid$Yeartest, y = pred_grid$Rugositytest, z = pred_grid$Predicted_Combined_Richness,
+                                         zlim = c(30, 80))
+Year <- seq(from = min(Monkey_Point$Year), to = max(Monkey_Point$Year), length.out = 100)
+Rugosity <- seq(from = min(Monkey_Point$Rugosity), to = max(Monkey_Point$Rugosity), length.out = 100)
+pred_grid <- expand.grid(Year = Year, Rugosity = Rugosity)
+pred_grid$Predicted_Combined_Richness <-predict(object = combined_r_yr, newdata = pred_grid, type = "response")
+predicted_combined_plot <- scatterplot3d(x = pred_grid$Year, y = pred_grid$Rugosity, z = pred_grid$Predicted_Combined_Richness,
                                          angle = 60,
                                          color = cb_palette[7],
                                          pch = 1,
@@ -1234,12 +1270,12 @@ predicted_combined_plot <- scatterplot3d(x = pred_grid$Yeartest, y = pred_grid$R
                                          zlab = "Combined Richness",
                                          xlim = c(0, 30),
                                          ylim = c(10, 80),
-                                         zlim = c(50, 70))
-Yeartest <- seq(from = min(Guana_Head$Year), to = max(Guana_Head$Year), length.out = 100)
-Rugositytest <- seq(from = min(Guana_Head$Rugosity), to = max(Guana_Head$Rugosity), length.out = 100)
-pred_grid <- expand.grid(Yeartest = Yeartest, Rugositytest = Rugositytest)
-pred_grid$Predicted_Combined_Richness <-predict(object = combined_cc_yr, newdata = pred_grid, type = "response")
-predicted_combined_plot <- scatterplot3d(x = pred_grid$Yeartest, y = pred_grid$Rugositytest, z = pred_grid$Predicted_Combined_Richness,
+                                         zlim = c(30, 80))
+Year <- seq(from = min(Guana_Head$Year), to = max(Guana_Head$Year), length.out = 100)
+Rugosity <- seq(from = min(Guana_Head$Rugosity), to = max(Guana_Head$Rugosity), length.out = 100)
+pred_grid <- expand.grid(Year = Year, Rugosity = Rugosity)
+pred_grid$Predicted_Combined_Richness <-predict(object = combined_r_yr, newdata = pred_grid, type = "response")
+predicted_combined_plot <- scatterplot3d(x = pred_grid$Year, y = pred_grid$Rugosity, z = pred_grid$Predicted_Combined_Richness,
                                          angle = 60,
                                          color = cb_palette[8],
                                          pch = 1,
@@ -1248,9 +1284,239 @@ predicted_combined_plot <- scatterplot3d(x = pred_grid$Yeartest, y = pred_grid$R
                                          zlab = "Combined Richness",
                                          xlim = c(0, 30),
                                          ylim = c(10, 80),
-                                         zlim = c(50, 70))
+                                         zlim = c(30, 80))
 par(mfrow = c(1,1))
 
 
 
 ########################################################################
+#######################COMBINED RICHNESS 2D#############################
+
+
+
+# Remove ghost factors
+combined_complete$Year_Factor <- as.character(combined_complete$Year_Factor)
+combined_complete <- combined_complete[combined_complete$Year_Factor != "0" | combined_complete$Year_Factor != "4" | combined_complete$Year_Factor != "5" |
+                                         combined_complete$Year_Factor != "6" | combined_complete$Year_Factor != "7" | combined_complete$Year_Factor != "12", ]
+combined_complete$Year_Factor <- as.factor(combined_complete$Year_Factor)
+# Order the factor levels for year
+combined_complete$Year_Factor <- ordered(combined_complete$Year_Factor, 
+                                         levels = c("1", "2", "3", "8", "9", "10", "11", "13", "14", "15", 
+                                                    "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26"))
+# Note that model created with year as factor for graphing purposes
+combined_r_yr_asfactor <- glm.nb(formula = Combined_Richness ~ Rugosity + Year_Factor, data = combined_complete)
+# Re-create subsets without ghost factors
+Pelican_Ghut <- combined_complete[which(combined_complete$Site == "pelican"),]
+Grand_Ghut <- combined_complete[which(combined_complete$Site == "grand"),]
+Crab_Cove <- combined_complete[which(combined_complete$Site == "crab"),]
+Muskmelon <- combined_complete[which(combined_complete$Site == "muskN"),]
+Bigelow <- combined_complete[which(combined_complete$Site == "bigelow"),]
+White_Bay <- combined_complete[which(combined_complete$Site == "white"),]
+Monkey_Point <- combined_complete[which(combined_complete$Site == "monkey"),]
+Guana_Head <- combined_complete[which(combined_complete$Site == "iguana"),]
+
+
+
+# Pelican_Ghut
+combined_predictions_2d <- data.frame(
+  Rugosity = rep(seq(from = min(Pelican_Ghut$Rugosity), to = max(Pelican_Ghut$Rugosity), length.out = 100), 21),
+  Year_Factor = factor(rep(1:21, each = 100), levels = 1:21, labels =
+                         levels(Pelican_Ghut$Year_Factor)))
+combined_predictions_2d <- cbind(combined_predictions_2d, predict(object = combined_r_yr_asfactor, newdata = combined_predictions_2d, type = "link", se.fit = TRUE))
+combined_predictions_2d <- within(combined_predictions_2d, {
+  Predicted_Combined_Richness <- exp(fit)
+  LL <- exp(fit - 1.96 * se.fit)
+  UL <- exp(fit + 1.96 * se.fit)
+})
+# Plot for Pelican_Ghut
+Pelican_Ghut_combined_2d <- ggplot(data = combined_predictions_2d, aes(x = Rugosity, y = Predicted_Combined_Richness, color = Year_Factor)) +
+                              geom_ribbon(aes(ymin = LL, ymax = UL, fill = Year_Factor), alpha = 0.25) +
+                              geom_line(aes(color = Year_Factor), size = 2) +
+                              labs(x = "Rugosity - Pelican Ghut", y = "Predicted Combined Richness") +
+                              scale_x_continuous(limits = c(10, 80)) +
+                              scale_y_continuous(limits = c(30, 80)) +
+                              theme(text = element_text(size = 18), 
+                                    panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
+                                    panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
+                                    panel.background = element_blank(), 
+                                    axis.line = element_line(colour = "black")
+                                    #legend.position = "none"
+                                    )
+# Grand_Ghut
+combined_predictions_2d <- data.frame(
+  Rugosity = rep(seq(from = min(Grand_Ghut$Rugosity), to = max(Grand_Ghut$Rugosity), length.out = 100), 21),
+  Year_Factor = factor(rep(1:21, each = 100), levels = 1:21, labels =
+                         levels(Grand_Ghut$Year_Factor)))
+combined_predictions_2d <- cbind(combined_predictions_2d, predict(object = combined_r_yr_asfactor, newdata = combined_predictions_2d, type = "link", se.fit = TRUE))
+combined_predictions_2d <- within(combined_predictions_2d, {
+  Predicted_Combined_Richness <- exp(fit)
+  LL <- exp(fit - 1.96 * se.fit)
+  UL <- exp(fit + 1.96 * se.fit)
+})
+# Plot for Grand_Ghut
+Grand_Ghut_combined_2d <- ggplot(data = combined_predictions_2d, aes(x = Rugosity, y = Predicted_Combined_Richness, color = Year_Factor)) +
+                            geom_ribbon(aes(ymin = LL, ymax = UL, fill = Year_Factor), alpha = 0.25) +
+                            geom_line(aes(color = Year_Factor), size = 2) +
+                            labs(x = "Rugosity - Grand Ghut", y = "Predicted Combined Richness") +
+                            scale_x_continuous(limits = c(10, 80)) +
+                            scale_y_continuous(limits = c(30, 80)) +
+                            theme(text = element_text(size = 18), 
+                                  panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
+                                  panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
+                                  panel.background = element_blank(), 
+                                  axis.line = element_line(colour = "black")
+                                  #legend.position = "none"
+                                  )
+# Crab_Cove
+combined_predictions_2d <- data.frame(
+  Rugosity = rep(seq(from = min(Crab_Cove$Rugosity), to = max(Crab_Cove$Rugosity), length.out = 100), 21),
+  Year_Factor = factor(rep(1:21, each = 100), levels = 1:21, labels =
+                         levels(Crab_Cove$Year_Factor)))
+combined_predictions_2d <- cbind(combined_predictions_2d, predict(object = combined_r_yr_asfactor, newdata = combined_predictions_2d, type = "link", se.fit = TRUE))
+combined_predictions_2d <- within(combined_predictions_2d, {
+  Predicted_Combined_Richness <- exp(fit)
+  LL <- exp(fit - 1.96 * se.fit)
+  UL <- exp(fit + 1.96 * se.fit)
+})
+# Plot for Crab_Cove
+Crab_Cove_combined_2d <- ggplot(data = combined_predictions_2d, aes(x = Rugosity, y = Predicted_Combined_Richness, color = Year_Factor)) +
+                            geom_ribbon(aes(ymin = LL, ymax = UL, fill = Year_Factor), alpha = 0.25) +
+                            geom_line(aes(color = Year_Factor), size = 2) +
+                            labs(x = "Rugosity - Crab Cove", y = "Predicted Combined Richness") +
+                            scale_x_continuous(limits = c(10, 80)) +
+                            scale_y_continuous(limits = c(30, 80)) +
+                            theme(text = element_text(size = 18), 
+                                  panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
+                                  panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
+                                  panel.background = element_blank(), 
+                                  axis.line = element_line(colour = "black")
+                                  #legend.position = "none"
+                                  )
+# Muskmelon
+combined_predictions_2d <- data.frame(
+  Rugosity = rep(seq(from = min(Muskmelon$Rugosity), to = max(Muskmelon$Rugosity), length.out = 100), 21),
+  Year_Factor = factor(rep(1:21, each = 100), levels = 1:21, labels =
+                         levels(Muskmelon$Year_Factor)))
+combined_predictions_2d <- cbind(combined_predictions_2d, predict(object = combined_r_yr_asfactor, newdata = combined_predictions_2d, type = "link", se.fit = TRUE))
+combined_predictions_2d <- within(combined_predictions_2d, {
+  Predicted_Combined_Richness <- exp(fit)
+  LL <- exp(fit - 1.96 * se.fit)
+  UL <- exp(fit + 1.96 * se.fit)
+})
+# Plot for Muskmelon
+Muskmelon_combined_2d <- ggplot(data = combined_predictions_2d, aes(x = Rugosity, y = Predicted_Combined_Richness, color = Year_Factor)) +
+                            geom_ribbon(aes(ymin = LL, ymax = UL, fill = Year_Factor), alpha = 0.25) +
+                            geom_line(aes(color = Year_Factor), size = 2) +
+                            labs(x = "Rugosity - Muskmelon", y = "Predicted Combined Richness") +
+                            scale_x_continuous(limits = c(10, 80)) +
+                            scale_y_continuous(limits = c(30, 80)) +
+                            theme(text = element_text(size = 18), 
+                                  panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
+                                  panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
+                                  panel.background = element_blank(), 
+                                  axis.line = element_line(colour = "black")
+                                  #legend.position = "none"
+                                  )
+# Bigelow
+combined_predictions_2d <- data.frame(
+  Rugosity = rep(seq(from = min(Bigelow$Rugosity), to = max(Bigelow$Rugosity), length.out = 100), 21),
+  Year_Factor = factor(rep(1:21, each = 100), levels = 1:21, labels =
+                         levels(Bigelow$Year_Factor)))
+combined_predictions_2d <- cbind(combined_predictions_2d, predict(object = combined_r_yr_asfactor, newdata = combined_predictions_2d, type = "link", se.fit = TRUE))
+combined_predictions_2d <- within(combined_predictions_2d, {
+  Predicted_Combined_Richness <- exp(fit)
+  LL <- exp(fit - 1.96 * se.fit)
+  UL <- exp(fit + 1.96 * se.fit)
+})
+# Plot for Bigelow
+Bigelow_combined_2d <- ggplot(data = combined_predictions_2d, aes(x = Rugosity, y = Predicted_Combined_Richness, color = Year_Factor)) +
+                          geom_ribbon(aes(ymin = LL, ymax = UL, fill = Year_Factor), alpha = 0.25) +
+                          geom_line(aes(color = Year_Factor), size = 2) +
+                          labs(x = "Rugosity - Bigelow", y = "Predicted Combined Richness") +
+                          scale_x_continuous(limits = c(10, 80)) +
+                          scale_y_continuous(limits = c(30, 80)) +
+                          theme(text = element_text(size = 18), 
+                                panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
+                                panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
+                                panel.background = element_blank(), 
+                                axis.line = element_line(colour = "black")
+                                #legend.position = "none"
+                                )
+# White_Bay
+combined_predictions_2d <- data.frame(
+  Rugosity = rep(seq(from = min(White_Bay$Rugosity), to = max(White_Bay$Rugosity), length.out = 100), 21),
+  Year_Factor = factor(rep(1:21, each = 100), levels = 1:21, labels =
+                         levels(White_Bay$Year_Factor)))
+combined_predictions_2d <- cbind(combined_predictions_2d, predict(object = combined_r_yr_asfactor, newdata = combined_predictions_2d, type = "link", se.fit = TRUE))
+combined_predictions_2d <- within(combined_predictions_2d, {
+  Predicted_Combined_Richness <- exp(fit)
+  LL <- exp(fit - 1.96 * se.fit)
+  UL <- exp(fit + 1.96 * se.fit)
+})
+# Plot for White_Bay
+White_Bay_combined_2d <- ggplot(data = combined_predictions_2d, aes(x = Rugosity, y = Predicted_Combined_Richness, color = Year_Factor)) +
+                            geom_ribbon(aes(ymin = LL, ymax = UL, fill = Year_Factor), alpha = 0.25) +
+                            geom_line(aes(color = Year_Factor), size = 2) +
+                            labs(x = "Rugosity - White Bay", y = "Predicted Combined Richness") +
+                            scale_x_continuous(limits = c(10, 80)) +
+                            scale_y_continuous(limits = c(30, 80)) +
+                            theme(text = element_text(size = 18), 
+                                  panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
+                                  panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
+                                  panel.background = element_blank(), 
+                                  axis.line = element_line(colour = "black")
+                                  #legend.position = "none"
+                                  )
+# Monkey_Point
+combined_predictions_2d <- data.frame(
+  Rugosity = rep(seq(from = min(Monkey_Point$Rugosity), to = max(Monkey_Point$Rugosity), length.out = 100), 21),
+  Year_Factor = factor(rep(1:21, each = 100), levels = 1:21, labels =
+                         levels(Monkey_Point$Year_Factor)))
+combined_predictions_2d <- cbind(combined_predictions_2d, predict(object = combined_r_yr_asfactor, newdata = combined_predictions_2d, type = "link", se.fit = TRUE))
+combined_predictions_2d <- within(combined_predictions_2d, {
+  Predicted_Combined_Richness <- exp(fit)
+  LL <- exp(fit - 1.96 * se.fit)
+  UL <- exp(fit + 1.96 * se.fit)
+})
+# Plot for Monkey_Point
+Monkey_Point_combined_2d <- ggplot(data = combined_predictions_2d, aes(x = Rugosity, y = Predicted_Combined_Richness, color = Year_Factor)) +
+                              geom_ribbon(aes(ymin = LL, ymax = UL, fill = Year_Factor), alpha = 0.25) +
+                              geom_line(aes(color = Year_Factor), size = 2) +
+                              labs(x = "Rugosity - Monkey Point", y = "Predicted Combined Richness") +
+                              scale_x_continuous(limits = c(10, 80)) +
+                              scale_y_continuous(limits = c(30, 80)) +
+                              theme(text = element_text(size = 18), 
+                                    panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
+                                    panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
+                                    panel.background = element_blank(), 
+                                    axis.line = element_line(colour = "black")
+                                    #legend.position = "none"
+                                    )
+# Guana_Head
+combined_predictions_2d <- data.frame(
+  Rugosity = rep(seq(from = min(Guana_Head$Rugosity), to = max(Guana_Head$Rugosity), length.out = 100), 21),
+  Year_Factor = factor(rep(1:21, each = 100), levels = 1:21, labels =
+                         levels(Guana_Head$Year_Factor)))
+combined_predictions_2d <- cbind(combined_predictions_2d, predict(object = combined_r_yr_asfactor, newdata = combined_predictions_2d, type = "link", se.fit = TRUE))
+combined_predictions_2d <- within(combined_predictions_2d, {
+  Predicted_Combined_Richness <- exp(fit)
+  LL <- exp(fit - 1.96 * se.fit)
+  UL <- exp(fit + 1.96 * se.fit)
+})
+# Plot for Guana_Head
+Guana_Head_combined_2d <- ggplot(data = combined_predictions_2d, aes(x = Rugosity, y = Predicted_Combined_Richness, color = Year_Factor)) +
+                            geom_ribbon(aes(ymin = LL, ymax = UL, fill = Year_Factor), alpha = 0.25) +
+                            geom_line(aes(color = Year_Factor), size = 2) +
+                            labs(x = "Rugosity - Guana Head", y = "Predicted Combined Richness") +
+                            scale_x_continuous(limits = c(10, 80)) +
+                            scale_y_continuous(limits = c(30, 80)) +
+                            theme(text = element_text(size = 18), 
+                                  panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
+                                  panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
+                                  panel.background = element_blank(), 
+                                  axis.line = element_line(colour = "black"))
+
+# Organize all of these figures into one window
+grid.arrange(Pelican_Ghut_combined_2d, Grand_Ghut_combined_2d, Crab_Cove_combined_2d, 
+             Muskmelon_combined_2d, Bigelow_combined_2d, White_Bay_combined_2d, 
+             Monkey_Point_combined_2d, Guana_Head_combined_2d, ncol = 3, nrow = 3)
