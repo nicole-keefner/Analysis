@@ -4,7 +4,7 @@
 
 
 ## Use *** to search for errors in the code or areas that need more work
-## Use END OF CLEANED CODE to search for the end of the updated/cleaned code
+## Use END OF CLEANED CODE to search for the end of the updated/cleaned code. If not found, all code is cleaned.
 
 
 
