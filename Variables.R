@@ -325,7 +325,9 @@ fish_split <- data.frame("Species_Code" = substr(x = KEY, start = 1, stop = (nch
 fish_raw_longform <- cbind(fish_raw_longform, fish_split)
 
 # Only retain observations of adult fish
-#***Clear Justification
+# Newly recruited juvenile fishes (< 1 month on the reef) were excluded 
+# because their abundance is strongly affected by lunar cycles, 
+# which complicates the detection of long-term trends. 
 fish_raw_longform$Age_Class <- as.character(x = fish_raw_longform$Age_Class)
 fish_raw_longform <- fish_raw_longform[fish_raw_longform$Age_Class == "a", ]
 fish_raw_longform$Age_Class <- as.factor(x = fish_raw_longform$Age_Class)
