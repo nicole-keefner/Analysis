@@ -1082,6 +1082,42 @@ ggplot(data = sponge_predictions, aes(x = Year, y = Predicted_Sponge_Richness)) 
         panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
         panel.background = element_blank(), 
         axis.line = element_line(colour = "black"))
+# Subset predictions by site
+sponge_predictions$Site <- as.character(sponge_predictions$Site)
+sponge_predictions_oneoftwo <- sponge_predictions[sponge_predictions$Site == "pelican" | 
+                                                sponge_predictions$Site == "white" | 
+                                                sponge_predictions$Site == "crab" | 
+                                                sponge_predictions$Site == "bigelow", ]
+sponge_predictions_twooftwo <- sponge_predictions[sponge_predictions$Site == "monkey" | 
+                                                sponge_predictions$Site == "iguana" | 
+                                                sponge_predictions$Site == "grand" | 
+                                                sponge_predictions$Site == "muskN", ]
+sponge_predictions_oneoftwo$Site <- as.factor(sponge_predictions_oneoftwo$Site)
+sponge_predictions_twooftwo$Site <- as.factor(sponge_predictions_twooftwo$Site)
+sponge_predictions$Site <- as.factor(sponge_predictions$Site)
+#Same as figure 34, but with 4 sites each
+ggplot(data = sponge_predictions_oneoftwo, aes(x = Year, y = Predicted_Sponge_Richness)) +
+  geom_ribbon(aes(ymin = LL, ymax = UL, fill = Site), alpha = 0.25) +
+  geom_line(aes(color = Site), size = 2) +
+  labs(x = "Time (Year)", y = "Predicted Sponge Richness") +
+  scale_y_continuous(limits = c(10, 35)) +
+  scale_color_manual(values = cb_palette[1:4]) +
+  theme(text = element_text(size = 18),
+        panel.grid.major = element_line(colour = "light gray", size = (0.5)),
+        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
+        panel.background = element_blank(), 
+        axis.line = element_line(colour = "black"))
+ggplot(data = sponge_predictions_twooftwo, aes(x = Year, y = Predicted_Sponge_Richness)) +
+  geom_ribbon(aes(ymin = LL, ymax = UL, fill = Site), alpha = 0.25) +
+  geom_line(aes(color = Site), size = 2) +
+  labs(x = "Time (Year)", y = "Predicted Sponge Richness") +
+  scale_y_continuous(limits = c(10, 35)) +
+  scale_color_manual(values = cb_palette[5:8]) +
+  theme(text = element_text(size = 18),
+        panel.grid.major = element_line(colour = "light gray", size = (0.5)),
+        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
+        panel.background = element_blank(),
+        axis.line = element_line(colour = "black"))
 # Figure 36. Relationship between time and sponge richness by site. Negative binomial distribution used.
 ggplot(data = variables, aes(x = Year, y = Sponge_Richness)) + 
   geom_point(size = 3)+
@@ -1089,7 +1125,7 @@ ggplot(data = variables, aes(x = Year, y = Sponge_Richness)) +
   scale_y_continuous(name = "Sponge Richness") +
   geom_smooth(size = 1.2, method = "glm.nb", formula = y ~ x, aes(color = Site)) +
   scale_color_manual(values = cb_palette) +
-  theme(text = element_text(size=27), 
+  theme(text = element_text(size=27),
         panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
         panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
         panel.background = element_blank(), 
@@ -1118,12 +1154,48 @@ fish_predictions <- within(fish_predictions, {
   LL <- exp(fit - 1.96 * se.fit)
   UL <- exp(fit + 1.96 * se.fit)
 })
-# Figure 37. Predicted relationship between time and fish richness by site. Negative binomial distribution used.
+# Figure 37. Predicted relationship between time and fish richness by site. All sites included. Negative binomial distribution used.
 ggplot(data = fish_predictions, aes(x = Year, y = Predicted_Fish_Richness)) +
   geom_ribbon(aes(ymin = LL, ymax = UL, fill = Site), alpha = 0.25) +
   geom_line(aes(color = Site), size = 2) +
   labs(x = "Time (Year)", y = "Predicted Fish Richness") +
   scale_color_manual(values = cb_palette) +
+  theme(text = element_text(size = 18), 
+        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
+        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
+        panel.background = element_blank(), 
+        axis.line = element_line(colour = "black"))
+# Subset predictions by site
+fish_predictions$Site <- as.character(fish_predictions$Site)
+fish_predictions_oneoftwo <- fish_predictions[fish_predictions$Site == "pelican" | 
+                                                fish_predictions$Site == "white" | 
+                                                fish_predictions$Site == "crab" | 
+                                                fish_predictions$Site == "iguana", ]
+fish_predictions_twooftwo <- fish_predictions[fish_predictions$Site == "monkey" | 
+                                                fish_predictions$Site == "bigelow" | 
+                                                fish_predictions$Site == "grand" | 
+                                                fish_predictions$Site == "muskN", ]
+fish_predictions_oneoftwo$Site <- as.factor(fish_predictions_oneoftwo$Site)
+fish_predictions_twooftwo$Site <- as.factor(fish_predictions_twooftwo$Site)
+fish_predictions$Site <- as.factor(fish_predictions$Site)
+#Same as figure 37, but with 4 sites each
+ggplot(data = fish_predictions_oneoftwo, aes(x = Year, y = Predicted_Fish_Richness)) +
+  geom_ribbon(aes(ymin = LL, ymax = UL, fill = Site), alpha = 0.25) +
+  geom_line(aes(color = Site), size = 2) +
+  labs(x = "Time (Year)", y = "Predicted Fish Richness") +
+  scale_y_continuous(limits = c(10, 35)) +
+  scale_color_manual(values = cb_palette[1:4]) +
+  theme(text = element_text(size = 18), 
+        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
+        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
+        panel.background = element_blank(), 
+        axis.line = element_line(colour = "black"))
+ggplot(data = fish_predictions_twooftwo, aes(x = Year, y = Predicted_Fish_Richness)) +
+  geom_ribbon(aes(ymin = LL, ymax = UL, fill = Site), alpha = 0.25) +
+  geom_line(aes(color = Site), size = 2) +
+  labs(x = "Time (Year)", y = "Predicted Fish Richness") +
+  scale_y_continuous(limits = c(10, 35)) +
+  scale_color_manual(values = cb_palette[5:8]) +
   theme(text = element_text(size = 18), 
         panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
         panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
