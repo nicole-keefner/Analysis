@@ -1041,7 +1041,7 @@ ggplot(data = coral_predictions_2d, aes(x = Percent_Coral_Cover, y = Predicted_C
         axis.line = element_line(colour = "black"))
 # Figure . Relationship between coral cover and coral richness by year. Negative binomial distribution used.
 ggplot(data = variables, aes(x = Percent_Coral_Cover, y = Coral_Richness)) + 
-  geom_point(size = 3)+
+  geom_point(size = 3) +
   scale_x_continuous(name = "Coral Cover (%)") +
   scale_y_continuous(name = "Coral Richness") +
   geom_smooth(size = 1.2, method = "glm.nb", formula = y ~ x, aes(color = Year_Factor)) +
@@ -1051,6 +1051,21 @@ ggplot(data = variables, aes(x = Percent_Coral_Cover, y = Coral_Richness)) +
         panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
         panel.background = element_blank(), 
         axis.line = element_line(colour = "black"))
+# Figure with prediction lines and true points colored by year
+ggplot(data = coral_predictions_2d, aes(x = Percent_Coral_Cover, y = Predicted_Coral_Richness, color = Year_Factor)) +
+  #geom_ribbon(aes(ymin = 0, ymax = 35, fill = Year_Factor), alpha = 0.25) +
+  geom_line(aes(color = Year_Factor), size = 2) +
+  geom_point(data = variables, size = 3, aes(x = Percent_Coral_Cover, y = Coral_Richness)) +
+  #scale_color_gradient(low="lightblue", high="darkblue") +
+  #scale_colour_viridis_d(option = "plasma") +
+  scale_colour_viridis_d() +
+  labs(x = "Coral Cover (%)", y = "Coral Richness", color = "Year") +
+  theme(text = element_text(size = 18), 
+        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
+        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
+        panel.background = element_blank(), 
+        axis.line = element_line(colour = "black"))
+
 
 
 ########################################################################
