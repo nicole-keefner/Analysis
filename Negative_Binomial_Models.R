@@ -49,7 +49,7 @@ variables <- read.csv(file = "variables.csv", header = T)
 # Because there are NA's in the Sponge_Richness column, R will be unable to calculate summary values
 # Create subset of data called "sponge_complete" that retains only complete cases for Sponge_Richness
 sponge_complete <- variables[complete.cases(variables$Sponge_Richness), ]
-
+sponge_complete$Year_Factor <- as.factor(sponge_complete$Year)
 
 
 # Create dataframe with means and SD's for all variables
@@ -1149,7 +1149,92 @@ ggplot(data = variables, aes(x = Year, y = Sponge_Richness)) +
         panel.background = element_blank(), 
         axis.line = element_line(colour = "black"))
 
+# ***# Predictions for sponge figures with coral cover and year and coral cover and site
+# sponge_predictions_for_figure <- data.frame(
+#   Percent_Coral_Cover = rep(seq(from = min(variables$Percent_Coral_Cover), to = max(variables$Percent_Coral_Cover), length.out = 100), 27),
+#   Year = rep(seq(from = min(variables$Year), to = max(variables$Year), length.out = 100), 8),
+#   #****There's something wrong with the line above, because I need to be able to have year as a factor for these figures, but this makes it a numeric
+#   Site = factor(rep(1:8, each = 2700), levels = 1:8, labels =
+#                   levels(variables$Site)))
+# sponge_predictions_for_figure <- cbind(sponge_predictions_for_figure, predict(object = sponge_cc_yr_site, newdata = sponge_predictions_for_figure, type = "link", se.fit = TRUE))
+# sponge_predictions_for_figure <- within(sponge_predictions_for_figure, {
+#   Predicted_Sponge_Richness <- exp(fit)
+#   LL <- exp(fit - 1.96 * se.fit)
+#   UL <- exp(fit + 1.96 * se.fit)
+# })
 
+# 7/12/2019
+# Note that I created a new model for the sake of creating this figure
+sponge_cc_yr_asfactor_fig_model <- glm.nb(formula = Sponge_Richness ~ Percent_Coral_Cover + Year_Factor, data = sponge_complete)
+sponge_cc_yr_asfactor_fig <- data.frame(
+  Percent_Coral_Cover = rep(seq(from = min(sponge_complete$Percent_Coral_Cover), to = max(sponge_complete$Percent_Coral_Cover), length.out = 100), 21),
+  Year_Factor = factor(rep(1:21, each = 100), levels = 1:21, labels = levels(sponge_complete$Year_Factor)))
+sponge_cc_yr_asfactor_fig <- cbind(sponge_cc_yr_asfactor_fig, predict(object = sponge_cc_yr_asfactor_fig_model, newdata = sponge_cc_yr_asfactor_fig, 
+                                                                        type = "link", se.fit = TRUE))
+# 95% confidence intervals
+sponge_cc_yr_asfactor_fig <- within(sponge_cc_yr_asfactor_fig, {
+  Predicted_Sponge_Richness <- exp(fit)
+  LL <- exp(fit - 1.96 * se.fit)
+  UL <- exp(fit + 1.96 * se.fit)
+})
+# Figure with prediction lines and true points colored by year***
+ggplot(data = sponge_cc_yr_asfactor_fig, aes(x = Percent_Coral_Cover, y = Predicted_Sponge_Richness, color = Year_Factor)) +
+  #geom_ribbon(aes(ymin = 0, ymax = 35, fill = Year_Factor), alpha = 0.25) +
+  geom_line(aes(color = Year_Factor), size = 2) +
+  geom_point(data = variables, size = 3, aes(x = Percent_Coral_Cover, y = Sponge_Richness)) +
+  #scale_color_gradient(low="lightblue", high="darkblue") +
+  #scale_colour_viridis_d(option = "plasma") +
+  scale_colour_viridis_d() +
+  labs(x = "Coral Cover (%)", y = "Sponge Richness", color = "Year") +
+  theme(text = element_text(size = 18), 
+        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
+        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
+        panel.background = element_blank(), 
+        axis.line = element_line(colour = "black"))
+
+# Note that I created a new model for the sake of creating this figure
+sponge_cc_site_fig_model <- glm.nb(formula = Sponge_Richness ~ Percent_Coral_Cover + Site, data = sponge_complete)
+sponge_cc_site_fig <- data.frame(
+  Percent_Coral_Cover = rep(seq(from = min(sponge_complete$Percent_Coral_Cover), to = max(sponge_complete$Percent_Coral_Cover), length.out = 100), 8),
+  Site = factor(rep(1:8, each = 100), levels = 1:8, labels = levels(sponge_complete$Site)))
+sponge_cc_site_fig <- cbind(sponge_cc_site_fig, predict(object = sponge_cc_site_fig_model, newdata = sponge_cc_site_fig, 
+                                                                        type = "link", se.fit = TRUE))
+# 95% confidence intervals
+sponge_cc_site_fig <- within(sponge_cc_site_fig, {
+  Predicted_Sponge_Richness <- exp(fit)
+  LL <- exp(fit - 1.96 * se.fit)
+  UL <- exp(fit + 1.96 * se.fit)
+})
+
+# Figure with prediction lines and true points colored by site***
+ggplot(data = sponge_cc_site_fig, aes(x = Percent_Coral_Cover, y = Predicted_Sponge_Richness, color = Site)) +
+  #geom_ribbon(aes(ymin = 0, ymax = 35, fill = Site), alpha = 0.25) +
+  geom_line(aes(color = Site), size = 2) +
+  geom_point(data = variables, size = 3, aes(x = Percent_Coral_Cover, y = Sponge_Richness)) +
+  #scale_color_gradient(low="lightblue", high="darkblue") +
+  #scale_colour_viridis_d(option = "plasma") +
+  scale_colour_viridis_d() +
+  labs(x = "Coral Cover (%)", y = "Sponge Richness", color = "Site") +
+  theme(text = element_text(size = 18), 
+        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
+        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
+        panel.background = element_blank(), 
+        axis.line = element_line(colour = "black"))
+
+
+
+
+
+
+# ***# Note that I created a new model for the sake of creating this figure
+# sponge_cc_yr_asfactor_site_test <- glm.nb(formula = Sponge_Richness ~ Percent_Coral_Cover + Year_Factor + Site, data = variables)
+# sponge_predictions_2d_test <- data.frame(
+#   Percent_Coral_Cover = rep(seq(from = min(variables$Percent_Coral_Cover), to = max(variables$Percent_Coral_Cover), length.out = 100), 216),
+#   Year_Factor = factor(rep(1:27, each = 800), levels = 1:27, labels = levels(variables$Year_Factor)),
+#   Site = factor(rep(1:8, each = 2700), levels = 1:8, labels = levels(variables$Site)))
+# sponge_predictions_2d_test <- cbind(sponge_predictions_2d_test, predict(object = sponge_cc_yr_asfactor_site_test, newdata = sponge_predictions_2d_test, 
+#                                                                         type = "link", se.fit = TRUE, na.action = na.omit))
+# #If newdata is omitted the predictions are based on the data used for the fit. In that case how cases with missing values in the original fit are handled is determined by the na.action argument of that fit. If na.action = na.omit omitted cases will not appear in the predictions, whereas if na.action = na.exclude they will appear (in predictions, standard errors or interval limits), with value NA. 
 
 ########################################################################
 #######################FISH RICHNESS####################################
@@ -1232,8 +1317,49 @@ ggplot(data = variables, aes(x = Year, y = Fish_Richness)) +
         panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
         panel.background = element_blank(), 
         axis.line = element_line(colour = "black"))
+# Figure with prediction lines and true points colored by site***
+ggplot(data = coral_predictions_2d, aes(x = Rugosity, y = Predicted_Fish_Richness, color = Site)) +
+  #geom_ribbon(aes(ymin = 0, ymax = 35, fill = Year_Factor), alpha = 0.25) +
+  geom_line(aes(color = Site), size = 2) +
+  geom_point(data = variables, size = 3, aes(x = Rugosity, y = Fish_Richness)) +
+  #scale_color_gradient(low="lightblue", high="darkblue") +
+  #scale_colour_viridis_d(option = "plasma") +
+  scale_colour_viridis_d() +
+  labs(x = "Coral Cover (%)", y = "Coral Richness", color = "Year") +
+  theme(text = element_text(size = 18), 
+        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
+        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
+        panel.background = element_blank(), 
+        axis.line = element_line(colour = "black"))
 
+# Note that I created a new model for the sake of creating this figure
+fish_r_site_fig_model <- glm.nb(formula = Fish_Richness ~ Rugosity + Site, data = variables)
+fish_r_site_fig <- data.frame(
+  Rugosity = rep(seq(from = min(variables$Rugosity), to = max(variables$Rugosity), length.out = 100), 8),
+  Site = factor(rep(1:8, each = 100), levels = 1:8, labels = levels(variables$Site)))
+fish_r_site_fig <- cbind(fish_r_site_fig, predict(object = fish_r_site_fig_model, newdata = fish_r_site_fig, 
+                                                        type = "link", se.fit = TRUE))
+# 95% confidence intervals
+fish_r_site_fig <- within(fish_r_site_fig, {
+  Predicted_Fish_Richness <- exp(fit)
+  LL <- exp(fit - 1.96 * se.fit)
+  UL <- exp(fit + 1.96 * se.fit)
+})
 
+# Figure with prediction lines and true points colored by site***
+ggplot(data = fish_r_site_fig, aes(x = Rugosity, y = Predicted_Fish_Richness, color = Site)) +
+  #geom_ribbon(aes(ymin = 0, ymax = 35, fill = Site), alpha = 0.25) +
+  geom_line(aes(color = Site), size = 2) +
+  geom_point(data = variables, size = 3, aes(x = Rugosity, y = Fish_Richness)) +
+  #scale_color_gradient(low="lightblue", high="darkblue") +
+  #scale_colour_viridis_d(option = "plasma") +
+  scale_colour_viridis_d() +
+  labs(x = "Rugosity", y = "Fish Richness", color = "Site") +
+  theme(text = element_text(size = 18), 
+        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
+        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
+        panel.background = element_blank(), 
+        axis.line = element_line(colour = "black"))
 
 ########################################################################
 #######################COMBINED RICHNESS 3D#############################
@@ -1384,6 +1510,64 @@ predicted_combined_plot <- scatterplot3d(x = pred_grid$Year, y = pred_grid$Rugos
                                          ylim = c(10, 80),
                                          zlim = c(30, 80))
 par(mfrow = c(1,1))
+
+# 7/12/2019
+# Note that I created a new model for the sake of creating this figure
+combined_r_yr_asfactor_fig_model <- glm.nb(formula = Combined_Richness ~ Rugosity + Year_Factor, data = sponge_complete)
+combined_r_yr_asfactor_fig <- data.frame(
+  Rugosity = rep(seq(from = min(sponge_complete$Rugosity), to = max(sponge_complete$Rugosity), length.out = 100), 21),
+  Year_Factor = factor(rep(1:21, each = 100), levels = 1:21, labels = levels(sponge_complete$Year_Factor)))
+combined_r_yr_asfactor_fig <- cbind(combined_r_yr_asfactor_fig, predict(object = combined_r_yr_asfactor_fig_model, newdata = combined_r_yr_asfactor_fig, 
+                                                                      type = "link", se.fit = TRUE))
+# 95% confidence intervals
+combined_r_yr_asfactor_fig <- within(combined_r_yr_asfactor_fig, {
+  Predicted_Combined_Richness <- exp(fit)
+  LL <- exp(fit - 1.96 * se.fit)
+  UL <- exp(fit + 1.96 * se.fit)
+})
+# Figure with prediction lines and true points colored by year***
+ggplot(data = combined_r_yr_asfactor_fig, aes(x = Rugosity, y = Predicted_Combined_Richness, color = Year_Factor)) +
+  #geom_ribbon(aes(ymin = 0, ymax = 35, fill = Year_Factor), alpha = 0.25) +
+  geom_line(aes(color = Year_Factor), size = 2) +
+  geom_point(data = variables, size = 3, aes(x = Rugosity, y = Combined_Richness)) +
+  #scale_color_gradient(low="lightblue", high="darkblue") +
+  #scale_colour_viridis_d(option = "plasma") +
+  scale_colour_viridis_d() +
+  labs(x = "Rugosity", y = "Combined Richness", color = "Year") +
+  theme(text = element_text(size = 18), 
+        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
+        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
+        panel.background = element_blank(), 
+        axis.line = element_line(colour = "black"))
+
+# Note that I created a new model for the sake of creating this figure
+combined_r_site_fig_model <- glm.nb(formula = Combined_Richness ~ Rugosity + Site, data = sponge_complete)
+combined_r_site_fig <- data.frame(
+  Rugosity = rep(seq(from = min(sponge_complete$Rugosity), to = max(sponge_complete$Rugosity), length.out = 100), 8),
+  Site = factor(rep(1:8, each = 100), levels = 1:8, labels = levels(sponge_complete$Site)))
+combined_r_site_fig <- cbind(combined_r_site_fig, predict(object = combined_r_site_fig_model, newdata = combined_r_site_fig, 
+                                                        type = "link", se.fit = TRUE))
+# 95% confidence intervals
+combined_r_site_fig <- within(combined_r_site_fig, {
+  Predicted_Combined_Richness <- exp(fit)
+  LL <- exp(fit - 1.96 * se.fit)
+  UL <- exp(fit + 1.96 * se.fit)
+})
+
+# Figure with prediction lines and true points colored by site***
+ggplot(data = combined_r_site_fig, aes(x = Rugosity, y = Predicted_Combined_Richness, color = Site)) +
+  #geom_ribbon(aes(ymin = 0, ymax = 35, fill = Site), alpha = 0.25) +
+  geom_line(aes(color = Site), size = 2) +
+  geom_point(data = variables, size = 3, aes(x = Rugosity, y = Combined_Richness)) +
+  #scale_color_gradient(low="lightblue", high="darkblue") +
+  #scale_colour_viridis_d(option = "plasma") +
+  scale_colour_viridis_d() +
+  labs(x = "Rugosity", y = "Combined Richness", color = "Site") +
+  theme(text = element_text(size = 18), 
+        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
+        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
+        panel.background = element_blank(), 
+        axis.line = element_line(colour = "black"))
 
 
 
