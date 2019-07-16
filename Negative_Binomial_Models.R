@@ -49,8 +49,10 @@ variables <- read.csv(file = "variables.csv", header = T)
 # Because there are NA's in the Sponge_Richness column, R will be unable to calculate summary values
 # Create subset of data called "sponge_complete" that retains only complete cases for Sponge_Richness
 sponge_complete <- variables[complete.cases(variables$Sponge_Richness), ]
-sponge_complete$Year_Factor <- as.factor(sponge_complete$Year)
-
+#sponge_complete$Year_Factor <- as.factor(sponge_complete$Year)
+sponge_complete$Year_Factor <- factor(sponge_complete$Year_Factor, levels = c("1", "2", "3", "8", "9", "10", "11", "13", "14", 
+                                                                              "15", "16", "17", "18", "19", "20", "21", "22", 
+                                                                              "23", "24", "25", "26"), ordered = TRUE)
 
 # Create dataframe with means and SD's for all variables
 avg_name <-c("Percent_Coral_Cover", 
@@ -1163,8 +1165,67 @@ ggplot(data = variables, aes(x = Year, y = Sponge_Richness)) +
 #   UL <- exp(fit + 1.96 * se.fit)
 # })
 
+
+
+
+
+
+
+
+# *** THIS IS THE CODE THAT WORKS TO CREATE A FIGURE OF CORAL COVER VS SPONGE RICHNESS WITH YEAR PREDICTION LINES AND TRUE POINTS WITH A COLOR GRADIENT
+sponge_complete$True_Year_Factor <- as.character(sponge_complete$True_Year_Factor)
+sponge_complete <- sponge_complete[sponge_complete$True_Year_Factor != "1992" | sponge_complete$True_Year_Factor != "1995" | sponge_complete$True_Year_Factor != "1996" |
+                                     sponge_complete$True_Year_Factor != "1997" | sponge_complete$True_Year_Factor != "1998" | sponge_complete$True_Year_Factor != "2003", ]
+sponge_complete$True_Year_Factor <- as.factor(sponge_complete$True_Year_Factor)
+
+stest_model <- glm.nb(formula = Sponge_Richness ~ Percent_Coral_Cover + True_Year_Factor, data = sponge_complete)
+stest <- data.frame(
+  Percent_Coral_Cover = rep(seq(from = min(sponge_complete$Percent_Coral_Cover), to = max(sponge_complete$Percent_Coral_Cover), length.out = 100), 21),
+  True_Year_Factor = factor(rep(1:21, each = 100), levels = 1:21, labels = levels(sponge_complete$True_Year_Factor)))
+
+stest <- cbind(stest, predict(object = stest_model, newdata = stest, type = "link", se.fit = TRUE, na.action = na.omit))
+# 95% confidence intervals
+stest <- within(stest, {
+  Predicted_Sponge_Richness <- exp(fit)
+  LL <- exp(fit - 1.96 * se.fit)
+  UL <- exp(fit + 1.96 * se.fit)      
+})
+# Figure with prediction lines and true points colored by year***
+ggplot(data = stest, aes(x = Percent_Coral_Cover, y = Predicted_Sponge_Richness, color = True_Year_Factor)) +
+  #geom_ribbon(aes(ymin = 0, ymax = 35, fill = Year_Factor), alpha = 0.25) +
+  geom_line(aes(color = True_Year_Factor), size = 2) +
+  geom_point(data = sponge_complete, size = 3, aes(x = Percent_Coral_Cover, y = Sponge_Richness)) +
+  #scale_color_gradient(low="lightblue", high="darkblue") +
+  #scale_colour_viridis_d(option = "plasma") +
+  ## Order numbers in legend, but can't use viridis
+  #scale_colour_discrete(c("1", "2", "3", "8", "9", "10", "11", "13", "14", "15", 
+  #                       "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26")) +
+  scale_colour_viridis_d() +
+  labs(x = "Coral Cover (%)", y = "Sponge Richness", color = "Year") +
+  theme(text = element_text(size = 18), 
+        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
+        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
+        panel.background = element_blank(), 
+        axis.line = element_line(colour = "black"))
+###END OF CODE FOR THIS FIGURE
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # 7/12/2019
 # Note that I created a new model for the sake of creating this figure
+# Order the factor levels for year
 sponge_cc_yr_asfactor_fig_model <- glm.nb(formula = Sponge_Richness ~ Percent_Coral_Cover + Year_Factor, data = sponge_complete)
 sponge_cc_yr_asfactor_fig <- data.frame(
   Percent_Coral_Cover = rep(seq(from = min(sponge_complete$Percent_Coral_Cover), to = max(sponge_complete$Percent_Coral_Cover), length.out = 100), 21),
@@ -1184,6 +1245,9 @@ ggplot(data = sponge_cc_yr_asfactor_fig, aes(x = Percent_Coral_Cover, y = Predic
   geom_point(data = variables, size = 3, aes(x = Percent_Coral_Cover, y = Sponge_Richness)) +
   #scale_color_gradient(low="lightblue", high="darkblue") +
   #scale_colour_viridis_d(option = "plasma") +
+  ## Order numbers in legend, but can't use viridis
+  #scale_colour_discrete(c("1", "2", "3", "8", "9", "10", "11", "13", "14", "15", 
+  #                       "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26")) +
   scale_colour_viridis_d() +
   labs(x = "Coral Cover (%)", y = "Sponge Richness", color = "Year") +
   theme(text = element_text(size = 18), 
@@ -1539,6 +1603,61 @@ ggplot(data = combined_r_yr_asfactor_fig, aes(x = Rugosity, y = Predicted_Combin
         panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
         panel.background = element_blank(), 
         axis.line = element_line(colour = "black"))
+
+
+
+
+
+
+# *** THIS IS THE CODE THAT WORKS TO CREATE A FIGURE OF RUGOSITY VS COMBINED RICHNESS WITH YEAR PREDICTION LINES AND TRUE POINTS WITH A COLOR GRADIENT
+combined_complete$True_Year_Factor <- as.character(combined_complete$True_Year_Factor)
+combined_complete <- combined_complete[combined_complete$True_Year_Factor != "1992" | combined_complete$True_Year_Factor != "1995" | combined_complete$True_Year_Factor != "1996" |
+                                         combined_complete$True_Year_Factor != "1997" | combined_complete$True_Year_Factor != "1998" | combined_complete$True_Year_Factor != "2003", ]
+combined_complete$True_Year_Factor <- as.factor(combined_complete$True_Year_Factor)
+
+ctest_model <- glm.nb(formula = Combined_Richness ~ Rugosity + True_Year_Factor, data = sponge_complete)
+ctest <- data.frame(
+  Rugosity = rep(seq(from = min(combined_complete$Rugosity), to = max(combined_complete$Rugosity), length.out = 100), 21),
+  True_Year_Factor = factor(rep(1:21, each = 100), levels = 1:21, labels = levels(combined_complete$True_Year_Factor)))
+
+ctest <- cbind(ctest, predict(object = ctest_model, newdata = ctest, type = "link", se.fit = TRUE, na.action = na.omit))
+# 95% confidence intervals
+ctest <- within(ctest, {
+  Predicted_Combined_Richness <- exp(fit)
+  LL <- exp(fit - 1.96 * se.fit)
+  UL <- exp(fit + 1.96 * se.fit)      
+})
+# Figure with prediction lines and true points colored by year***
+ggplot(data = ctest, aes(x = Rugosity, y = Predicted_Combined_Richness, color = True_Year_Factor)) +
+  #geom_ribbon(aes(ymin = 0, ymax = 35, fill = Year_Factor), alpha = 0.25) +
+  geom_line(aes(color = True_Year_Factor), size = 2) +
+  geom_point(data = combined_complete, size = 3, aes(x = Rugosity, y = Combined_Richness)) +
+  #scale_color_gradient(low="lightblue", high="darkblue") +
+  #scale_colour_viridis_d(option = "plasma") +
+  ## Order numbers in legend, but can't use viridis
+  #scale_colour_discrete(c("1", "2", "3", "8", "9", "10", "11", "13", "14", "15", 
+  #                       "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26")) +
+  scale_colour_viridis_d() +
+  labs(x = "Rugosity", y = "Combined Richness", color = "Year") +
+  theme(text = element_text(size = 18), 
+        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
+        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
+        panel.background = element_blank(), 
+        axis.line = element_line(colour = "black"))
+###END OF CODE FOR THIS FIGURE
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # Note that I created a new model for the sake of creating this figure
 combined_r_site_fig_model <- glm.nb(formula = Combined_Richness ~ Rugosity + Site, data = sponge_complete)
