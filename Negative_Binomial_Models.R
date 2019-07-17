@@ -247,7 +247,7 @@ combined_r_site_sitexr = glm.nb(formula = Combined_Richness ~ Rugosity + Site + 
 # combined_r_yr_site_yrxsite = glm.nb(formula = Combined_Richness ~ Rugosity + Year + Site + Year*Site, data = variables)
 
 
-## AIC tables to evaluate surrogate effectiveness over space and time
+## AIC tables to evaluate surrogate effectiveness over space and time for models with and without surrogates
 # Names of coral cover models in order they are listed for the AIC tables
 cc_modnames <- c("yr", "site", "yr_site", "yr_site_yrxsite", "cc", "cc_yr", "cc_site", "cc_yr_site",
                  "cc_yr_yrxcc", "cc_site_sitexcc") 
@@ -322,11 +322,40 @@ combined_r <- aictab(cand.set = list(combined_yr, combined_site, combined_yr_sit
 
 
 
-## Save AIC tables for the top candidate surrogates for each target as .csv files
+## Save AIC tables for the top candidate surrogates for each target as .csv files (models with and without surrogates)
 # write.table(x = coral_cc, file = "coral_cc.csv", sep = ",", col.names = TRUE,row.names = FALSE)
 # write.table(x = sponge_cc, file = "sponge_cc.csv", sep = ",", col.names = TRUE,row.names = FALSE)
 # write.table(x = fish_r, file = "fish_r.csv", sep = ",", col.names = TRUE,row.names = FALSE)
 # write.table(x = combined_r, file = "combined_r.csv", sep = ",", col.names = TRUE,row.names = FALSE)
+
+
+## AIC tables to evaluate surrogate effectiveness over space and time for models ONLY with surrogates
+# Names of coral cover models in order they are listed for the AIC tables
+cc_modnames_surrogate_only <- c("cc", "cc_yr", "cc_site", "cc_yr_site", "cc_yr_yrxcc", "cc_site_sitexcc") 
+# AIC to compare coral_cc models
+coral_cc_surrogate_only <- aictab(cand.set = list(coral_cc, coral_cc_yr, coral_cc_site, coral_cc_yr_site,
+                                   coral_cc_yr_yrxcc, coral_cc_site_sitexcc),
+                   modnames = cc_modnames_surrogate_only, digits = 4)
+# AIC to compare sponge_cc models
+sponge_cc_surrogate_only <- aictab(cand.set = list(sponge_cc, sponge_cc_yr, sponge_cc_site, sponge_cc_yr_site,
+                                    sponge_cc_yr_yrxcc, sponge_cc_site_sitexcc),  
+                    modnames = cc_modnames_surrogate_only, digits = 4)
+# Names of rugosity models in order they are listed for the AIC tables
+r_modnames_surrogate_only <- c("r", "r_yr", "r_site", "r_yr_site",
+                "r_yr_yrxr", "r_site_sitexr")  
+# AIC to compare fish_r models
+fish_r_surrogate_only <- aictab(cand.set = list(fish_r, fish_r_yr, fish_r_site, fish_r_yr_site,
+                                 fish_r_yr_yrxr, fish_r_site_sitexr),  
+                 modnames = r_modnames_surrogate_only, digits = 4)
+# AIC to compare combined_r models
+combined_r_surrogate_only <- aictab(cand.set = list(combined_r, combined_r_yr, combined_r_site, combined_r_yr_site,
+                                     combined_r_yr_yrxr, combined_r_site_sitexr),  
+                     modnames = r_modnames_surrogate_only, digits = 4)
+## Save AIC tables for the top candidate surrogates for each target as .csv files (models ONLY with surrogates)
+# write.table(x = coral_cc_surrogate_only, file = "coral_cc_Only_Models_With_Surrogate.csv", sep = ",", col.names = TRUE,row.names = FALSE)
+# write.table(x = sponge_cc_surrogate_only, file = "sponge_cc_Only_Models_With_Surrogate.csv", sep = ",", col.names = TRUE,row.names = FALSE)
+# write.table(x = fish_r_surrogate_only, file = "fish_r_Only_Models_With_Surrogate.csv", sep = ",", col.names = TRUE,row.names = FALSE)
+# write.table(x = combined_r_surrogate_only, file = "combined_r_Only_Models_With_Surrogate.csv", sep = ",", col.names = TRUE,row.names = FALSE)
 
 
 
