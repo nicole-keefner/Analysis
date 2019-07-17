@@ -1097,6 +1097,39 @@ ggplot(data = coral_predictions_2d, aes(x = Percent_Coral_Cover, y = Predicted_C
         panel.background = element_blank(), 
         axis.line = element_line(colour = "black"))
 
+# *** THIS IS THE CODE THAT WORKS TO CREATE A FIGURE OF CORAL COVER VS CORAL RICHNESS WITH YEAR PREDICTION LINES AND TRUE POINTS WITH A COLOR GRADIENT
+# The code above also works in this case, but I wanted to follow the same formatting as the other figures which requires using a 4 digit year instead of the indexed year
+coral_test_model <- glm.nb(formula = Coral_Richness ~ Percent_Coral_Cover + True_Year_Factor, data = variables)
+coral_test <- data.frame(
+  Percent_Coral_Cover = rep(seq(from = min(variables$Percent_Coral_Cover), to = max(variables$Percent_Coral_Cover), length.out = 100), 27),
+  True_Year_Factor = factor(rep(1:27, each = 100), levels = 1:27, labels = levels(variables$True_Year_Factor)))
+
+coral_test <- cbind(coral_test, predict(object = coral_test_model, newdata = coral_test, type = "link", se.fit = TRUE, na.action = na.omit))
+# 95% confidence intervals
+coral_test <- within(coral_test, {
+  Predicted_Coral_Richness <- exp(fit)
+  LL <- exp(fit - 1.96 * se.fit)
+  UL <- exp(fit + 1.96 * se.fit)      
+})
+# Figure with prediction lines and true points colored by year***
+ggplot(data = coral_test, aes(x = Percent_Coral_Cover, y = Predicted_Coral_Richness, color = True_Year_Factor)) +
+  #geom_ribbon(aes(ymin = 0, ymax = 35, fill = Year_Factor), alpha = 0.25) +
+  geom_line(aes(color = True_Year_Factor), size = 2) +
+  geom_point(data = variables, size = 3, aes(x = Percent_Coral_Cover, y = Coral_Richness)) +
+  #scale_color_gradient(low="lightblue", high="darkblue") +
+  #scale_colour_viridis_d(option = "plasma") +
+  ## Order numbers in legend, but can't use viridis
+  #scale_colour_discrete(c("1", "2", "3", "8", "9", "10", "11", "13", "14", "15", 
+  #                       "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26")) +
+  scale_colour_viridis_d() +
+  labs(x = "Coral Cover (%)", y = "Coral Richness", color = "Year") +
+  theme(text = element_text(size = 18), 
+        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
+        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
+        panel.background = element_blank(), 
+        axis.line = element_line(colour = "black"))
+###END OF CODE FOR THIS FIGURE
+
 
 
 ########################################################################
