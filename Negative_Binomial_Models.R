@@ -573,11 +573,13 @@ par(op)
 
 # Figure 1. Relationship between coral cover and coral richness.
 basic_coral_cc <- ggplot(data = variables, aes(x = Percent_Coral_Cover, y = Coral_Richness)) +
-                    geom_point(size = 3) +
-                    scale_x_continuous(name = "Coral Cover (%)") +
-                    scale_y_continuous(name = "Coral Richness") +
-                    geom_smooth(size = 1.2, method = "glm.nb", formula = y ~ x) +
+                    geom_point(size = 3, color = "gray") +
+                    scale_x_continuous(name = "", limits = c(0, 65)) +
+                    scale_y_continuous(name = "Coral Richness", limits = c(0, 25)) +
+                    #labs(title = "Target: Coral Species Richness") +
+                    geom_smooth(size = 1.2, method = "glm.nb", formula = y ~ x, color = "black") +
                     theme(text = element_text(size = 27),
+                          #plot.title = element_text(size = 22),
                           panel.grid.major = element_line(colour = "light gray", size = (0.5)),
                           panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
                           panel.background = element_blank(),
@@ -585,11 +587,13 @@ basic_coral_cc <- ggplot(data = variables, aes(x = Percent_Coral_Cover, y = Cora
 
 # Figure 2. Relationship between coral cover and sponge richness.
 basic_sponge_cc <- ggplot(data = variables, aes(x = Percent_Coral_Cover, y = Sponge_Richness)) +
-                    geom_point(size = 3) +
-                    scale_x_continuous(name = "Coral Cover (%)") +
-                    scale_y_continuous(name = "Sponge Richness") +
-                    geom_smooth(size = 1.2, method = "glm.nb", formula = y ~ x) +
+                    geom_point(size = 3, color = "gray") +
+                    scale_x_continuous(name = "", limits = c(0, 65)) +
+                    scale_y_continuous(name = "Sponge Richness", limits = c(0, 40)) +
+                    #labs(title = "Target: Sponge Species Richness") +
+                    geom_smooth(size = 1.2, method = "glm.nb", formula = y ~ x, color = "black") +
                     theme(text = element_text(size = 27),
+                          #plot.title = element_text(size = 22),
                           panel.grid.major = element_line(colour = "light gray", size = (0.5)),
                           panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
                           panel.background = element_blank(),
@@ -599,11 +603,13 @@ basic_sponge_cc <- ggplot(data = variables, aes(x = Percent_Coral_Cover, y = Spo
 
 # Figure 3. Relationship between coral cover and fish richness.
 basic_fish_cc <- ggplot(data = variables, aes(x = Percent_Coral_Cover, y = Fish_Richness)) +
-                  geom_point(size = 3) +
-                  scale_x_continuous(name = "Coral Cover (%)") +
-                  scale_y_continuous(name = "Fish Richness") +
-                  geom_smooth(size = 1.2, method = "glm.nb", formula = y ~ x) +
+                  geom_point(size = 3, color = "gray") +
+                  scale_x_continuous(name = "", limits = c(0, 65)) +
+                  scale_y_continuous(name = "Fish Richness", limits = c(0, 40)) +
+                  #labs(title = "Target: Fish Species Richness") +                
+                  geom_smooth(size = 1.2, method = "glm.nb", formula = y ~ x, color = "black") +
                   theme(text = element_text(size = 27),
+                        #plot.title = element_text(size = 22),
                         panel.grid.major = element_line(colour = "light gray", size = (0.5)),
                         panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
                         panel.background = element_blank(),
@@ -611,11 +617,13 @@ basic_fish_cc <- ggplot(data = variables, aes(x = Percent_Coral_Cover, y = Fish_
 
 # Figure 4. Relationship between coral cover and combined richness.
 basic_combined_cc <- ggplot(data = variables, aes(x = Percent_Coral_Cover, y = Combined_Richness)) +
-                    geom_point(size = 3) +
-                    scale_x_continuous(name = "Coral Cover (%)") +
-                    scale_y_continuous(name = "Combined Richness") +
-                    geom_smooth(size = 1.2, method = "glm.nb", formula = y ~ x) +
+                    geom_point(size = 3, color = "gray") +
+                    scale_x_continuous(name = "Coral Cover (%)", limits = c(0, 65)) +
+                    scale_y_continuous(name = "Combined Richness", limits = c(0, 80)) +
+                    #labs(title = "Target: Combined Species Richness") +                  
+                    geom_smooth(size = 1.2, method = "glm.nb", formula = y ~ x, color = "black") +
                     theme(text = element_text(size = 27),
+                          #plot.title = element_text(size = 22),
                           panel.grid.major = element_line(colour = "light gray", size = (0.5)),
                           panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
                           panel.background = element_blank(),
@@ -625,10 +633,11 @@ basic_combined_cc <- ggplot(data = variables, aes(x = Percent_Coral_Cover, y = C
 
 # Figure 5. Relationship between sponge cover and coral richness.
 basic_coral_sc <- ggplot(data = variables, aes(x = Percent_Sponge_Cover, y = Coral_Richness)) +
-                    geom_point(size = 3) +
-                    scale_x_continuous(name = "Sponge Cover (%)") +
-                    scale_y_continuous(name = "Coral Richness") +
-                    geom_smooth(size = 1.2, method = "glm.nb", formula = y ~ x) +
+                    geom_point(size = 3, color = "gray") +
+                    scale_x_continuous(name = "", limits = c(0, 30)) +
+                    scale_y_continuous(name = "", limits = c(0, 25)) +
+                    #labs(title = "") +
+                    geom_smooth(size = 1.2, method = "glm.nb", formula = y ~ x, color = "black") +
                     theme(text = element_text(size = 27),
                           panel.grid.major = element_line(colour = "light gray", size = (0.5)),
                           panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
@@ -637,10 +646,11 @@ basic_coral_sc <- ggplot(data = variables, aes(x = Percent_Sponge_Cover, y = Cor
 
 # Figure 6. Relationship between sponge cover and sponge richness.
 basic_sponge_sc <- ggplot(data = variables, aes(x = Percent_Sponge_Cover, y = Sponge_Richness)) +
-                      geom_point(size = 3) +
-                      scale_x_continuous(name = "Sponge Cover (%)") +
-                      scale_y_continuous(name = "Sponge Richness") +
-                      geom_smooth(size = 1.2, method = "glm.nb", formula = y ~ x) +
+                      geom_point(size = 3, color = "gray") +
+                      scale_x_continuous(name = "", limits = c(0, 30)) +
+                      scale_y_continuous(name = "", limits = c(0, 40)) +
+                      #labs(title = "") +
+                      geom_smooth(size = 1.2, method = "glm.nb", formula = y ~ x, color = "black") +
                       theme(text = element_text(size = 27),
                             panel.grid.major = element_line(colour = "light gray", size = (0.5)),
                             panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
@@ -650,10 +660,11 @@ basic_sponge_sc <- ggplot(data = variables, aes(x = Percent_Sponge_Cover, y = Sp
 
 # Figure 7. Relationship between sponge cover and fish richness.
 basic_fish_sc <- ggplot(data = variables, aes(x = Percent_Sponge_Cover, y = Fish_Richness)) +
-                    geom_point(size = 3) +
-                    scale_x_continuous(name = "Sponge Cover (%)") +
-                    scale_y_continuous(name = "Fish Richness") +
-                    geom_smooth(size = 1.2, method = "glm.nb", formula = y ~ x) +
+                    geom_point(size = 3, color = "gray") +
+                    scale_x_continuous(name = "", limits = c(0, 30)) +
+                    scale_y_continuous(name = "", limits = c(0, 40)) +
+                    #labs(title = "") +
+                    geom_smooth(size = 1.2, method = "glm.nb", formula = y ~ x, color = "black") +
                     theme(text = element_text(size = 27),
                           panel.grid.major = element_line(colour = "light gray", size = (0.5)),
                           panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
@@ -662,10 +673,11 @@ basic_fish_sc <- ggplot(data = variables, aes(x = Percent_Sponge_Cover, y = Fish
 
 # Figure 8. Relationship between sponge cover and combined richness.
 basic_combined_sc <- ggplot(data = variables, aes(x = Percent_Sponge_Cover, y = Combined_Richness)) +
-                        geom_point(size = 3) +
-                        scale_x_continuous(name = "Sponge Cover (%)") +
-                        scale_y_continuous(name = "Combined Richness") +
-                        geom_smooth(size = 1.2, method = "glm.nb", formula = y ~ x) +
+                        geom_point(size = 3, color = "gray") +
+                        scale_x_continuous(name = "Sponge Cover (%)", limits = c(0, 30)) +
+                        scale_y_continuous(name = "", limits = c(0, 80)) +
+                        #labs(title = "") +
+                        geom_smooth(size = 1.2, method = "glm.nb", formula = y ~ x, color = "black") +
                         theme(text = element_text(size = 27),
                               panel.grid.major = element_line(colour = "light gray", size = (0.5)),
                               panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
@@ -675,10 +687,11 @@ basic_combined_sc <- ggplot(data = variables, aes(x = Percent_Sponge_Cover, y = 
 
 # Figure 9. Relationship between rugosity and coral richness.
 basic_coral_r <- ggplot(data = variables, aes(x = Rugosity, y = Coral_Richness)) +
-                    geom_point(size = 3) +
-                    scale_x_continuous(name = "Rugosity") +
-                    scale_y_continuous(name = "Coral Richness") +
-                    geom_smooth(size = 1.2, method = "glm.nb", formula = y ~ x) +
+                    geom_point(size = 3, color = "gray") +
+                    scale_x_continuous(name = "", limits = c(0, 80)) +
+                    scale_y_continuous(name = "", limits = c(0, 25)) +
+                    #labs(title = "") +
+                    geom_smooth(size = 1.2, method = "glm.nb", formula = y ~ x, color = "black") +
                     theme(text = element_text(size = 27),
                           panel.grid.major = element_line(colour = "light gray", size = (0.5)),
                           panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
@@ -687,10 +700,11 @@ basic_coral_r <- ggplot(data = variables, aes(x = Rugosity, y = Coral_Richness))
 
 # Figure 10. Relationship between rugosity and sponge richness.
 basic_sponge_r <- ggplot(data = variables, aes(x = Rugosity, y = Sponge_Richness)) +
-                    geom_point(size = 3) +
-                    scale_x_continuous(name = "Rugosity") +
-                    scale_y_continuous(name = "Sponge Richness") +
-                    geom_smooth(size = 1.2, method = "glm.nb", formula = y ~ x) +
+                    geom_point(size = 3, color = "gray") +
+                    scale_x_continuous(name = "", limits = c(0, 80)) +
+                    scale_y_continuous(name = "", limits = c(0, 40)) +
+                    #labs(title = "") +
+                    geom_smooth(size = 1.2, method = "glm.nb", formula = y ~ x, color = "black") +
                     theme(text = element_text(size = 27),
                           panel.grid.major = element_line(colour = "light gray", size = (0.5)),
                           panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
@@ -700,10 +714,11 @@ basic_sponge_r <- ggplot(data = variables, aes(x = Rugosity, y = Sponge_Richness
 
 # Figure 11. Relationship between rugosity and fish richness.
 basic_fish_r <- ggplot(data = variables, aes(x = Rugosity, y = Fish_Richness)) +
-                  geom_point(size = 3) +
-                  scale_x_continuous(name = "Rugosity") +
-                  scale_y_continuous(name = "Fish Richness") +
-                  geom_smooth(size = 1.2, method = "glm.nb", formula = y ~ x) +
+                  geom_point(size = 3, color = "gray") +
+                  scale_x_continuous(name = "", limits = c(0, 80)) +
+                  scale_y_continuous(name = "", limits = c(0, 40)) +
+                  #labs(title = "") +
+                  geom_smooth(size = 1.2, method = "glm.nb", formula = y ~ x, color = "black") +
                   theme(text = element_text(size = 27),
                         panel.grid.major = element_line(colour = "light gray", size = (0.5)),
                         panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
@@ -712,10 +727,11 @@ basic_fish_r <- ggplot(data = variables, aes(x = Rugosity, y = Fish_Richness)) +
 
 # Figure 12. Relationship between rugosity and combined richness.
 basic_combined_r <- ggplot(data = variables, aes(x = Rugosity, y = Combined_Richness)) +
-                      geom_point(size = 3) +
-                      scale_x_continuous(name = "Rugosity") +
-                      scale_y_continuous(name = "Combined Richness") +
-                      geom_smooth(size = 1.2, method = "glm.nb", formula = y ~ x) +
+                      geom_point(size = 3, color = "gray") +
+                      scale_x_continuous(name = "Rugosity", limits = c(0, 80)) +
+                      scale_y_continuous(name = "", limits = c(0, 80)) +
+                      #labs(title = "") +
+                      geom_smooth(size = 1.2, method = "glm.nb", formula = y ~ x, color = "black") +
                       theme(text = element_text(size = 27),
                             panel.grid.major = element_line(colour = "light gray", size = (0.5)),
                             panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
