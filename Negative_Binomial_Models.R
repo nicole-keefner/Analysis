@@ -122,6 +122,12 @@ combined_sc = glm.nb(formula = Combined_Richness ~ Percent_Sponge_Cover, data = 
 combined_r = glm.nb(formula = Combined_Richness ~ Rugosity, data = variables)
 combined_surrogate <- aictab(cand.set = list(combined_cc, combined_sc, combined_r), modnames = c("combined_cc", "combined_sc", "combined_r"), digits = 4)
 
+## Save AIC tables for determining the top surrogate for each target as .csv files
+# write.table(x = coral_surrogate, file = "coral_surrogate.csv", sep = ",", col.names = TRUE,row.names = FALSE)
+# write.table(x = sponge_surrogate, file = "sponge_surrogate.csv", sep = ",", col.names = TRUE,row.names = FALSE)
+# write.table(x = fish_surrogate, file = "fish_surrogate.csv", sep = ",", col.names = TRUE,row.names = FALSE)
+# write.table(x = combined_surrogate, file = "combined_surrogate.csv", sep = ",", col.names = TRUE,row.names = FALSE)
+
 
 
 ########################################################################
