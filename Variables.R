@@ -408,7 +408,7 @@ variables <- merge(x = variables, y = rugosity, by = "Site_Year", all = T)
 variables <- merge(x = variables, y = coral_richness, by = "Site_Year", all = T)
 variables <- merge(x = variables, y = sponge_richness, by = "Site_Year", all = T)
 variables <- merge(x = variables, y = fish_richness, by = "Site_Year", all = T)
-variables <- variables[,c("Site_Year","Percent_Coral_Cover", "Percent_Sponge_Cover", "Rugosity", "Coral_Richness", "Sponge_Richness", "Fish_Richness")]
+variables <- variables[,c("Site_Year", "Percent_Coral_Cover", "Percent_Sponge_Cover", "Rugosity", "Coral_Richness", "Sponge_Richness", "Fish_Richness")]
 
 # Add a column called Combined_Richness that adds the richness of corals, sponges, and fishes
 # However, the combined richness will only be calculated for the Site_Year combinations where
@@ -429,7 +429,7 @@ variables <- merge(x = variables, y = combined_richness, by = "Site_Year", all =
 
 # Split Site_Year column into separate Year and Site columns
 variables$Site_Year <- as.character(x = variables$Site_Year)
-variables <- separate(data = variables, col = Site_Year, into = c("Year", "Site"), sep="_")
+variables <- separate(data = variables, col = Site_Year, into = c("Year", "Site"), sep = "_")
 # Make Site type factor and Year type integer
 variables$Site <- as.factor(x = variables$Site)
 variables$Year <- as.integer(x = variables$Year)
@@ -441,7 +441,18 @@ colnames(variables)[colnames(variables) == "Year"] <- "True_Year"
 variables$Year <- variables$True_Year - 1992
 
 # Save this variables table as a .csv
-#write.table(variables, file="variables.csv", sep=",", col.names=TRUE,row.names=FALSE)
+#write.table(x = variables, file = "variables.csv", sep = ",", col.names = TRUE, row.names = FALSE)
+
+# Create dataframes of the taxonomic species/RTU's that were used in the field
+coral_taxa <- data.frame(levels(x = coral_averages$Species_Code))
+sponge_taxa <- data.frame(levels(x = sponge_raw_longform$Taxonomic_Group))
+fish_taxa <- data.frame(levels(x = fish_raw_longform$Species_Code))
+fish_commonnames <- data.frame(levels(x = fish_raw_longform$common.name))
+# Create .csv files of the tables of the taxonomic species/RTU's that were used in the field
+# write.table(x = coral_taxa, file = "coral_taxa.csv", sep = ",", col.names = TRUE, row.names = FALSE)
+# write.table(x = sponge_taxa, file = "sponge_taxa.csv", sep = ",", col.names = TRUE, row.names = FALSE)
+# write.table(x = fish_taxa, file = "fish_taxa.csv", sep = ",", col.names = TRUE, row.names = FALSE)
+# write.table(x = fish_commonnames, file = "fish_commonnames.csv", sep = ",", col.names = TRUE, row.names = FALSE)
 
 # This concludes the data import and cleaning
 # See Models.R script for modeling and figures

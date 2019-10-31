@@ -158,7 +158,7 @@ combined_surrogate <- aictab(cand.set = list(combined_cc, combined_sc, combined_
 # write.table(x = fish_surrogate, file = "fish_surrogate.csv", sep = ",", col.names = TRUE,row.names = FALSE)
 # write.table(x = combined_surrogate, file = "combined_surrogate.csv", sep = ",", col.names = TRUE,row.names = FALSE)
 
-# HTML formatting to get the Nagelkerke's pseudo-r-squared
+# HTML formatting to get the Nagelkerke's pseudo-r-squared for surrogate-only models
 tab_model(coral_sc)
 tab_model(coral_cc)
 tab_model(coral_r)
@@ -175,7 +175,19 @@ tab_model(combined_sc)
 # Create dataframe of pseudo-r-squared values
 pseudo_basic_models <- c("coral_sc", "coral_cc", "coral_r", "sponge_cc", "sponge_sc", "sponge_r", "fish_r", "fish_cc", "fish_sc", "combined_r", "combined_cc", "combined_sc")
 pseudo_basic_values <- c(0.032, 0.619, 0.232, 0.283, 0.236, 0.053, 0.625, 0.529, 0.214, 0.383, 0.316, 0.008)
-testy <- data.frame(pseudo_basic_models, pseudo_basic_values)
+table_pseudo_basic_values <- data.frame(pseudo_basic_models, pseudo_basic_values)
+# HTML formatting to get the Nagelkerke's pseudo-r-squared for competitive models
+tab_model(coral_cc_yr)
+tab_model(coral_cc_yr_yrxcc)
+tab_model(sponge_cc_yr_site)
+tab_model(fish_r_site)
+tab_model(fish_r_yr_site)
+tab_model(combined_r_yr_site)
+# Values in order: 0.032; 0.619; 0.232; 0.283; 0.236; 0.053; 0.625; 0.529; 0.214; 0.383; 0.316; 0.008
+# Create dataframe of pseudo-r-squared values
+pseudo_comp_models <- c("coral_cc_yr", "coral_cc_yr_yrxcc", "sponge_cc_yr_site", "fish_r_site", "fish_r_yr_site", "combined_r_yr_site")
+pseudo_comp_values <- c(0.688, 0.690, 0.712, 0.824, 0.824, 0.649)
+table_pseudo_comp_values <- data.frame(pseudo_comp_models, pseudo_comp_values)
 
 
 
