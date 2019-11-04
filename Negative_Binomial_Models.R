@@ -1937,4 +1937,52 @@ ggplot(data = combined_r_site_fig, aes(x = Rugosity, y = Predicted_Combined_Rich
 #              Monkey_Point_combined_2d, Guana_Head_combined_2d, ncol = 3, nrow = 3)
 
 
+
+########################################################################
+#######################SIMPLE RELATIONSHIPS BETWEEN GROUPS##############
+
+# R-squared value for fish and coral richness
+summary(lm(data = variables, formula = Fish_Richness ~ Coral_Richness))$r.squared
+# Figure of coral richness vs fish richness with basic LINEAR line of best fit
+ggplot(data = variables, aes(x = Coral_Richness, y = Fish_Richness)) +
+  geom_point(data = variables, size = 3, aes(x = Coral_Richness, y = Fish_Richness)) +
+  geom_smooth(method = "glm", se = TRUE) +
+  labs(x = "Coral Richness", y = "Fish Richness") +
+  annotate(geom = "text", x = 18, y = 13, label = "italic(R) ^ 2 == 0.23", parse = TRUE) +
+  theme(text = element_text(size = 18),
+        panel.grid.major = element_line(colour = "light gray", size = (0.5)),
+        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
+        panel.background = element_blank(),
+        axis.line = element_line(colour = "black"))
+
+
+# R-squared value for sponge and coral richness
+summary(lm(data = variables, formula = Sponge_Richness ~ Coral_Richness))$r.squared
+# Figure of coral richness vs sponge richness with basic LINEAR line of best fit
+ggplot(data = variables, aes(x = Coral_Richness, y = Sponge_Richness)) +
+  geom_point(data = variables, size = 3, aes(x = Coral_Richness, y = Sponge_Richness)) +
+  geom_smooth(method = "glm", se = TRUE) +
+  labs(x = "Coral Richness", y = "Sponge Richness") +
+  annotate(geom = "text", x = 18, y = 35, label = "italic(R) ^ 2 == 0.06", parse = TRUE) +
+  theme(text = element_text(size = 18),
+        panel.grid.major = element_line(colour = "light gray", size = (0.5)),
+        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
+        panel.background = element_blank(),
+        axis.line = element_line(colour = "black"))
+
+# R-squared value for fish and sponge richness
+summary(lm(data = variables, formula = Fish_Richness ~ Sponge_Richness))$r.squared
+# Figure of sponge richness vs fish richness with basic LINEAR line of best fit
+ggplot(data = variables, aes(x = Sponge_Richness, y = Fish_Richness)) +
+  geom_point(data = variables, size = 3, aes(x = Sponge_Richness, y = Fish_Richness)) +
+  geom_smooth(method = "glm", se = TRUE) +
+  labs(x = "Sponge Richness", y = "Fish Richness") +
+  annotate(geom = "text", x = 30, y = 35, label = "italic(R) ^ 2 == 0.10", parse = TRUE) +
+  theme(text = element_text(size = 18),
+        panel.grid.major = element_line(colour = "light gray", size = (0.5)),
+        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
+        panel.background = element_blank(),
+        axis.line = element_line(colour = "black"))
+
+
 ## END OF SCRIPT
