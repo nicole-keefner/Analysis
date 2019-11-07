@@ -649,6 +649,7 @@ basic_coral_cc <- ggplot(data = variables, aes(x = Percent_Coral_Cover, y = Cora
                     scale_x_continuous(name = "", limits = c(0, 65)) +
                     scale_y_continuous(name = "Coral Richness", limits = c(0, 25)) +
                     #labs(title = "Target: Coral Species Richness") +
+                    annotate(geom = "text", size = 10, x = 50, y = 2.5, label = "italic(R) ['N'] ^ 2 == 0.62", parse = TRUE) +
                     geom_smooth(size = 1.2, method = "glm.nb", formula = y ~ x, color = "black") +
                     theme(text = element_text(size = 27),
                           #plot.title = element_text(size = 22),
@@ -663,6 +664,7 @@ basic_sponge_cc <- ggplot(data = variables, aes(x = Percent_Coral_Cover, y = Spo
                     scale_x_continuous(name = "", limits = c(0, 65)) +
                     scale_y_continuous(name = "Sponge Richness", limits = c(0, 40)) +
                     #labs(title = "Target: Sponge Species Richness") +
+                    annotate(geom = "text", size = 10, x = 50, y = 3, label = "italic(R) ['N'] ^ 2 == 0.28", parse = TRUE) +
                     geom_smooth(size = 1.2, method = "glm.nb", formula = y ~ x, color = "black") +
                     theme(text = element_text(size = 27),
                           #plot.title = element_text(size = 22),
@@ -790,6 +792,7 @@ basic_fish_r <- ggplot(data = variables, aes(x = Rugosity, y = Fish_Richness)) +
                   scale_x_continuous(name = "", limits = c(0, 80)) +
                   scale_y_continuous(name = "", limits = c(0, 40)) +
                   #labs(title = "") +
+                  annotate(geom = "text", size = 10, x = 60, y = 5, label = "italic(R) ['N'] ^ 2 == 0.63", parse = TRUE) +
                   geom_smooth(size = 1.2, method = "glm.nb", formula = y ~ x, color = "black") +
                   theme(text = element_text(size = 27),
                         panel.grid.major = element_line(colour = "light gray", size = (0.5)),
@@ -803,6 +806,7 @@ basic_combined_r <- ggplot(data = variables, aes(x = Rugosity, y = Combined_Rich
                       scale_x_continuous(name = "Rugosity", limits = c(0, 80)) +
                       scale_y_continuous(name = "", limits = c(0, 80)) +
                       #labs(title = "") +
+                      annotate(geom = "text", size = 10, x = 60, y = 10, label = "italic(R) ['N'] ^ 2 == 0.38", parse = TRUE) +
                       geom_smooth(size = 1.2, method = "glm.nb", formula = y ~ x, color = "black") +
                       theme(text = element_text(size = 27),
                             panel.grid.major = element_line(colour = "light gray", size = (0.5)),
