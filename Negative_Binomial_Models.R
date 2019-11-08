@@ -1990,3 +1990,16 @@ ggplot(data = variables, aes(x = Sponge_Richness, y = Fish_Richness)) +
 
 
 ## END OF SCRIPT
+
+# thoughts for results
+# > ght<-variables[which(variables$True_Year>2007),]
+# > ghtlessthan20<-ght[which(ght$Percent_Coral_Cover<20),]
+# > View(ghtlessthan20)
+# > summary(ghtlessthan20$Sponge_Richness)
+# Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+#   13.00   20.75   24.50   24.67   29.00   36.00       3 
+# > thg<-variables[which(variables$True_Year<2008),]
+# > thglessthan20<-thg[which(thg$Percent_Coral_Cover<20),]
+# > summary(thglessthan20$Sponge_Richness)
+#    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+# 13.00   18.25   22.00   21.61   24.00   30.00      20 
