@@ -549,6 +549,580 @@ summary(combined_cc_yr_site)
 
 ########################################################################
 
+# Double-check Model Assumptions 11/10/19
+# From "Mixed Effects Models and Extensions in Ecology with R" by, Zuur, Ieno, et al. pg. 231
+# Overdispersion is when variance > mean (use negative binomial); variance = mean (use Poisson)
+# There shouldn't be patterns in the deviance or Pearson residuals.
+# Variables checked variables$Year, Site, Percent_Coral_Cover, Percent_Sponge_Cover, Rugosity, each of the 4 richnesses
+# When you re-run with Poisson, there is not really a difference
+#model <- glm(Coral_Richness ~ Percent_Coral_Cover, family = "poisson", data = variables)
+# There should be no patterns in these residuals.
+
+
+#cr_cc
+cr_cc = glm.nb(formula = Coral_Richness ~ Percent_Coral_Cover, data = variables)
+cr_cc_pearson <- residuals(object = cr_cc, type = "pearson")
+cr_cc_deviance <- residuals(object = cr_cc, type = "deviance")
+cr_cc_mu <- predict(cr_cc, type = "response")
+cr_cc_response <- variables$Coral_Richness - cr_cc_mu
+cr_cc_scaled <- cr_cc_response / sqrt(7.630148 * cr_cc_mu) 
+# The authors explain that they have to manually scale the residuals because the residual function doesn't account 
+# for overdispersion, however, I'm not sure why they used 7.63... in this calculation.
+op <- par(mfrow = c(2, 2))
+plot(x = cr_cc_mu, y = cr_cc_response, main = "Response residuals")
+plot(x = cr_cc_mu, y = cr_cc_pearson, main = "Pearson residuals")
+plot(x = cr_cc_mu, y = cr_cc_scaled, main = "Pearson residuals scaled")
+plot(x = cr_cc_mu, y = cr_cc_deviance, main = "Deviance residuals")
+par(op)
+
+#cr_sc
+cr_sc = glm.nb(formula = Coral_Richness ~ Percent_Sponge_Cover, data = variables)
+cr_sc_pearson <- residuals(object = cr_sc, type = "pearson")
+cr_sc_deviance <- residuals(object = cr_sc, type = "deviance")
+cr_sc_mu <- predict(cr_sc, type = "response")
+cr_sc_response <- variables$Coral_Richness - cr_sc_mu
+cr_sc_scaled <- cr_sc_response / sqrt(7.630148 * cr_sc_mu) 
+# The authors explain that they have to manually scale the residuals because the residual function doesn't account 
+# for overdispersion, however, I'm not sure why they used 7.63... in this calculation.
+op <- par(mfrow = c(2, 2))
+plot(x = cr_sc_mu, y = cr_sc_response, main = "Response residuals")
+plot(x = cr_sc_mu, y = cr_sc_pearson, main = "Pearson residuals")
+plot(x = cr_sc_mu, y = cr_sc_scaled, main = "Pearson residuals scaled")
+plot(x = cr_sc_mu, y = cr_sc_deviance, main = "Deviance residuals")
+par(op)
+
+#cr_ru
+cr_ru = glm.nb(formula = Coral_Richness ~ Rugosity, data = variables)
+cr_ru_pearson <- residuals(object = cr_ru, type = "pearson")
+cr_ru_deviance <- residuals(object = cr_ru, type = "deviance")
+cr_ru_mu <- predict(cr_ru, type = "response")
+cr_ru_response <- variables$Coral_Richness - cr_ru_mu
+cr_ru_scaled <- cr_ru_response / sqrt(7.630148 * cr_ru_mu) 
+# The authors explain that they have to manually scale the residuals because the residual function doesn't account 
+# for overdispersion, however, I'm not sure why they used 7.63... in this calculation.
+op <- par(mfrow = c(2, 2))
+plot(x = cr_ru_mu, y = cr_ru_response, main = "Response residuals")
+plot(x = cr_ru_mu, y = cr_ru_pearson, main = "Pearson residuals")
+plot(x = cr_ru_mu, y = cr_ru_scaled, main = "Pearson residuals scaled")
+plot(x = cr_ru_mu, y = cr_ru_deviance, main = "Deviance residuals")
+par(op)
+
+#cr_yr
+cr_yr = glm.nb(formula = Coral_Richness ~ Year, data = variables)
+cr_yr_pearson <- residuals(object = cr_yr, type = "pearson")
+cr_yr_deviance <- residuals(object = cr_yr, type = "deviance")
+cr_yr_mu <- predict(cr_yr, type = "response")
+cr_yr_response <- variables$Coral_Richness - cr_yr_mu
+cr_yr_scaled <- cr_yr_response / sqrt(7.630148 * cr_yr_mu) 
+# The authors explain that they have to manually scale the residuals because the residual function doesn't account 
+# for overdispersion, however, I'm not sure why they used 7.63... in this calculation.
+op <- par(mfrow = c(2, 2))
+plot(x = cr_yr_mu, y = cr_yr_response, main = "Response residuals")
+plot(x = cr_yr_mu, y = cr_yr_pearson, main = "Pearson residuals")
+plot(x = cr_yr_mu, y = cr_yr_scaled, main = "Pearson residuals scaled")
+plot(x = cr_yr_mu, y = cr_yr_deviance, main = "Deviance residuals")
+par(op)
+
+#cr_st
+cr_st = glm.nb(formula = Coral_Richness ~ Site, data = variables)
+cr_st_pearson <- residuals(object = cr_st, type = "pearson")
+cr_st_deviance <- residuals(object = cr_st, type = "deviance")
+cr_st_mu <- predict(cr_st, type = "response")
+cr_st_response <- variables$Coral_Richness - cr_st_mu
+cr_st_scaled <- cr_st_response / sqrt(7.630148 * cr_st_mu) 
+# The authors explain that they have to manually scale the residuals because the residual function doesn't account 
+# for overdispersion, however, I'm not sure why they used 7.63... in this calculation.
+op <- par(mfrow = c(2, 2))
+plot(x = cr_st_mu, y = cr_st_response, main = "Response residuals")
+plot(x = cr_st_mu, y = cr_st_pearson, main = "Pearson residuals")
+plot(x = cr_st_mu, y = cr_st_scaled, main = "Pearson residuals scaled")
+plot(x = cr_st_mu, y = cr_st_deviance, main = "Deviance residuals")
+par(op)
+
+#cr_sr
+cr_sr = glm.nb(formula = Coral_Richness ~ Sponge_Richness, data = variables)
+cr_sr_pearson <- residuals(object = cr_sr, type = "pearson")
+cr_sr_deviance <- residuals(object = cr_sr, type = "deviance")
+cr_sr_mu <- predict(cr_sr, type = "response")
+cr_sr_response <- variables$Coral_Richness - cr_sr_mu
+cr_sr_scaled <- cr_sr_response / sqrt(7.630148 * cr_sr_mu) 
+# The authors explain that they have to manually scale the residuals because the residual function doesn't account 
+# for overdispersion, however, I'm not sure why they used 7.63... in this calculation.
+op <- par(mfrow = c(2, 2))
+plot(x = cr_sr_mu, y = cr_sr_response, main = "Response residuals")
+plot(x = cr_sr_mu, y = cr_sr_pearson, main = "Pearson residuals")
+plot(x = cr_sr_mu, y = cr_sr_scaled, main = "Pearson residuals scaled")
+plot(x = cr_sr_mu, y = cr_sr_deviance, main = "Deviance residuals")
+par(op)
+
+#cr_fr
+cr_fr = glm.nb(formula = Coral_Richness ~ Fish_Richness, data = variables)
+cr_fr_pearson <- residuals(object = cr_fr, type = "pearson")
+cr_fr_deviance <- residuals(object = cr_fr, type = "deviance")
+cr_fr_mu <- predict(cr_fr, type = "response")
+cr_fr_response <- variables$Coral_Richness - cr_fr_mu
+cr_fr_scaled <- cr_fr_response / sqrt(7.630148 * cr_fr_mu) 
+# The authors explain that they have to manually scale the residuals because the residual function doesn't account 
+# for overdispersion, however, I'm not sure why they used 7.63... in this calculation.
+op <- par(mfrow = c(2, 2))
+plot(x = cr_fr_mu, y = cr_fr_response, main = "Response residuals")
+plot(x = cr_fr_mu, y = cr_fr_pearson, main = "Pearson residuals")
+plot(x = cr_fr_mu, y = cr_fr_scaled, main = "Pearson residuals scaled")
+plot(x = cr_fr_mu, y = cr_fr_deviance, main = "Deviance residuals")
+par(op)
+
+#cr_cd
+cr_cd = glm.nb(formula = Coral_Richness ~ Combined_Richness, data = variables)
+cr_cd_pearson <- residuals(object = cr_cd, type = "pearson")
+cr_cd_deviance <- residuals(object = cr_cd, type = "deviance")
+cr_cd_mu <- predict(cr_cd, type = "response")
+cr_cd_response <- variables$Coral_Richness - cr_cd_mu
+cr_cd_scaled <- cr_cd_response / sqrt(7.630148 * cr_cd_mu) 
+# The authors explain that they have to manually scale the residuals because the residual function doesn't account 
+# for overdispersion, however, I'm not sure why they used 7.63... in this calculation.
+op <- par(mfrow = c(2, 2))
+plot(x = cr_cd_mu, y = cr_cd_response, main = "Response residuals")
+plot(x = cr_cd_mu, y = cr_cd_pearson, main = "Pearson residuals")
+plot(x = cr_cd_mu, y = cr_cd_scaled, main = "Pearson residuals scaled")
+plot(x = cr_cd_mu, y = cr_cd_deviance, main = "Deviance residuals")
+par(op)
+
+#sr_cc
+sr_cc = glm.nb(formula = Sponge_Richness ~ Percent_Coral_Cover, data = variables)
+sr_cc_pearson <- residuals(object = sr_cc, type = "pearson")
+sr_cc_deviance <- residuals(object = sr_cc, type = "deviance")
+sr_cc_mu <- predict(sr_cc, type = "response")
+sr_cc_response <- variables$Sponge_Richness - sr_cc_mu
+sr_cc_scaled <- sr_cc_response / sqrt(7.630148 * sr_cc_mu) 
+# The authors explain that they have to manually scale the residuals because the residual function doesn't account 
+# for overdispersion, however, I'm not sure why they used 7.63... in this calculation.***
+op <- par(mfrow = c(2, 2))
+plot(x = sr_cc_mu, y = sr_cc_response, main = "Response residuals")
+plot(x = sr_cc_mu, y = sr_cc_pearson, main = "Pearson residuals")
+plot(x = sr_cc_mu, y = sr_cc_scaled, main = "Pearson residuals scaled")
+plot(x = sr_cc_mu, y = sr_cc_deviance, main = "Deviance residuals")
+par(op)
+#***Note that the successful output here does not include response residuals or scaled pearson residuals due to the missing years
+
+#sr_sc
+sr_sc = glm.nb(formula = Sponge_Richness ~ Percent_Sponge_Cover, data = variables)
+sr_sc_pearson <- residuals(object = sr_sc, type = "pearson")
+sr_sc_deviance <- residuals(object = sr_sc, type = "deviance")
+sr_sc_mu <- predict(sr_sc, type = "response")
+sr_sc_response <- variables$Sponge_Richness - sr_sc_mu
+sr_sc_scaled <- sr_sc_response / sqrt(7.630148 * sr_sc_mu) 
+# The authors explain that they have to manually scale the residuals because the residual function doesn't account 
+# for overdispersion, however, I'm not sure why they used 7.63... in this calculation.
+op <- par(mfrow = c(2, 2))
+plot(x = sr_sc_mu, y = sr_sc_response, main = "Response residuals")
+plot(x = sr_sc_mu, y = sr_sc_pearson, main = "Pearson residuals")
+plot(x = sr_sc_mu, y = sr_sc_scaled, main = "Pearson residuals scaled")
+plot(x = sr_sc_mu, y = sr_sc_deviance, main = "Deviance residuals")
+par(op)
+
+#sr_ru
+sr_ru = glm.nb(formula = Sponge_Richness ~ Rugosity, data = variables)
+sr_ru_pearson <- residuals(object = sr_ru, type = "pearson")
+sr_ru_deviance <- residuals(object = sr_ru, type = "deviance")
+sr_ru_mu <- predict(sr_ru, type = "response")
+sr_ru_response <- variables$Sponge_Richness - sr_ru_mu
+sr_ru_scaled <- sr_ru_response / sqrt(7.630148 * sr_ru_mu) 
+# The authors explain that they have to manually scale the residuals because the residual function doesn't account 
+# for overdispersion, however, I'm not sure why they used 7.63... in this calculation.
+op <- par(mfrow = c(2, 2))
+plot(x = sr_ru_mu, y = sr_ru_response, main = "Response residuals")
+plot(x = sr_ru_mu, y = sr_ru_pearson, main = "Pearson residuals")
+plot(x = sr_ru_mu, y = sr_ru_scaled, main = "Pearson residuals scaled")
+plot(x = sr_ru_mu, y = sr_ru_deviance, main = "Deviance residuals")
+par(op)
+
+#sr_yr
+sr_yr = glm.nb(formula = Sponge_Richness ~ Year, data = variables)
+sr_yr_pearson <- residuals(object = sr_yr, type = "pearson")
+sr_yr_deviance <- residuals(object = sr_yr, type = "deviance")
+sr_yr_mu <- predict(sr_yr, type = "response")
+sr_yr_response <- variables$Sponge_Richness - sr_yr_mu
+sr_yr_scaled <- sr_yr_response / sqrt(7.630148 * sr_yr_mu) 
+# The authors explain that they have to manually scale the residuals because the residual function doesn't account 
+# for overdispersion, however, I'm not sure why they used 7.63... in this calculation.
+op <- par(mfrow = c(2, 2))
+plot(x = sr_yr_mu, y = sr_yr_response, main = "Response residuals")
+plot(x = sr_yr_mu, y = sr_yr_pearson, main = "Pearson residuals")
+plot(x = sr_yr_mu, y = sr_yr_scaled, main = "Pearson residuals scaled")
+plot(x = sr_yr_mu, y = sr_yr_deviance, main = "Deviance residuals")
+par(op)
+
+#sr_st
+sr_st = glm.nb(formula = Sponge_Richness ~ Site, data = variables)
+sr_st_pearson <- residuals(object = sr_st, type = "pearson")
+sr_st_deviance <- residuals(object = sr_st, type = "deviance")
+sr_st_mu <- predict(sr_st, type = "response")
+sr_st_response <- variables$Sponge_Richness - sr_st_mu
+sr_st_scaled <- sr_st_response / sqrt(7.630148 * sr_st_mu) 
+# The authors explain that they have to manually scale the residuals because the residual function doesn't account 
+# for overdispersion, however, I'm not sure why they used 7.63... in this calculation.
+op <- par(mfrow = c(2, 2))
+plot(x = sr_st_mu, y = sr_st_response, main = "Response residuals")
+plot(x = sr_st_mu, y = sr_st_pearson, main = "Pearson residuals")
+plot(x = sr_st_mu, y = sr_st_scaled, main = "Pearson residuals scaled")
+plot(x = sr_st_mu, y = sr_st_deviance, main = "Deviance residuals")
+par(op)
+
+#sr_fr
+sr_fr = glm.nb(formula = Sponge_Richness ~ Fish_Richness, data = variables)
+sr_fr_pearson <- residuals(object = sr_fr, type = "pearson")
+sr_fr_deviance <- residuals(object = sr_fr, type = "deviance")
+sr_fr_mu <- predict(sr_fr, type = "response")
+sr_fr_response <- variables$Sponge_Richness - sr_fr_mu
+sr_fr_scaled <- sr_fr_response / sqrt(7.630148 * sr_fr_mu) 
+# The authors explain that they have to manually scale the residuals because the residual function doesn't account 
+# for overdispersion, however, I'm not sure why they used 7.63... in this calculation.
+op <- par(mfrow = c(2, 2))
+plot(x = sr_fr_mu, y = sr_fr_response, main = "Response residuals")
+plot(x = sr_fr_mu, y = sr_fr_pearson, main = "Pearson residuals")
+plot(x = sr_fr_mu, y = sr_fr_scaled, main = "Pearson residuals scaled")
+plot(x = sr_fr_mu, y = sr_fr_deviance, main = "Deviance residuals")
+par(op)
+
+#sr_cd
+sr_cd = glm.nb(formula = Sponge_Richness ~ Combined_Richness, data = variables)
+sr_cd_pearson <- residuals(object = sr_cd, type = "pearson")
+sr_cd_deviance <- residuals(object = sr_cd, type = "deviance")
+sr_cd_mu <- predict(sr_cd, type = "response")
+sr_cd_response <- variables$Sponge_Richness - sr_cd_mu
+sr_cd_scaled <- sr_cd_response / sqrt(7.630148 * sr_cd_mu) 
+# The authors explain that they have to manually scale the residuals because the residual function doesn't account 
+# for overdispersion, however, I'm not sure why they used 7.63... in this calculation.
+op <- par(mfrow = c(2, 2))
+plot(x = sr_cd_mu, y = sr_cd_response, main = "Response residuals")
+plot(x = sr_cd_mu, y = sr_cd_pearson, main = "Pearson residuals")
+plot(x = sr_cd_mu, y = sr_cd_scaled, main = "Pearson residuals scaled")
+plot(x = sr_cd_mu, y = sr_cd_deviance, main = "Deviance residuals")
+par(op)
+
+#fr_cc
+fr_cc = glm.nb(formula = Fish_Richness ~ Percent_Coral_Cover, data = variables)
+fr_cc_pearson <- residuals(object = fr_cc, type = "pearson")
+fr_cc_deviance <- residuals(object = fr_cc, type = "deviance")
+fr_cc_mu <- predict(fr_cc, type = "response")
+fr_cc_response <- variables$Fish_Richness - fr_cc_mu
+fr_cc_scaled <- fr_cc_response / sqrt(7.630148 * fr_cc_mu) 
+# The authors explain that they have to manually scale the residuals because the residual function doesn't account 
+# for overdispersion, however, I'm not sure why they used 7.63... in this calculation.
+op <- par(mfrow = c(2, 2))
+plot(x = fr_cc_mu, y = fr_cc_response, main = "Response residuals")
+plot(x = fr_cc_mu, y = fr_cc_pearson, main = "Pearson residuals")
+plot(x = fr_cc_mu, y = fr_cc_scaled, main = "Pearson residuals scaled")
+plot(x = fr_cc_mu, y = fr_cc_deviance, main = "Deviance residuals")
+par(op)
+
+#fr_sc
+fr_sc = glm.nb(formula = Fish_Richness ~ Percent_Sponge_Cover, data = variables)
+fr_sc_pearson <- residuals(object = fr_sc, type = "pearson")
+fr_sc_deviance <- residuals(object = fr_sc, type = "deviance")
+fr_sc_mu <- predict(fr_sc, type = "response")
+fr_sc_response <- variables$Fish_Richness - fr_sc_mu
+fr_sc_scaled <- fr_sc_response / sqrt(7.630148 * fr_sc_mu) 
+# The authors explain that they have to manually scale the residuals because the residual function doesn't account 
+# for overdispersion, however, I'm not sure why they used 7.63... in this calculation.
+op <- par(mfrow = c(2, 2))
+plot(x = fr_sc_mu, y = fr_sc_response, main = "Response residuals")
+plot(x = fr_sc_mu, y = fr_sc_pearson, main = "Pearson residuals")
+plot(x = fr_sc_mu, y = fr_sc_scaled, main = "Pearson residuals scaled")
+plot(x = fr_sc_mu, y = fr_sc_deviance, main = "Deviance residuals")
+par(op)
+
+#fr_ru
+fr_ru = glm.nb(formula = Fish_Richness ~ Rugosity, data = variables)
+fr_ru_pearson <- residuals(object = fr_ru, type = "pearson")
+fr_ru_deviance <- residuals(object = fr_ru, type = "deviance")
+fr_ru_mu <- predict(fr_ru, type = "response")
+fr_ru_response <- variables$Fish_Richness - fr_ru_mu
+fr_ru_scaled <- fr_ru_response / sqrt(7.630148 * fr_ru_mu) 
+# The authors explain that they have to manually scale the residuals because the residual function doesn't account 
+# for overdispersion, however, I'm not sure why they used 7.63... in this calculation.
+op <- par(mfrow = c(2, 2))
+plot(x = fr_ru_mu, y = fr_ru_response, main = "Response residuals")
+plot(x = fr_ru_mu, y = fr_ru_pearson, main = "Pearson residuals")
+plot(x = fr_ru_mu, y = fr_ru_scaled, main = "Pearson residuals scaled")
+plot(x = fr_ru_mu, y = fr_ru_deviance, main = "Deviance residuals")
+par(op)
+
+#fr_yr
+fr_yr = glm.nb(formula = Fish_Richness ~ Year, data = variables)
+fr_yr_pearson <- residuals(object = fr_yr, type = "pearson")
+fr_yr_deviance <- residuals(object = fr_yr, type = "deviance")
+fr_yr_mu <- predict(fr_yr, type = "response")
+fr_yr_response <- variables$Fish_Richness - fr_yr_mu
+fr_yr_scaled <- fr_yr_response / sqrt(7.630148 * fr_yr_mu) 
+# The authors explain that they have to manually scale the residuals because the residual function doesn't account 
+# for overdispersion, however, I'm not sure why they used 7.63... in this calculation.
+op <- par(mfrow = c(2, 2))
+plot(x = fr_yr_mu, y = fr_yr_response, main = "Response residuals")
+plot(x = fr_yr_mu, y = fr_yr_pearson, main = "Pearson residuals")
+plot(x = fr_yr_mu, y = fr_yr_scaled, main = "Pearson residuals scaled")
+plot(x = fr_yr_mu, y = fr_yr_deviance, main = "Deviance residuals")
+par(op)
+
+#fr_st
+fr_st = glm.nb(formula = Fish_Richness ~ Site, data = variables)
+fr_st_pearson <- residuals(object = fr_st, type = "pearson")
+fr_st_deviance <- residuals(object = fr_st, type = "deviance")
+fr_st_mu <- predict(fr_st, type = "response")
+fr_st_response <- variables$Fish_Richness - fr_st_mu
+fr_st_scaled <- fr_st_response / sqrt(7.630148 * fr_st_mu) 
+# The authors explain that they have to manually scale the residuals because the residual function doesn't account 
+# for overdispersion, however, I'm not sure why they used 7.63... in this calculation.
+op <- par(mfrow = c(2, 2))
+plot(x = fr_st_mu, y = fr_st_response, main = "Response residuals")
+plot(x = fr_st_mu, y = fr_st_pearson, main = "Pearson residuals")
+plot(x = fr_st_mu, y = fr_st_scaled, main = "Pearson residuals scaled")
+plot(x = fr_st_mu, y = fr_st_deviance, main = "Deviance residuals")
+par(op)
+
+#fr_cd
+fr_cd = glm.nb(formula = Fish_Richness ~ Combined_Richness, data = variables)
+fr_cd_pearson <- residuals(object = fr_cd, type = "pearson")
+fr_cd_deviance <- residuals(object = fr_cd, type = "deviance")
+fr_cd_mu <- predict(fr_cd, type = "response")
+fr_cd_response <- variables$Fish_Richness - fr_cd_mu
+fr_cd_scaled <- fr_cd_response / sqrt(7.630148 * fr_cd_mu) 
+# The authors explain that they have to manually scale the residuals because the residual function doesn't account 
+# for overdispersion, however, I'm not sure why they used 7.63... in this calculation.
+op <- par(mfrow = c(2, 2))
+plot(x = fr_cd_mu, y = fr_cd_response, main = "Response residuals")
+plot(x = fr_cd_mu, y = fr_cd_pearson, main = "Pearson residuals")
+plot(x = fr_cd_mu, y = fr_cd_scaled, main = "Pearson residuals scaled")
+plot(x = fr_cd_mu, y = fr_cd_deviance, main = "Deviance residuals")
+par(op)
+
+#cd_cc
+cd_cc = glm.nb(formula = Combined_Richness ~ Percent_Coral_Cover, data = variables)
+cd_cc_pearson <- residuals(object = cd_cc, type = "pearson")
+cd_cc_deviance <- residuals(object = cd_cc, type = "deviance")
+cd_cc_mu <- predict(cd_cc, type = "response")
+cd_cc_response <- variables$Combined_Richness - cd_cc_mu
+cd_cc_scaled <- cd_cc_response / sqrt(7.630148 * cd_cc_mu) 
+# The authors explain that they have to manually scale the residuals because the residual function doesn't account 
+# for overdispersion, however, I'm not sure why they used 7.63... in this calculation.
+op <- par(mfrow = c(2, 2))
+plot(x = cd_cc_mu, y = cd_cc_response, main = "Response residuals")
+plot(x = cd_cc_mu, y = cd_cc_pearson, main = "Pearson residuals")
+plot(x = cd_cc_mu, y = cd_cc_scaled, main = "Pearson residuals scaled")
+plot(x = cd_cc_mu, y = cd_cc_deviance, main = "Deviance residuals")
+par(op)
+
+#cd_sc
+cd_sc = glm.nb(formula = Combined_Richness ~ Percent_Sponge_Cover, data = variables)
+cd_sc_pearson <- residuals(object = cd_sc, type = "pearson")
+cd_sc_deviance <- residuals(object = cd_sc, type = "deviance")
+cd_sc_mu <- predict(cd_sc, type = "response")
+cd_sc_response <- variables$Combined_Richness - cd_sc_mu
+cd_sc_scaled <- cd_sc_response / sqrt(7.630148 * cd_sc_mu) 
+# The authors explain that they have to manually scale the residuals because the residual function doesn't account 
+# for overdispersion, however, I'm not sure why they used 7.63... in this calculation.
+op <- par(mfrow = c(2, 2))
+plot(x = cd_sc_mu, y = cd_sc_response, main = "Response residuals")
+plot(x = cd_sc_mu, y = cd_sc_pearson, main = "Pearson residuals")
+plot(x = cd_sc_mu, y = cd_sc_scaled, main = "Pearson residuals scaled")
+plot(x = cd_sc_mu, y = cd_sc_deviance, main = "Deviance residuals")
+par(op)
+
+#cd_ru
+cd_ru = glm.nb(formula = Combined_Richness ~ Rugosity, data = variables)
+cd_ru_pearson <- residuals(object = cd_ru, type = "pearson")
+cd_ru_deviance <- residuals(object = cd_ru, type = "deviance")
+cd_ru_mu <- predict(cd_ru, type = "response")
+cd_ru_response <- variables$Combined_Richness - cd_ru_mu
+cd_ru_scaled <- cd_ru_response / sqrt(7.630148 * cd_ru_mu) 
+# The authors explain that they have to manually scale the residuals because the residual function doesn't account 
+# for overdispersion, however, I'm not sure why they used 7.63... in this calculation.
+op <- par(mfrow = c(2, 2))
+plot(x = cd_ru_mu, y = cd_ru_response, main = "Response residuals")
+plot(x = cd_ru_mu, y = cd_ru_pearson, main = "Pearson residuals")
+plot(x = cd_ru_mu, y = cd_ru_scaled, main = "Pearson residuals scaled")
+plot(x = cd_ru_mu, y = cd_ru_deviance, main = "Deviance residuals")
+par(op)
+
+#cd_yr
+cd_yr = glm.nb(formula = Combined_Richness ~ Year, data = variables)
+cd_yr_pearson <- residuals(object = cd_yr, type = "pearson")
+cd_yr_deviance <- residuals(object = cd_yr, type = "deviance")
+cd_yr_mu <- predict(cd_yr, type = "response")
+cd_yr_response <- variables$Combined_Richness - cd_yr_mu
+cd_yr_scaled <- cd_yr_response / sqrt(7.630148 * cd_yr_mu) 
+# The authors explain that they have to manually scale the residuals because the residual function doesn't account 
+# for overdispersion, however, I'm not sure why they used 7.63... in this calculation.
+op <- par(mfrow = c(2, 2))
+plot(x = cd_yr_mu, y = cd_yr_response, main = "Response residuals")
+plot(x = cd_yr_mu, y = cd_yr_pearson, main = "Pearson residuals")
+plot(x = cd_yr_mu, y = cd_yr_scaled, main = "Pearson residuals scaled")
+plot(x = cd_yr_mu, y = cd_yr_deviance, main = "Deviance residuals")
+par(op)
+
+#cd_st
+cd_st = glm.nb(formula = Combined_Richness ~ Site, data = variables)
+cd_st_pearson <- residuals(object = cd_st, type = "pearson")
+cd_st_deviance <- residuals(object = cd_st, type = "deviance")
+cd_st_mu <- predict(cd_st, type = "response")
+cd_st_response <- variables$Combined_Richness - cd_st_mu
+cd_st_scaled <- cd_st_response / sqrt(7.630148 * cd_st_mu) 
+# The authors explain that they have to manually scale the residuals because the residual function doesn't account 
+# for overdispersion, however, I'm not sure why they used 7.63... in this calculation.
+op <- par(mfrow = c(2, 2))
+plot(x = cd_st_mu, y = cd_st_response, main = "Response residuals")
+plot(x = cd_st_mu, y = cd_st_pearson, main = "Pearson residuals")
+plot(x = cd_st_mu, y = cd_st_scaled, main = "Pearson residuals scaled")
+plot(x = cd_st_mu, y = cd_st_deviance, main = "Deviance residuals")
+par(op)
+
+#yr_cc
+yr_cc = glm.nb(formula = Year ~ Percent_Coral_Cover, data = variables)
+yr_cc_pearson <- residuals(object = yr_cc, type = "pearson")
+yr_cc_deviance <- residuals(object = yr_cc, type = "deviance")
+yr_cc_mu <- predict(yr_cc, type = "response")
+yr_cc_response <- variables$Year - yr_cc_mu
+yr_cc_scaled <- yr_cc_response / sqrt(7.630148 * yr_cc_mu) 
+# The authors explain that they have to manually scale the residuals because the residual function doesn't account 
+# for overdispersion, however, I'm not sure why they used 7.63... in this calculation.
+op <- par(mfrow = c(2, 2))
+plot(x = yr_cc_mu, y = yr_cc_response, main = "Response residuals")
+plot(x = yr_cc_mu, y = yr_cc_pearson, main = "Pearson residuals")
+plot(x = yr_cc_mu, y = yr_cc_scaled, main = "Pearson residuals scaled")
+plot(x = yr_cc_mu, y = yr_cc_deviance, main = "Deviance residuals")
+par(op)
+
+#yr_sc
+yr_sc = glm.nb(formula = Year ~ Percent_Sponge_Cover, data = variables)
+yr_sc_pearson <- residuals(object = yr_sc, type = "pearson")
+yr_sc_deviance <- residuals(object = yr_sc, type = "deviance")
+yr_sc_mu <- predict(yr_sc, type = "response")
+yr_sc_response <- variables$Year - yr_sc_mu
+yr_sc_scaled <- yr_sc_response / sqrt(7.630148 * yr_sc_mu) 
+# The authors explain that they have to manually scale the residuals because the residual function doesn't account 
+# for overdispersion, however, I'm not sure why they used 7.63... in this calculation.
+op <- par(mfrow = c(2, 2))
+plot(x = yr_sc_mu, y = yr_sc_response, main = "Response residuals")
+plot(x = yr_sc_mu, y = yr_sc_pearson, main = "Pearson residuals")
+plot(x = yr_sc_mu, y = yr_sc_scaled, main = "Pearson residuals scaled")
+plot(x = yr_sc_mu, y = yr_sc_deviance, main = "Deviance residuals")
+par(op)
+
+#yr_ru
+yr_ru = glm.nb(formula = Year ~ Rugosity, data = variables)
+yr_ru_pearson <- residuals(object = yr_ru, type = "pearson")
+yr_ru_deviance <- residuals(object = yr_ru, type = "deviance")
+yr_ru_mu <- predict(yr_ru, type = "response")
+yr_ru_response <- variables$Year - yr_ru_mu
+yr_ru_scaled <- yr_ru_response / sqrt(7.630148 * yr_ru_mu) 
+# The authors explain that they have to manually scale the residuals because the residual function doesn't account 
+# for overdispersion, however, I'm not sure why they used 7.63... in this calculation.
+op <- par(mfrow = c(2, 2))
+plot(x = yr_ru_mu, y = yr_ru_response, main = "Response residuals")
+plot(x = yr_ru_mu, y = yr_ru_pearson, main = "Pearson residuals")
+plot(x = yr_ru_mu, y = yr_ru_scaled, main = "Pearson residuals scaled")
+plot(x = yr_ru_mu, y = yr_ru_deviance, main = "Deviance residuals")
+par(op)
+
+#yr_st
+yr_st = glm.nb(formula = Year ~ Site, data = variables)
+yr_st_pearson <- residuals(object = yr_st, type = "pearson")
+yr_st_deviance <- residuals(object = yr_st, type = "deviance")
+yr_st_mu <- predict(yr_st, type = "response")
+yr_st_response <- variables$Year - yr_st_mu
+yr_st_scaled <- yr_st_response / sqrt(7.630148 * yr_st_mu) 
+# The authors explain that they have to manually scale the residuals because the residual function doesn't account 
+# for overdispersion, however, I'm not sure why they used 7.63... in this calculation.
+op <- par(mfrow = c(2, 2))
+plot(x = yr_st_mu, y = yr_st_response, main = "Response residuals")
+plot(x = yr_st_mu, y = yr_st_pearson, main = "Pearson residuals")
+plot(x = yr_st_mu, y = yr_st_scaled, main = "Pearson residuals scaled")
+plot(x = yr_st_mu, y = yr_st_deviance, main = "Deviance residuals")
+par(op)
+
+#st_cc
+st_cc = glm.nb(formula = Site ~ Percent_Coral_Cover, data = variables)
+st_cc_pearson <- residuals(object = st_cc, type = "pearson")
+st_cc_deviance <- residuals(object = st_cc, type = "deviance")
+st_cc_mu <- predict(st_cc, type = "response")
+st_cc_response <- variables$Site - st_cc_mu
+st_cc_scaled <- st_cc_response / sqrt(7.630148 * st_cc_mu) 
+# The authors explain that they have to manually scale the residuals because the residual function doesn't account 
+# for overdispersion, however, I'm not sure why they used 7.63... in this calculation.
+op <- par(mfrow = c(2, 2))
+plot(x = st_cc_mu, y = st_cc_response, main = "Response residuals")
+plot(x = st_cc_mu, y = st_cc_pearson, main = "Pearson residuals")
+plot(x = st_cc_mu, y = st_cc_scaled, main = "Pearson residuals scaled")
+plot(x = st_cc_mu, y = st_cc_deviance, main = "Deviance residuals")
+par(op)
+
+#st_sc
+st_sc = glm.nb(formula = Site ~ Percent_Sponge_Cover, data = variables)
+st_sc_pearson <- residuals(object = st_sc, type = "pearson")
+st_sc_deviance <- residuals(object = st_sc, type = "deviance")
+st_sc_mu <- predict(st_sc, type = "response")
+st_sc_response <- variables$Site - st_sc_mu
+st_sc_scaled <- st_sc_response / sqrt(7.630148 * st_sc_mu) 
+# The authors explain that they have to manually scale the residuals because the residual function doesn't account 
+# for overdispersion, however, I'm not sure why they used 7.63... in this calculation.
+op <- par(mfrow = c(2, 2))
+plot(x = st_sc_mu, y = st_sc_response, main = "Response residuals")
+plot(x = st_sc_mu, y = st_sc_pearson, main = "Pearson residuals")
+plot(x = st_sc_mu, y = st_sc_scaled, main = "Pearson residuals scaled")
+plot(x = st_sc_mu, y = st_sc_deviance, main = "Deviance residuals")
+par(op)
+
+#st_ru
+st_ru = glm.nb(formula = Site ~ Rugosity, data = variables)
+st_ru_pearson <- residuals(object = st_ru, type = "pearson")
+st_ru_deviance <- residuals(object = st_ru, type = "deviance")
+st_ru_mu <- predict(st_ru, type = "response")
+st_ru_response <- variables$Site - st_ru_mu
+st_ru_scaled <- st_ru_response / sqrt(7.630148 * st_ru_mu) 
+# The authors explain that they have to manually scale the residuals because the residual function doesn't account 
+# for overdispersion, however, I'm not sure why they used 7.63... in this calculation.
+op <- par(mfrow = c(2, 2))
+plot(x = st_ru_mu, y = st_ru_response, main = "Response residuals")
+plot(x = st_ru_mu, y = st_ru_pearson, main = "Pearson residuals")
+plot(x = st_ru_mu, y = st_ru_scaled, main = "Pearson residuals scaled")
+plot(x = st_ru_mu, y = st_ru_deviance, main = "Deviance residuals")
+par(op)
+
+#cc_sc
+cc_sc = glm.nb(formula = Percent_Coral_Cover ~ Percent_Sponge_Cover, data = variables)
+cc_sc_pearson <- residuals(object = cc_sc, type = "pearson")
+cc_sc_deviance <- residuals(object = cc_sc, type = "deviance")
+cc_sc_mu <- predict(cc_sc, type = "response")
+cc_sc_response <- variables$Percent_Coral_Cover - cc_sc_mu
+cc_sc_scaled <- cc_sc_response / sqrt(7.630148 * cc_sc_mu) 
+# The authors explain that they have to manually scale the residuals because the residual function doesn't account 
+# for overdispersion, however, I'm not sure why they used 7.63... in this calculation.
+op <- par(mfrow = c(2, 2))
+plot(x = cc_sc_mu, y = cc_sc_response, main = "Response residuals")
+plot(x = cc_sc_mu, y = cc_sc_pearson, main = "Pearson residuals")
+plot(x = cc_sc_mu, y = cc_sc_scaled, main = "Pearson residuals scaled")
+plot(x = cc_sc_mu, y = cc_sc_deviance, main = "Deviance residuals")
+par(op)
+
+#sc_ru
+sc_ru = glm.nb(formula = Percent_Sponge_Cover ~ Rugosity, data = variables)
+sc_ru_pearson <- residuals(object = sc_ru, type = "pearson")
+sc_ru_deviance <- residuals(object = sc_ru, type = "deviance")
+sc_ru_mu <- predict(sc_ru, type = "response")
+sc_ru_response <- variables$Percent_Sponge_Cover - sc_ru_mu
+sc_ru_scaled <- sc_ru_response / sqrt(7.630148 * sc_ru_mu) 
+# The authors explain that they have to manually scale the residuals because the residual function doesn't account 
+# for overdispersion, however, I'm not sure why they used 7.63... in this calculation.
+op <- par(mfrow = c(2, 2))
+plot(x = sc_ru_mu, y = sc_ru_response, main = "Response residuals")
+plot(x = sc_ru_mu, y = sc_ru_pearson, main = "Pearson residuals")
+plot(x = sc_ru_mu, y = sc_ru_scaled, main = "Pearson residuals scaled")
+plot(x = sc_ru_mu, y = sc_ru_deviance, main = "Deviance residuals")
+par(op)
+
+#####Below are previous attempts
+
+
 
 
 ## Checking model assumption of negative binomial***
