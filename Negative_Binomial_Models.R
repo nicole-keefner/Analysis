@@ -1405,81 +1405,88 @@ grid.arrange(basic_coral_cc, basic_coral_sc, basic_coral_r,
 # ## Figures of basic relationships between time (x) and surrogates/targets (y)
 # 
 # # Figure 13. Relationship between time and coral cover.
-# ggplot(data = variables, aes(x = True_Year, y = Percent_Coral_Cover)) + 
+# ggplot(data = variables, aes(x = True_Year, y = Percent_Coral_Cover)) +
 #   geom_point(size = 3) +
 #   scale_x_continuous(name = "Time (Years)") +
 #   scale_y_continuous(name = "Coral Cover (%)") +
+#   geom_smooth(size = 1.2, method = "glm.nb", formula = y ~ x, color = "black") +
 #   theme(text = element_text(size = 27),
-#         panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
+#         panel.grid.major = element_line(colour = "light gray", size = (0.5)),
 #         panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
-#         panel.background = element_blank(), 
+#         panel.background = element_blank(),
 #         axis.line = element_line(colour = "black"))
 # 
 # # Figure 14. Relationship between time and sponge cover.
-# ggplot(data = variables, aes(x = True_Year, y = Percent_Sponge_Cover)) + 
+# ggplot(data = variables, aes(x = True_Year, y = Percent_Sponge_Cover)) +
 #   geom_point(size = 3) +
 #   scale_x_continuous(name = "Time (Years)") +
 #   scale_y_continuous(name = "Sponge Cover (%)") +
+#   geom_smooth(size = 1.2, method = "glm.nb", formula = y ~ x, color = "black") +
 #   theme(text = element_text(size = 27),
-#         panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
+#         panel.grid.major = element_line(colour = "light gray", size = (0.5)),
 #         panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
-#         panel.background = element_blank(), 
+#         panel.background = element_blank(),
 #         axis.line = element_line(colour = "black"))
 # 
 # # Figure 15. Relationship between time and rugosity.
-# ggplot(data = variables, aes(x = True_Year, y = Rugosity)) + 
+# ggplot(data = variables, aes(x = True_Year, y = Rugosity)) +
 #   geom_point(size = 3) +
 #   scale_x_continuous(name = "Time (Years)") +
 #   scale_y_continuous(name = "Rugosity") +
+#   geom_smooth(size = 1.2, method = "glm.nb", formula = y ~ x, color = "black") +
 #   theme(text = element_text(size = 27),
-#         panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
+#         panel.grid.major = element_line(colour = "light gray", size = (0.5)),
 #         panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
-#         panel.background = element_blank(), 
+#         panel.background = element_blank(),
 #         axis.line = element_line(colour = "black"))
 # 
 # # Figure 16. Relationship between time and coral richness.
-# ggplot(data = variables, aes(x = True_Year, y = Coral_Richness)) + 
+# ggplot(data = variables, aes(x = True_Year, y = Coral_Richness)) +
 #   geom_point(size = 3) +
 #   scale_x_continuous(name = "Time (Years)") +
 #   scale_y_continuous(name = "Coral Richness") +
+#   geom_smooth(size = 1.2, method = "glm.nb", formula = y ~ x, color = "black") +
 #   theme(text = element_text(size = 27),
-#         panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
+#         panel.grid.major = element_line(colour = "light gray", size = (0.5)),
 #         panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
-#         panel.background = element_blank(), 
+#         panel.background = element_blank(),
 #         axis.line = element_line(colour = "black"))
 # 
 # # Figure 17. Relationship between time and sponge richness.
-# ggplot(data = variables, aes(x = True_Year, y = Sponge_Richness)) + 
+# ggplot(data = variables, aes(x = True_Year, y = Sponge_Richness)) +
 #   geom_point(size = 3) +
 #   scale_x_continuous(name = "Time (Years)") +
 #   scale_y_continuous(name = "Sponge Richness") +
+#   geom_smooth(size = 1.2, method = "glm.nb", formula = y ~ x, color = "black") +
 #   theme(text = element_text(size = 27),
-#         panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
+#         panel.grid.major = element_line(colour = "light gray", size = (0.5)),
 #         panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
-#         panel.background = element_blank(), 
+#         panel.background = element_blank(),
 #         axis.line = element_line(colour = "black"))
 # # Resulting warning message same as that from figure 2.
 # 
 # # Figure 18. Relationship between time and fish richness.
-# ggplot(data = variables, aes(x = True_Year, y = Fish_Richness)) + 
+# ggplot(data = variables, aes(x = True_Year, y = Fish_Richness)) +
 #   geom_point(size = 3) +
 #   scale_x_continuous(name = "Time (Years)") +
 #   scale_y_continuous(name = "Fish Richness") +
+#   geom_smooth(size = 1.2, method = "glm.nb", formula = y ~ x, color = "black") +
 #   theme(text = element_text(size = 27),
-#         panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
+#         panel.grid.major = element_line(colour = "light gray", size = (0.5)),
 #         panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
-#         panel.background = element_blank(), 
+#         panel.background = element_blank(),
 #         axis.line = element_line(colour = "black"))
 # 
 # # Figure 19. Relationship between time and combined richness.
-# ggplot(data = variables, aes(x = True_Year, y = Combined_Richness)) + 
+# ggplot(data = variables, aes(x = True_Year, y = Combined_Richness)) +
 #   geom_point(size = 3) +
 #   scale_x_continuous(name = "Time (Years)") +
 #   scale_y_continuous(name = "Combined Richness") +
+#   geom_smooth(size = 1.2, method = "glm.nb", formula = y ~ x, color = "black") +
 #   theme(text = element_text(size = 27),
-#         panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
+#         panel.grid.major = element_line(colour = "light gray", size = (0.5)),
 #         panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
-#         panel.background = element_blank(), 
+#         panel.background = element_blank(),
 #         axis.line = element_line(colour = "black"))
 # # Resulting warning message same as that from figure 4.
 # 
@@ -2556,6 +2563,48 @@ ggplot(data = variables, aes(x = Sponge_Richness, y = Fish_Richness)) +
   geom_smooth(method = "glm", se = TRUE) +
   labs(x = "Sponge Richness", y = "Fish Richness") +
   annotate(geom = "text", x = 30, y = 35, label = "italic(R) ^ 2 == 0.10", parse = TRUE) +
+  theme(text = element_text(size = 18),
+        panel.grid.major = element_line(colour = "light gray", size = (0.5)),
+        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
+        panel.background = element_blank(),
+        axis.line = element_line(colour = "black"))
+
+# R-squared value for cc and sc
+summary(lm(data = variables, formula = Percent_Coral_Cover ~ Percent_Sponge_Cover))$r.squared
+# Figure of coral cover vs sponge cover with basic LINEAR line of best fit
+ggplot(data = variables, aes(x = Percent_Sponge_Cover, y = Percent_Coral_Cover)) +
+  geom_point(data = variables, size = 3, aes(x = Percent_Sponge_Cover, y = Percent_Coral_Cover)) +
+  geom_smooth(method = "glm", se = TRUE) +
+  labs(x = "Sponge Cover (%)", y = "Coral Cover (%)") +
+  annotate(geom = "text", x = 25, y = 35, label = "italic(R) ^ 2 == 0.11", parse = TRUE) +
+  theme(text = element_text(size = 18),
+        panel.grid.major = element_line(colour = "light gray", size = (0.5)),
+        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
+        panel.background = element_blank(),
+        axis.line = element_line(colour = "black"))
+
+# R-squared value for cc and r
+summary(lm(data = variables, formula = Percent_Coral_Cover ~ Rugosity))$r.squared
+# Figure of coral cover vs rugosity with basic LINEAR line of best fit
+ggplot(data = variables, aes(x = Rugosity, y = Percent_Coral_Cover)) +
+  geom_point(data = variables, size = 3, aes(x = Rugosity, y = Percent_Coral_Cover)) +
+  geom_smooth(method = "glm", se = TRUE) +
+  labs(x = "Rugosity", y = "Coral Cover (%)") +
+  annotate(geom = "text", x = 25, y = 35, label = "italic(R) ^ 2 == 0.39", parse = TRUE) +
+  theme(text = element_text(size = 18),
+        panel.grid.major = element_line(colour = "light gray", size = (0.5)),
+        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
+        panel.background = element_blank(),
+        axis.line = element_line(colour = "black"))
+
+# R-squared value for r and sc
+summary(lm(data = variables, formula = Rugosity ~ Percent_Sponge_Cover))$r.squared
+# Figure of rugosity vs sponge cover with basic LINEAR line of best fit
+ggplot(data = variables, aes(x = Percent_Sponge_Cover, y = Rugosity)) +
+  geom_point(data = variables, size = 3, aes(x = Percent_Sponge_Cover, y = Rugosity)) +
+  geom_smooth(method = "glm", se = TRUE) +
+  labs(x = "Sponge Cover (%)", y = "Rugosity") +
+  annotate(geom = "text", x = 25, y = 35, label = "italic(R) ^ 2 == 0.12", parse = TRUE) +
   theme(text = element_text(size = 18),
         panel.grid.major = element_line(colour = "light gray", size = (0.5)),
         panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
