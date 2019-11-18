@@ -2527,90 +2527,136 @@ ggplot(data = combined_r_site_fig, aes(x = Rugosity, y = Predicted_Combined_Rich
 #######################SIMPLE RELATIONSHIPS BETWEEN GROUPS##############
 
 # R-squared value for fish and coral richness
-summary(lm(data = variables, formula = Fish_Richness ~ Coral_Richness))$r.squared
+summary(lm(data = variables, formula = Coral_Richness ~ Fish_Richness))$r.squared
 # Figure of coral richness vs fish richness with basic LINEAR line of best fit
-ggplot(data = variables, aes(x = Coral_Richness, y = Fish_Richness)) +
-  geom_point(data = variables, size = 3, aes(x = Coral_Richness, y = Fish_Richness)) +
-  geom_smooth(method = "glm", se = TRUE) +
-  labs(x = "Coral Richness", y = "Fish Richness") +
-  annotate(geom = "text", x = 18, y = 13, label = "italic(R) ^ 2 == 0.23", parse = TRUE) +
-  theme(text = element_text(size = 18),
-        panel.grid.major = element_line(colour = "light gray", size = (0.5)),
-        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
-        panel.background = element_blank(),
-        axis.line = element_line(colour = "black"))
-
+plot_1a <- ggplot(data = variables, aes(x = Coral_Richness, y = Fish_Richness)) +
+              geom_point(data = variables, size = 3, aes(x = Coral_Richness, y = Fish_Richness)) +
+              geom_smooth(method = "glm", se = TRUE) +
+              labs(x = "Coral Richness", y = "Fish Richness") +
+              annotate(geom = "text", size = 10, x = 5, y = 4, label = "italic(R) ^ 2 == 0.23", parse = TRUE) +
+              scale_x_continuous(limits = c(0, 25)) +
+              scale_y_continuous(limits = c(0, 40)) +
+              theme(text = element_text(size = 18),
+                    panel.grid.major = element_line(colour = "light gray", size = (0.5)),
+                    panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
+                    panel.background = element_blank(),
+                    axis.line = element_line(colour = "black"))
 
 # R-squared value for sponge and coral richness
-summary(lm(data = variables, formula = Sponge_Richness ~ Coral_Richness))$r.squared
-# Figure of coral richness vs sponge richness with basic LINEAR line of best fit
-ggplot(data = variables, aes(x = Coral_Richness, y = Sponge_Richness)) +
-  geom_point(data = variables, size = 3, aes(x = Coral_Richness, y = Sponge_Richness)) +
-  geom_smooth(method = "glm", se = TRUE) +
-  labs(x = "Coral Richness", y = "Sponge Richness") +
-  annotate(geom = "text", x = 18, y = 35, label = "italic(R) ^ 2 == 0.06", parse = TRUE) +
-  theme(text = element_text(size = 18),
-        panel.grid.major = element_line(colour = "light gray", size = (0.5)),
-        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
-        panel.background = element_blank(),
-        axis.line = element_line(colour = "black"))
+summary(lm(data = variables, formula = Coral_Richness ~ Sponge_Richness))$r.squared
+# Figure of sponge richness vs coral richness with basic LINEAR line of best fit
+plot_1b <- ggplot(data = variables, aes(x = Sponge_Richness, y = Coral_Richness)) +
+              geom_point(data = variables, size = 3, aes(x = Sponge_Richness, y = Coral_Richness)) +
+              geom_smooth(method = "glm", se = TRUE) +
+              labs(x = "Sponge Richness", y = "Coral Richness") +
+              annotate(geom = "text", size = 10, x = 10, y = 2, label = "italic(R) ^ 2 == 0.06", parse = TRUE) +
+              scale_x_continuous(limits = c(0, 40)) +
+              scale_y_continuous(limits = c(0, 25)) +
+              theme(text = element_text(size = 18),
+                    panel.grid.major = element_line(colour = "light gray", size = (0.5)),
+                    panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
+                    panel.background = element_blank(),
+                    axis.line = element_line(colour = "black"))
 
-# R-squared value for fish and sponge richness
+# R-squared value for sponge and fish richness
 summary(lm(data = variables, formula = Fish_Richness ~ Sponge_Richness))$r.squared
 # Figure of sponge richness vs fish richness with basic LINEAR line of best fit
-ggplot(data = variables, aes(x = Sponge_Richness, y = Fish_Richness)) +
-  geom_point(data = variables, size = 3, aes(x = Sponge_Richness, y = Fish_Richness)) +
-  geom_smooth(method = "glm", se = TRUE) +
-  labs(x = "Sponge Richness", y = "Fish Richness") +
-  annotate(geom = "text", x = 30, y = 35, label = "italic(R) ^ 2 == 0.10", parse = TRUE) +
-  theme(text = element_text(size = 18),
-        panel.grid.major = element_line(colour = "light gray", size = (0.5)),
-        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
-        panel.background = element_blank(),
-        axis.line = element_line(colour = "black"))
+plot_1c <- ggplot(data = variables, aes(x = Sponge_Richness, y = Fish_Richness)) +
+              geom_point(data = variables, size = 3, aes(x = Sponge_Richness, y = Fish_Richness)) +
+              geom_smooth(method = "glm", se = TRUE) +
+              labs(x = "Sponge Richness", y = "Fish Richness") +
+              annotate(geom = "text", size = 10, x = 10, y = 4, label = "italic(R) ^ 2 == 0.10", parse = TRUE) +
+              scale_x_continuous(limits = c(0, 40)) +
+              scale_y_continuous(limits = c(0, 40)) +
+              theme(text = element_text(size = 18),
+                    panel.grid.major = element_line(colour = "light gray", size = (0.5)),
+                    panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
+                    panel.background = element_blank(),
+                    axis.line = element_line(colour = "black"))
 
-# R-squared value for cc and sc
+# Organize these figures into one window
+grid.arrange(plot_1a, plot_1b, plot_1c,
+             ncol = 1, nrow = 3)
+
+# R-squared value for sc and cc
 summary(lm(data = variables, formula = Percent_Coral_Cover ~ Percent_Sponge_Cover))$r.squared
-# Figure of coral cover vs sponge cover with basic LINEAR line of best fit
-ggplot(data = variables, aes(x = Percent_Sponge_Cover, y = Percent_Coral_Cover)) +
-  geom_point(data = variables, size = 3, aes(x = Percent_Sponge_Cover, y = Percent_Coral_Cover)) +
-  geom_smooth(method = "glm", se = TRUE) +
-  labs(x = "Sponge Cover (%)", y = "Coral Cover (%)") +
-  annotate(geom = "text", x = 25, y = 35, label = "italic(R) ^ 2 == 0.11", parse = TRUE) +
-  theme(text = element_text(size = 18),
-        panel.grid.major = element_line(colour = "light gray", size = (0.5)),
-        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
-        panel.background = element_blank(),
-        axis.line = element_line(colour = "black"))
+# Figure of sponge cover vs coral cover with basic LINEAR line of best fit
+plot_2b <- ggplot(data = variables, aes(x = Percent_Sponge_Cover, y = Percent_Coral_Cover)) +
+              geom_point(data = variables, size = 3, aes(x = Percent_Sponge_Cover, y = Percent_Coral_Cover)) +
+              geom_smooth(method = "glm", se = TRUE) +
+              labs(x = "Sponge Cover (%)", y = "Coral Cover (%)") +
+              annotate(geom = "text", size = 10, x = 25, y = 55, label = "italic(R) ^ 2 == 0.11", parse = TRUE) +
+              scale_x_continuous(limits = c(0, 30)) +
+              scale_y_continuous(limits = c(0, 65)) +
+              theme(text = element_text(size = 18),
+                    panel.grid.major = element_line(colour = "light gray", size = (0.5)),
+                    panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
+                    panel.background = element_blank(),
+                    axis.line = element_line(colour = "black"))
 
 # R-squared value for cc and r
-summary(lm(data = variables, formula = Percent_Coral_Cover ~ Rugosity))$r.squared
+summary(lm(data = variables, formula = Rugosity ~ Percent_Coral_Cover))$r.squared
 # Figure of coral cover vs rugosity with basic LINEAR line of best fit
-ggplot(data = variables, aes(x = Rugosity, y = Percent_Coral_Cover)) +
-  geom_point(data = variables, size = 3, aes(x = Rugosity, y = Percent_Coral_Cover)) +
-  geom_smooth(method = "glm", se = TRUE) +
-  labs(x = "Rugosity", y = "Coral Cover (%)") +
-  annotate(geom = "text", x = 25, y = 35, label = "italic(R) ^ 2 == 0.39", parse = TRUE) +
-  theme(text = element_text(size = 18),
-        panel.grid.major = element_line(colour = "light gray", size = (0.5)),
-        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
-        panel.background = element_blank(),
-        axis.line = element_line(colour = "black"))
+plot_2a <- ggplot(data = variables, aes(x = Percent_Coral_Cover, y = Rugosity)) +
+              geom_point(data = variables, size = 3, aes(x = Percent_Coral_Cover, y = Rugosity)) +
+              geom_smooth(method = "glm", se = TRUE) +
+              labs(x = "Coral Cover (%)", y = "Rugosity") +
+              annotate(geom = "text", size = 10, x = 50, y = 10, label = "italic(R) ^ 2 == 0.39", parse = TRUE) +
+              scale_x_continuous(limits = c(0, 65)) +
+              scale_y_continuous(limits = c(0, 80)) +
+              theme(text = element_text(size = 18),
+                    panel.grid.major = element_line(colour = "light gray", size = (0.5)),
+                    panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
+                    panel.background = element_blank(),
+                    axis.line = element_line(colour = "black"))
 
-# R-squared value for r and sc
+# R-squared value for sc and r
 summary(lm(data = variables, formula = Rugosity ~ Percent_Sponge_Cover))$r.squared
-# Figure of rugosity vs sponge cover with basic LINEAR line of best fit
-ggplot(data = variables, aes(x = Percent_Sponge_Cover, y = Rugosity)) +
-  geom_point(data = variables, size = 3, aes(x = Percent_Sponge_Cover, y = Rugosity)) +
-  geom_smooth(method = "glm", se = TRUE) +
-  labs(x = "Sponge Cover (%)", y = "Rugosity") +
-  annotate(geom = "text", x = 25, y = 35, label = "italic(R) ^ 2 == 0.12", parse = TRUE) +
-  theme(text = element_text(size = 18),
-        panel.grid.major = element_line(colour = "light gray", size = (0.5)),
-        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
-        panel.background = element_blank(),
-        axis.line = element_line(colour = "black"))
+# Figure of sponge cover vs rugosity with basic LINEAR line of best fit
+plot_2c <- ggplot(data = variables, aes(x = Percent_Sponge_Cover, y = Rugosity)) +
+            geom_point(data = variables, size = 3, aes(x = Percent_Sponge_Cover, y = Rugosity)) +
+            geom_smooth(method = "glm", se = TRUE) +
+            labs(x = "Sponge Cover (%)", y = "Rugosity") +
+            annotate(geom = "text", size = 10, x = 25, y = 70, label = "italic(R) ^ 2 == 0.12", parse = TRUE) +
+            scale_x_continuous(limits = c(0, 30)) +
+            scale_y_continuous(limits = c(0, 80)) +
+            theme(text = element_text(size = 18),
+                  panel.grid.major = element_line(colour = "light gray", size = (0.5)),
+                  panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
+                  panel.background = element_blank(),
+                  axis.line = element_line(colour = "black"))
 
+# Organize these figures into one window
+grid.arrange(plot_2a, plot_2b, plot_2c,
+             ncol = 1, nrow = 3)
+
+cc_time <- ggplot(data = variables, aes(x = Year, y = Percent_Coral_Cover)) +
+              geom_point(data = variables, size = 3, aes(x = Year, y = Percent_Coral_Cover)) +
+              geom_smooth(method = "glm", se = TRUE) +
+              labs(x = "Year", y = "Coral Cover (%)") +
+              #scale_x_continuous(limits = c(0, 65)) +
+              #scale_y_continuous(limits = c(0, 80)) +
+              theme(text = element_text(size = 18),
+                    panel.grid.major = element_line(colour = "light gray", size = (0.5)),
+                    panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
+                    panel.background = element_blank(),
+                    axis.line = element_line(colour = "black"))
+            
+cr_time <- ggplot(data = variables, aes(x = Year, y = Coral_Richness)) +
+              geom_point(data = variables, size = 3, aes(x = Year, y = Coral_Richness)) +
+              geom_smooth(method = "glm", se = TRUE) +
+              labs(x = "Year", y = "Coral Richness") +
+              #scale_x_continuous(limits = c(0, 65)) +
+              #scale_y_continuous(limits = c(0, 80)) +
+              theme(text = element_text(size = 18),
+                    panel.grid.major = element_line(colour = "light gray", size = (0.5)),
+                    panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
+                    panel.background = element_blank(),
+                    axis.line = element_line(colour = "black"))
+
+# Organize these figures into one window
+grid.arrange(cr_time, cc_time,
+             ncol = 1, nrow = 2)
 
 ## END OF SCRIPT
 
