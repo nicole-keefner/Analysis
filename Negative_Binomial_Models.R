@@ -2658,6 +2658,14 @@ cr_time <- ggplot(data = variables, aes(x = Year, y = Coral_Richness)) +
 grid.arrange(cr_time, cc_time,
              ncol = 1, nrow = 2)
 
+# Ranges in variables for Crab Cove and White Bay
+summary(variables[which(variables$Site == "crab"),])
+#26-57 cm
+summary(variables[which(variables$Site == "white"),])
+#19-60 cm
+
+
+
 ## END OF SCRIPT
 
 # thoughts for results
