@@ -2061,14 +2061,97 @@ fish_r_site_fig_model <- glm.nb(formula = Fish_Richness ~ Rugosity + Site, data 
 fish_r_site_fig <- data.frame(
   Rugosity = rep(seq(from = min(variables$Rugosity), to = max(variables$Rugosity), length.out = 100), 8),
   Site = factor(rep(1:8, each = 100), levels = 1:8, labels = levels(variables$Site)))
-fish_r_site_fig <- cbind(fish_r_site_fig, predict(object = fish_r_site_fig_model, newdata = fish_r_site_fig, 
-                                                        type = "link", se.fit = TRUE))
+fish_r_site_fig_pred <- predict(object = fish_r_site_fig_model, newdata = fish_r_site_fig, type = "link", se.fit = TRUE)
+fish_r_site_fig <- cbind(fish_r_site_fig, fish_r_site_fig_pred)
 # 95% confidence intervals
 fish_r_site_fig <- within(fish_r_site_fig, {
   Predicted_Fish_Richness <- exp(fit)
   LL <- exp(fit - 1.96 * se.fit)
   UL <- exp(fit + 1.96 * se.fit)
 })
+
+bigelowonly <- variables[which(variables$Site == "bigelow"),]
+crabonly <- variables[which(variables$Site == "crab"),]
+grandonly <- variables[which(variables$Site == "grand"),]
+iguanaonly <- variables[which(variables$Site == "iguana"),]
+monkeyonly <- variables[which(variables$Site == "monkey"),]
+muskNonly <- variables[which(variables$Site == "muskN"),]
+pelicanonly <- variables[which(variables$Site == "pelican"),]
+whiteonly <- variables[which(variables$Site == "white"),]
+
+bigelowonly$Rugosity <- as.numeric(bigelowonly$Rugosity)
+crabonly$Rugosity <- as.numeric(crabonly$Rugosity)
+grandonly$Rugosity <- as.numeric(grandonly$Rugosity)
+iguanaonly$Rugosity <- as.numeric(iguanaonly$Rugosity)
+monkeyonly$Rugosity <- as.numeric(monkeyonly$Rugosity)
+muskNonly$Rugosity <- as.numeric(muskNonly$Rugosity)
+pelicanonly$Rugosity <- as.numeric(pelicanonly$Rugosity)
+whiteonly$Rugosity <- as.numeric(whiteonly$Rugosity)
+
+max(pelicanonly$Rugosity)
+min(pelicanonly$Rugosity)
+######fish_r_site_fig_trueranges <- cbind(fish_r_site_fig, )
+
+fish_r_site_fig$Predicted_Fish_Richness_T_Rugosity_Range <- NA
+fish_r_site_fig$Predicted_Fish_Richness_T_Rugosity_Range <- as.numeric(fish_r_site_fig$Predicted_Fish_Richness_T_Rugosity_Range)
+
+#i didn't actually use row anywhere
+for(row in 1:nrow(fish_r_site_fig)) {
+  #fish_r_site_fig$Site <- as.character(fish_r_site_fig$Site)
+  Site <- fish_r_site_fig[row, "Site"]
+  Rugositee <- fish_r_site_fig[row, "Rugosity"]
+  #Predicted_Fish_Richness_T_Rugosity_Range <- fish_r_site_fig[row, "Predicted_Fish_Richness_T_Rugosity_Range"]
+  Predicted_Fish_Richness <- fish_r_site_fig[row, "Predicted_Fish_Richness"]
+  
+  if(Site == 'bigelow') {
+    upper = max(bigelowonly$Rugosity)
+      lower = min(bigelowonly$Rugosity)
+  } else if(Site == 'crab') {
+    upper = max(crabonly$Rugosity)
+    lower = min(crabonly$Rugosity)
+  } else if(Site == 'grand') {
+    upper = max(grandonly$Rugosity)
+    lower = min(grandonly$Rugosity)
+  } else if(Site == 'iguana') {
+    upper = max(iguanaonly$Rugosity)
+    lower = min(iguanaonly$Rugosity)
+  } else if(Site == 'monkey') {
+    upper = max(monkeyonly$Rugosity)
+    lower = min(monkeyonly$Rugosity)
+  } else if(Site == 'muskN') {
+    upper = max(muskNonly$Rugosity)
+    lower = min(muskNonly$Rugosity)
+  } else if(Site == 'pelican') {
+    upper = max(pelicanonly$Rugosity)
+    lower = min(pelicanonly$Rugosity)
+  } else if(Site == 'white') {
+    upper = max(whiteonly$Rugosity)
+    lower = min(whiteonly$Rugosity)
+  } 
+  if(Rugositee >= lower & Rugositee <= upper) {
+    fish_r_site_fig[row, "Predicted_Fish_Richness_T_Rugosity_Range"] = Predicted_Fish_Richness
+  } else {
+    fish_r_site_fig[row, "Predicted_Fish_Richness_T_Rugosity_Range"] = NA
+  }
+}
+
+# Figure with prediction lines and true points colored by site with lines cut off based on true range of rugosity
+ggplot(data = fish_r_site_fig, aes(x = Rugosity, y = Predicted_Fish_Richness_T_Rugosity_Range, color = Site)) +
+  #geom_ribbon(aes(ymin = 0, ymax = 35, fill = Site), alpha = 0.25) +
+  geom_line(aes(color = Site), size = 2) +
+  geom_point(data = variables, size = 3, aes(x = Rugosity, y = Fish_Richness)) +
+  #scale_color_gradient(low="lightblue", high="darkblue") +
+  #scale_colour_viridis_d(option = "plasma") +
+  scale_colour_viridis_d() +
+  labs(x = "Rugosity", y = "Fish Richness", color = "Site") +
+  theme(text = element_text(size = 18), 
+        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
+        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
+        panel.background = element_blank(), 
+        axis.line = element_line(colour = "black"))
+
+
+
 
 # Figure with prediction lines and true points colored by site
 ggplot(data = fish_r_site_fig, aes(x = Rugosity, y = Predicted_Fish_Richness, color = Site)) +
@@ -2285,7 +2368,63 @@ ggplot(data = combined_r_site_fig, aes(x = Rugosity, y = Predicted_Combined_Rich
         panel.background = element_blank(), 
         axis.line = element_line(colour = "black"))
 
+combined_r_site_fig$Predicted_Combined_Richness_T_Rugosity_Range <- NA
+combined_r_site_fig$Predicted_Combined_Richness_T_Rugosity_Range <- as.numeric(combined_r_site_fig$Predicted_Combined_Richness_T_Rugosity_Range)
 
+#i didn't actually use row anywhere
+for(row in 1:nrow(combined_r_site_fig)) {
+  #combined_r_site_fig$Site <- as.character(combined_r_site_fig$Site)
+  Site <- combined_r_site_fig[row, "Site"]
+  Rugositee <- combined_r_site_fig[row, "Rugosity"]
+  #Predicted_Fish_Richness_T_Rugosity_Range <- combined_r_site_fig[row, "Predicted_Fish_Richness_T_Rugosity_Range"]
+  Predicted_Combined_Richness <- combined_r_site_fig[row, "Predicted_Combined_Richness"]
+  
+  if(Site == 'bigelow') {
+    upper = max(bigelowonly$Rugosity)
+    lower = min(bigelowonly$Rugosity)
+  } else if(Site == 'crab') {
+    upper = max(crabonly$Rugosity)
+    lower = min(crabonly$Rugosity)
+  } else if(Site == 'grand') {
+    upper = max(grandonly$Rugosity)
+    lower = min(grandonly$Rugosity)
+  } else if(Site == 'iguana') {
+    upper = max(iguanaonly$Rugosity)
+    lower = min(iguanaonly$Rugosity)
+  } else if(Site == 'monkey') {
+    upper = max(monkeyonly$Rugosity)
+    lower = min(monkeyonly$Rugosity)
+  } else if(Site == 'muskN') {
+    upper = max(muskNonly$Rugosity)
+    lower = min(muskNonly$Rugosity)
+  } else if(Site == 'pelican') {
+    upper = max(pelicanonly$Rugosity)
+    lower = min(pelicanonly$Rugosity)
+  } else if(Site == 'white') {
+    upper = max(whiteonly$Rugosity)
+    lower = min(whiteonly$Rugosity)
+  } 
+  if(Rugositee >= lower & Rugositee <= upper) {
+    combined_r_site_fig[row, "Predicted_Combined_Richness_T_Rugosity_Range"] = Predicted_Combined_Richness
+  } else {
+    combined_r_site_fig[row, "Predicted_Combined_Richness_T_Rugosity_Range"] = NA
+  }
+}
+
+# Figure with prediction lines and true points colored by site with lines cut off based on true range of rugosity
+ggplot(data = combined_r_site_fig, aes(x = Rugosity, y = Predicted_Combined_Richness_T_Rugosity_Range, color = Site)) +
+  #geom_ribbon(aes(ymin = 0, ymax = 35, fill = Site), alpha = 0.25) +
+  geom_line(aes(color = Site), size = 2) +
+  geom_point(data = variables, size = 3, aes(x = Rugosity, y = Combined_Richness)) +
+  #scale_color_gradient(low="lightblue", high="darkblue") +
+  #scale_colour_viridis_d(option = "plasma") +
+  scale_colour_viridis_d() +
+  labs(x = "Rugosity", y = "Combined Richness", color = "Site") +
+  theme(text = element_text(size = 18), 
+        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
+        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
+        panel.background = element_blank(), 
+        axis.line = element_line(colour = "black"))
 
 ########################################################################
 #######################COMBINED RICHNESS################################
