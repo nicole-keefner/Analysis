@@ -1396,7 +1396,18 @@ grid.arrange(basic_coral_cc, basic_coral_sc, basic_coral_r,
              basic_combined_cc, basic_combined_sc, basic_combined_r,
              ncol = 3, nrow = 4)
  
- 
+# Coral richness for presentation 1800x500
+grid.arrange(basic_coral_cc, basic_coral_sc, basic_coral_r,
+             ncol = 3, nrow = 1)
+# Fish richness for presentation
+grid.arrange(basic_fish_cc, basic_fish_sc, basic_fish_r,
+             ncol = 3, nrow = 1)
+# Sponge richness for presentation
+grid.arrange(basic_sponge_cc, basic_sponge_sc, basic_sponge_r,
+             ncol = 3, nrow = 1)
+# Combined richness for presentation
+grid.arrange(basic_combined_cc, basic_combined_sc, basic_combined_r,
+             ncol = 3, nrow = 1)
  
 # ########################################################################
 # 
