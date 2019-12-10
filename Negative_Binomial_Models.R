@@ -135,28 +135,55 @@ hist(x = variables$Combined_Richness, breaks = 25)
 # (e.g. coral_cc is a model with coral cover as the predictor for coral richness)
 
 # For each target, compare models in aic table
+coral_intercept = glm.nb(formula = Coral_Richness ~ 1, data = variables)
 coral_cc = glm.nb(formula = Coral_Richness ~ Percent_Coral_Cover, data = variables)
 coral_sc = glm.nb(formula = Coral_Richness ~ Percent_Sponge_Cover, data = variables)
 coral_r = glm.nb(formula = Coral_Richness ~ Rugosity, data = variables)
-coral_surrogate <- aictab(cand.set = list(coral_cc, coral_sc, coral_r), modnames = c("coral_cc", "coral_sc", "coral_r"), digits = 4)
+#many of the intercept models are not competitive despite having fewer parameters
+coral_surrogate <- aictab(cand.set = list(coral_intercept, coral_cc, coral_sc, coral_r), modnames = c("coral_intercept", "coral_cc", "coral_sc", "coral_r"), digits = 4)
+#coral_surrogate <- aictab(cand.set = list(coral_cc, coral_sc, coral_r), modnames = c("coral_cc", "coral_sc", "coral_r"), digits = 4)
+sponge_intercept = glm.nb(formula = Sponge_Richness ~ 1, data = variables)
 sponge_cc = glm.nb(formula = Sponge_Richness ~ Percent_Coral_Cover, data = variables)
 sponge_sc = glm.nb(formula = Sponge_Richness ~ Percent_Sponge_Cover, data = variables)
 sponge_r = glm.nb(formula = Sponge_Richness ~ Rugosity, data = variables)
-sponge_surrogate <- aictab(cand.set = list(sponge_cc, sponge_sc, sponge_r), modnames = c("sponge_cc", "sponge_sc", "sponge_r"), digits = 4)
+sponge_surrogate <- aictab(cand.set = list(sponge_intercept, sponge_cc, sponge_sc, sponge_r), modnames = c("sponge_intercept", "sponge_cc", "sponge_sc", "sponge_r"), digits = 4)
+#sponge_surrogate <- aictab(cand.set = list(sponge_cc, sponge_sc, sponge_r), modnames = c("sponge_cc", "sponge_sc", "sponge_r"), digits = 4)
+fish_intercept = glm.nb(formula = Fish_Richness ~ 1, data = variables)
 fish_cc = glm.nb(formula = Fish_Richness ~ Percent_Coral_Cover, data = variables)
 fish_sc = glm.nb(formula = Fish_Richness ~ Percent_Sponge_Cover, data = variables)
 fish_r = glm.nb(formula = Fish_Richness ~ Rugosity, data = variables)
-fish_surrogate <- aictab(cand.set = list(fish_cc, fish_sc, fish_r), modnames = c("fish_cc", "fish_sc", "fish_r"), digits = 4)
+fish_surrogate <- aictab(cand.set = list(fish_intercept, fish_cc, fish_sc, fish_r), modnames = c("fish_intercept", "fish_cc", "fish_sc", "fish_r"), digits = 4)
+#fish_surrogate <- aictab(cand.set = list(fish_cc, fish_sc, fish_r), modnames = c("fish_cc", "fish_sc", "fish_r"), digits = 4)
+combined_intercept = glm.nb(formula = Combined_Richness ~ 1, data = variables)
 combined_cc = glm.nb(formula = Combined_Richness ~ Percent_Coral_Cover, data = variables)
 combined_sc = glm.nb(formula = Combined_Richness ~ Percent_Sponge_Cover, data = variables)
 combined_r = glm.nb(formula = Combined_Richness ~ Rugosity, data = variables)
-combined_surrogate <- aictab(cand.set = list(combined_cc, combined_sc, combined_r), modnames = c("combined_cc", "combined_sc", "combined_r"), digits = 4)
+combined_surrogate <- aictab(cand.set = list(combined_intercept, combined_cc, combined_sc, combined_r), modnames = c("combined_intercept", "combined_cc", "combined_sc", "combined_r"), digits = 4)
+#combined_surrogate <- aictab(cand.set = list(combined_cc, combined_sc, combined_r), modnames = c("combined_cc", "combined_sc", "combined_r"), digits = 4)
 
 ## Save AIC tables for determining the top surrogate for each target as .csv files
 # write.table(x = coral_surrogate, file = "coral_surrogate.csv", sep = ",", col.names = TRUE,row.names = FALSE)
 # write.table(x = sponge_surrogate, file = "sponge_surrogate.csv", sep = ",", col.names = TRUE,row.names = FALSE)
 # write.table(x = fish_surrogate, file = "fish_surrogate.csv", sep = ",", col.names = TRUE,row.names = FALSE)
 # write.table(x = combined_surrogate, file = "combined_surrogate.csv", sep = ",", col.names = TRUE,row.names = FALSE)
+
+# # This is how to export model output to Word file
+# # Coral Model outputs
+# coral_out <- capture.output(summary(coral_cc_yr))
+# cat("Top Model for Coral Richness", coral_out, file="summary_of_coral_cc_yr.doc", sep="\n", append=TRUE)
+# coral_int_out <- capture.output(summary(coral_cc_yr_yrxcc))
+# cat("Top Model for Coral Richness with Interaction", coral_int_out, file="summary_of_coral_cc_yr_yrxcc.doc", sep="\n", append=TRUE)
+# # Sponge Model output
+# sponge_out <- capture.output(summary(sponge_cc_yr_site))
+# cat("Top Model for Sponge Richness", sponge_out, file="summary_of_sponge_cc_yr_site.doc", sep="\n", append=TRUE)
+# # Fish Model output
+# fish_out <- capture.output(summary(fish_r_site))
+# cat("Top Model for Fish Richness", fish_out, file="summary_of_fish_r_site.doc", sep="\n", append=TRUE)
+# # Combined Model output
+# combined_out <- capture.output(summary(combined_r_yr_site))
+# cat("Top Model for Combined Richness", combined_out, file="summary_of_combined_cc_yr_site.doc", sep="\n", append=TRUE)
+
+
 
 # HTML formatting to get the Nagelkerke's pseudo-r-squared for surrogate-only models
 tab_model(coral_sc)
@@ -1418,9 +1445,9 @@ grid.arrange(basic_combined_cc, basic_combined_sc, basic_combined_r,
 # # Figure 13. Relationship between time and coral cover.
 # ggplot(data = variables, aes(x = True_Year, y = Percent_Coral_Cover)) +
 #   geom_point(size = 3) +
-#   scale_x_continuous(name = "Time (Years)") +
+#   scale_x_continuous(name = "Time (Years)", breaks=c(1992,1997, 2002, 2007, 2012, 2017)) +
 #   scale_y_continuous(name = "Coral Cover (%)") +
-#   geom_smooth(size = 1.2, method = "glm.nb", formula = y ~ x, color = "black") +
+#   geom_smooth(size = 2, method = "glm.nb", formula = y ~ x, color = "black") +
 #   theme(text = element_text(size = 27),
 #         panel.grid.major = element_line(colour = "light gray", size = (0.5)),
 #         panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
@@ -1430,9 +1457,9 @@ grid.arrange(basic_combined_cc, basic_combined_sc, basic_combined_r,
 # # Figure 14. Relationship between time and sponge cover.
 # ggplot(data = variables, aes(x = True_Year, y = Percent_Sponge_Cover)) +
 #   geom_point(size = 3) +
-#   scale_x_continuous(name = "Time (Years)") +
+#   scale_x_continuous(name = "Time (Years)", breaks=c(1992,1997, 2002, 2007, 2012, 2017)) +
 #   scale_y_continuous(name = "Sponge Cover (%)") +
-#   geom_smooth(size = 1.2, method = "glm.nb", formula = y ~ x, color = "black") +
+#   geom_smooth(size = 2, method = "glm.nb", formula = y ~ x, color = "black") +
 #   theme(text = element_text(size = 27),
 #         panel.grid.major = element_line(colour = "light gray", size = (0.5)),
 #         panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
@@ -1442,9 +1469,9 @@ grid.arrange(basic_combined_cc, basic_combined_sc, basic_combined_r,
 # # Figure 15. Relationship between time and rugosity.
 # ggplot(data = variables, aes(x = True_Year, y = Rugosity)) +
 #   geom_point(size = 3) +
-#   scale_x_continuous(name = "Time (Years)") +
+#   scale_x_continuous(name = "Time (Years)", breaks=c(1992,1997, 2002, 2007, 2012, 2017)) +
 #   scale_y_continuous(name = "Rugosity") +
-#   geom_smooth(size = 1.2, method = "glm.nb", formula = y ~ x, color = "black") +
+#   geom_smooth(size = 2, method = "glm.nb", formula = y ~ x, color = "black") +
 #   theme(text = element_text(size = 27),
 #         panel.grid.major = element_line(colour = "light gray", size = (0.5)),
 #         panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
@@ -1454,9 +1481,9 @@ grid.arrange(basic_combined_cc, basic_combined_sc, basic_combined_r,
 # # Figure 16. Relationship between time and coral richness.
 # ggplot(data = variables, aes(x = True_Year, y = Coral_Richness)) +
 #   geom_point(size = 3) +
-#   scale_x_continuous(name = "Time (Years)") +
+#   scale_x_continuous(name = "Time (Years)", breaks=c(1992,1997, 2002, 2007, 2012, 2017)) +
 #   scale_y_continuous(name = "Coral Richness") +
-#   geom_smooth(size = 1.2, method = "glm.nb", formula = y ~ x, color = "black") +
+#   geom_smooth(size = 2, method = "glm.nb", formula = y ~ x, color = "black") +
 #   theme(text = element_text(size = 27),
 #         panel.grid.major = element_line(colour = "light gray", size = (0.5)),
 #         panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
@@ -1466,9 +1493,9 @@ grid.arrange(basic_combined_cc, basic_combined_sc, basic_combined_r,
 # # Figure 17. Relationship between time and sponge richness.
 # ggplot(data = variables, aes(x = True_Year, y = Sponge_Richness)) +
 #   geom_point(size = 3) +
-#   scale_x_continuous(name = "Time (Years)") +
+#   scale_x_continuous(name = "Time (Years)", breaks=c(1992,1997, 2002, 2007, 2012, 2017)) +
 #   scale_y_continuous(name = "Sponge Richness") +
-#   geom_smooth(size = 1.2, method = "glm.nb", formula = y ~ x, color = "black") +
+#   geom_smooth(size = 2, method = "glm.nb", formula = y ~ x, color = "black") +
 #   theme(text = element_text(size = 27),
 #         panel.grid.major = element_line(colour = "light gray", size = (0.5)),
 #         panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
@@ -1479,9 +1506,9 @@ grid.arrange(basic_combined_cc, basic_combined_sc, basic_combined_r,
 # # Figure 18. Relationship between time and fish richness.
 # ggplot(data = variables, aes(x = True_Year, y = Fish_Richness)) +
 #   geom_point(size = 3) +
-#   scale_x_continuous(name = "Time (Years)") +
+#   scale_x_continuous(name = "Time (Years)", breaks=c(1992,1997, 2002, 2007, 2012, 2017)) +
 #   scale_y_continuous(name = "Fish Richness") +
-#   geom_smooth(size = 1.2, method = "glm.nb", formula = y ~ x, color = "black") +
+#   geom_smooth(size = 2, method = "glm.nb", formula = y ~ x, color = "black") +
 #   theme(text = element_text(size = 27),
 #         panel.grid.major = element_line(colour = "light gray", size = (0.5)),
 #         panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
@@ -1491,9 +1518,9 @@ grid.arrange(basic_combined_cc, basic_combined_sc, basic_combined_r,
 # # Figure 19. Relationship between time and combined richness.
 # ggplot(data = variables, aes(x = True_Year, y = Combined_Richness)) +
 #   geom_point(size = 3) +
-#   scale_x_continuous(name = "Time (Years)") +
+#   scale_x_continuous(name = "Time (Years)", breaks=c(1992,1997, 2002, 2007, 2012, 2017)) +
 #   scale_y_continuous(name = "Combined Richness") +
-#   geom_smooth(size = 1.2, method = "glm.nb", formula = y ~ x, color = "black") +
+#   geom_smooth(size = 2, method = "glm.nb", formula = y ~ x, color = "black") +
 #   theme(text = element_text(size = 27),
 #         panel.grid.major = element_line(colour = "light gray", size = (0.5)),
 #         panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
@@ -1521,18 +1548,18 @@ cb_palette <- c("#999999", "#E69F00", "#56B4E9", "#009E73",
 # ## Figures of basic relationships between time (x) and surrogates/targets (y) by site (legend)
 #
 # # Figure 20. Relationship between time and coral cover by site.
-# ggplot(data = variables, aes(x = True_Year_Factor, y = Percent_Coral_Cover, group = Site, color = Site)) + 
+# ggplot(data = variables, aes(x = True_Year_Factor, y = Percent_Coral_Cover, group = Site, color = Site)) +
 #   geom_line(size = 1.1) +
 #   scale_x_discrete(name = "Time (Years)") +
 #   scale_y_continuous(name = "Coral Cover (%)") +
 #   scale_color_manual(values = cb_palette) +
-#   theme(text = element_text(size = 18), 
+#   theme(text = element_text(size = 18),
 #         axis.text.x = element_text(angle = +90, hjust = 0),
-#         panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
+#         panel.grid.major = element_line(colour = "light gray", size = (0.5)),
 #         panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
-#         panel.background = element_blank(), 
+#         panel.background = element_blank(),
 #         axis.line = element_line(colour = "black"))
-# 
+#
 # # Figure 21. Relationship between time and sponge cover by site.
 # ggplot(data = variables, aes(x = True_Year_Factor, y = Percent_Sponge_Cover, group = Site, color = Site)) + 
 #   geom_line(size = 1.1) +
@@ -1622,89 +1649,96 @@ cb_palette <- c("#999999", "#E69F00", "#56B4E9", "#009E73",
 # 
 # 
 # ## Figures of basic relationships between time (x) and surrogates/targets (y) by site (panels)
-# 
-# # Figure 27. Relationship between time and coral cover with sites distinguished by panels.
-# ggplot(data = variables, aes(x = True_Year, y = Percent_Coral_Cover)) + 
+# # 
+# # # Figure 27. Relationship between time and coral cover with sites distinguished by panels.
+# ggplot(data = variables, aes(x = True_Year, y = Percent_Coral_Cover)) +
 #   geom_point(size = 3) +
-#   scale_x_continuous(name = "Time (Years)") +
+#   scale_x_continuous(name = "Time (Years)", breaks=c(1992,1997, 2002, 2007, 2012, 2017)) +
 #   scale_y_continuous(name = "Coral Cover (%)") +
-#   theme(text = element_text(size = 18), 
-#         panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
+#   geom_smooth(size = 1, method = "glm.nb", formula = y ~ x, color = "black") +
+#   theme(text = element_text(size = 18),
+#         panel.grid.major = element_line(colour = "light gray", size = (0.5)),
 #         panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
-#         panel.background = element_blank(), 
+#         panel.background = element_blank(),
 #         axis.line = element_line(colour = "black")) +
 #   facet_wrap(facets = ~ Site)
 # 
 # # Figure 28. Relationship between time and sponge cover with sites distinguished by panels.
-# ggplot(data = variables, aes(x = True_Year, y = Percent_Sponge_Cover)) + 
+# ggplot(data = variables, aes(x = True_Year, y = Percent_Sponge_Cover)) +
 #   geom_point(size = 3) +
-#   scale_x_continuous(name = "Time (Years)") +
+#   scale_x_continuous(name = "Time (Years)", breaks=c(1992,1997, 2002, 2007, 2012, 2017)) +
 #   scale_y_continuous(name = "Sponge Cover (%)") +
-#   theme(text = element_text(size = 18), 
-#         panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
+#   geom_smooth(size = 1, method = "glm.nb", formula = y ~ x, color = "black") +
+#   theme(text = element_text(size = 18),
+#         panel.grid.major = element_line(colour = "light gray", size = (0.5)),
 #         panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
-#         panel.background = element_blank(), 
+#         panel.background = element_blank(),
 #         axis.line = element_line(colour = "black")) +
 #   facet_wrap(facets = ~ Site)
 # 
 # # Figure 29. Relationship between time and rugosity with sites distinguished by panels.
-# ggplot(data = variables, aes(x = True_Year, y = Rugosity)) + 
+# ggplot(data = variables, aes(x = True_Year, y = Rugosity)) +
 #   geom_point(size = 3) +
-#   scale_x_continuous(name = "Time (Years)") +
+#   scale_x_continuous(name = "Time (Years)", breaks=c(1992,1997, 2002, 2007, 2012, 2017)) +
 #   scale_y_continuous(name = "Rugosity") +
-#   theme(text = element_text(size = 18), 
-#         panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
+#   geom_smooth(size = 1, method = "glm.nb", formula = y ~ x, color = "black") +
+#   theme(text = element_text(size = 18),
+#         panel.grid.major = element_line(colour = "light gray", size = (0.5)),
 #         panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
-#         panel.background = element_blank(), 
+#         panel.background = element_blank(),
 #         axis.line = element_line(colour = "black")) +
 #   facet_wrap(facets = ~ Site)
 # 
 # # Figure 30. Relationship between time and coral richness with sites distinguished by panels.
-# ggplot(data = variables, aes(x = True_Year, y = Coral_Richness)) + 
+# ggplot(data = variables, aes(x = True_Year, y = Coral_Richness)) +
 #   geom_point(size = 3) +
-#   scale_x_continuous(name = "Time (Years)") +
+#   scale_x_continuous(name = "Time (Years)", breaks=c(1992,1997, 2002, 2007, 2012, 2017)) +
 #   scale_y_continuous(name = "Coral Richness") +
-#   theme(text = element_text(size = 18), 
-#         panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
+#   geom_smooth(size = 1, method = "glm.nb", formula = y ~ x, color = "black") +
+#   theme(text = element_text(size = 18),
+#         panel.grid.major = element_line(colour = "light gray", size = (0.5)),
 #         panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
-#         panel.background = element_blank(), 
+#         panel.background = element_blank(),
 #         axis.line = element_line(colour = "black")) +
 #   facet_wrap(facets = ~ Site)
 # 
 # # Figure 31. Relationship between time and sponge richness with sites distinguished by panels.
-# ggplot(data = variables, aes(x = True_Year, y = Sponge_Richness)) + 
+# ggplot(data = variables, aes(x = True_Year, y = Sponge_Richness)) +
 #   geom_point(size = 3) +
-#   scale_x_continuous(name = "Time (Years)") +
+#   scale_x_continuous(name = "Time (Years)", breaks=c(1992,1997, 2002, 2007, 2012, 2017)) +
 #   scale_y_continuous(name = "Sponge Richness") +
-#   theme(text = element_text(size = 18), 
-#         panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
+#   geom_smooth(size = 1, method = "glm.nb", formula = y ~ x, color = "black") +
+#   theme(text = element_text(size = 18),
+#         panel.grid.major = element_line(colour = "light gray", size = (0.5)),
 #         panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
-#         panel.background = element_blank(), 
+#         panel.background = element_blank(),
 #         axis.line = element_line(colour = "black")) +
 #   facet_wrap(facets = ~ Site)
 # # Resulting warning message same as that from figure 2.
 # 
 # # Figure 32. Relationship between time and fish richness with sites distinguished by panels.
-# ggplot(data = variables, aes(x = True_Year, y = Fish_Richness)) + 
+# ggplot(data = variables, aes(x = True_Year, y = Fish_Richness)) +
 #   geom_point(size = 3) +
-#   scale_x_continuous(name = "Time (Years)") +
+#   scale_x_continuous(name = "Time (Years)", breaks=c(1992,1997, 2002, 2007, 2012, 2017)) +
 #   scale_y_continuous(name = "Fish Richness") +
-#   theme(text = element_text(size = 18), 
-#         panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
+#   geom_smooth(size = 1, method = "glm.nb", formula = y ~ x, color = "black") +
+#   theme(text = element_text(size = 18),
+#         panel.grid.major = element_line(colour = "light gray", size = (0.5)),
 #         panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
-#         panel.background = element_blank(), 
+#         panel.background = element_blank(),
 #         axis.line = element_line(colour = "black")) +
 #   facet_wrap(facets = ~ Site)
 # 
 # # Figure 33. Relationship between time and combined richness with sites distinguished by panels.
-# ggplot(data = variables, aes(x = True_Year, y = Combined_Richness)) + 
+# ggplot(data = variables, aes(x = True_Year, y = Combined_Richness)) +
 #   geom_point(size = 3) +
-#   scale_x_continuous(name = "Time (Years)") +
+#   scale_x_continuous(name = "Time (Years)", breaks=c(1992,1997, 2002, 2007, 2012, 2017)) +
 #   scale_y_continuous(name = "Combined Richness") +
-#   theme(text = element_text(size = 18), 
-#         panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
+#   geom_smooth(size = 1, method = "glm.nb", formula = y ~ x, color = "black") +
+#   theme(text = element_text(size = 18),
+#         panel.grid.major = element_line(colour = "light gray", size = (0.5)),
 #         panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
-#         panel.background = element_blank(), 
+#         panel.background = element_blank(),
 #         axis.line = element_line(colour = "black")) +
 #   facet_wrap(facets = ~ Site)
 # # Resulting warning message same as that from figure 4.
@@ -1829,7 +1863,37 @@ ggplot(data = coral_test, aes(x = Percent_Coral_Cover, y = Predicted_Coral_Richn
         axis.line = element_line(colour = "black"))
 ###END OF CODE FOR THIS FIGURE
 
+#Below is the updated code, but predicted values now need to be based on the model with year as trend
+coral_cc_yr
+coral_newtest <- data.frame(
+  Percent_Coral_Cover = rep(seq(from = min(variables$Percent_Coral_Cover), to = max(variables$Percent_Coral_Cover), length.out = 100), 27),
+  Year = rep(seq(from = min(variables$Year), to = max(variables$Year), length.out = 100), 27))
 
+coral_newtest <- cbind(coral_newtest, predict(object = coral_cc_yr, newdata = coral_newtest, type = "link", se.fit = TRUE, na.action = na.omit))
+# 95% confidence intervals
+coral_newtest <- within(coral_newtest, {
+  Predicted_Coral_Richness <- exp(fit)
+  LL <- exp(fit - 1.96 * se.fit)
+  UL <- exp(fit + 1.96 * se.fit)      
+})
+ggplot(data = coral_newtest, aes(x = Percent_Coral_Cover, y = Predicted_Coral_Richness)) +
+  #geom_ribbon(aes(ymin = 0, ymax = 35, fill = Year_Factor), alpha = 0.25) +
+  geom_point(data = variables, size = 3, aes(x = Percent_Coral_Cover, y = Coral_Richness, color = True_Year_Factor)) +
+  geom_line(size = 2) +
+  geom_line(size = 2, linetype = "dashed", aes(x = Percent_Coral_Cover, y = LL)) +
+  geom_line(size = 2, linetype = "dashed", aes(x = Percent_Coral_Cover, y = UL)) +
+  #scale_color_gradient(low="lightblue", high="darkblue") +
+  #scale_colour_viridis_d(option = "plasma") +
+  ## Order numbers in legend, but can't use viridis
+  #scale_colour_discrete(c("1", "2", "3", "8", "9", "10", "11", "13", "14", "15", 
+  #                       "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26")) +
+  scale_colour_viridis_d() +
+  labs(x = "Coral Cover (%)", y = "Coral Richness", color = "Year") +
+  theme(text = element_text(size = 18), 
+        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
+        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
+        panel.background = element_blank(), 
+        axis.line = element_line(colour = "black"))
 
 ########################################################################
 #######################SPONGE RICHNESS##################################
@@ -1986,6 +2050,46 @@ ggplot(data = sponge_cc_site_fig, aes(x = Percent_Coral_Cover, y = Predicted_Spo
 
 ########################################################################
 #######################FISH RICHNESS####################################
+
+
+# TEST for Graham's comment
+fishy_test_model <- glm.nb(formula = Fish_Richness ~ Rugosity + True_Year_Factor, data = variables)
+fishy_test <- data.frame(
+  Rugosity = rep(seq(from = min(variables$Rugosity), to = max(variables$Rugosity), length.out = 100), 27),
+  True_Year_Factor = factor(rep(1:27, each = 100), levels = 1:27, labels = levels(variables$True_Year_Factor)))
+
+fishy_test <- cbind(fishy_test, predict(object = fishy_test_model, newdata = fishy_test, type = "link", se.fit = TRUE, na.action = na.omit))
+# 95% confidence intervals
+fishy_test <- within(fishy_test, {
+  Predicted_Fish_Richness <- exp(fit)
+  LL <- exp(fit - 1.96 * se.fit)
+  UL <- exp(fit + 1.96 * se.fit)      
+})
+# Figure with prediction lines and true points colored by year
+ggplot(data = fishy_test, aes(x = Rugosity, y = Predicted_Fish_Richness, color = True_Year_Factor)) +
+  geom_line(aes(color = True_Year_Factor), size = 2) +
+  geom_point(data = variables, size = 3, aes(x = Rugosity, y = Fish_Richness)) +
+  scale_colour_viridis_d() +
+  labs(x = "Rugosity", y = "Fish Richness", color = "Year") +
+  theme(text = element_text(size = 18), 
+        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
+        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
+        panel.background = element_blank(), 
+        axis.line = element_line(colour = "black"))
+###END OF CODE FOR THIS FIGURE
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
