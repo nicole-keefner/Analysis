@@ -1863,7 +1863,7 @@ ggplot(data = coral_test, aes(x = Percent_Coral_Cover, y = Predicted_Coral_Richn
         axis.line = element_line(colour = "black"))
 ###END OF CODE FOR THIS FIGURE
 
-#Below is the updated code, but predicted values now need to be based on the model with year as trend
+# Below is the updated code, but predicted values now need to be based on the model with year as trend
 coral_cc_yr
 coral_newtest <- data.frame(
   Percent_Coral_Cover = rep(seq(from = min(variables$Percent_Coral_Cover), to = max(variables$Percent_Coral_Cover), length.out = 100), 27),
@@ -1877,16 +1877,12 @@ coral_newtest <- within(coral_newtest, {
   UL <- exp(fit + 1.96 * se.fit)      
 })
 ggplot(data = coral_newtest, aes(x = Percent_Coral_Cover, y = Predicted_Coral_Richness)) +
-  #geom_ribbon(aes(ymin = 0, ymax = 35, fill = Year_Factor), alpha = 0.25) +
   geom_point(data = variables, size = 3, aes(x = Percent_Coral_Cover, y = Coral_Richness, color = True_Year_Factor)) +
   geom_line(size = 2) +
   geom_line(size = 2, linetype = "dashed", aes(x = Percent_Coral_Cover, y = LL)) +
   geom_line(size = 2, linetype = "dashed", aes(x = Percent_Coral_Cover, y = UL)) +
-  #scale_color_gradient(low="lightblue", high="darkblue") +
-  #scale_colour_viridis_d(option = "plasma") +
-  ## Order numbers in legend, but can't use viridis
-  #scale_colour_discrete(c("1", "2", "3", "8", "9", "10", "11", "13", "14", "15", 
-  #                       "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26")) +
+  scale_x_continuous(limits = c(0, 65)) +
+  scale_y_continuous(limits = c(0, 40)) +
   scale_colour_viridis_d() +
   labs(x = "Coral Cover (%)", y = "Coral Richness", color = "Year") +
   theme(text = element_text(size = 18), 
@@ -1894,6 +1890,36 @@ ggplot(data = coral_newtest, aes(x = Percent_Coral_Cover, y = Predicted_Coral_Ri
         panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
         panel.background = element_blank(), 
         axis.line = element_line(colour = "black"))
+
+# Below is the updated code, but predicted values now need to be based on the model with year as trend and interaction
+coral_cc_yr_yrxcc
+coral_newtest_int <- data.frame(
+  Percent_Coral_Cover = rep(seq(from = min(variables$Percent_Coral_Cover), to = max(variables$Percent_Coral_Cover), length.out = 100), 27),
+  Year = rep(seq(from = min(variables$Year), to = max(variables$Year), length.out = 100), 27))
+
+coral_newtest_int <- cbind(coral_newtest_int, predict(object = coral_cc_yr_yrxcc, newdata = coral_newtest_int, type = "link", se.fit = TRUE, na.action = na.omit))
+# 95% confidence intervals
+coral_newtest_int <- within(coral_newtest_int, {
+  Predicted_Coral_Richness <- exp(fit)
+  LL <- exp(fit - 1.96 * se.fit)
+  UL <- exp(fit + 1.96 * se.fit)      
+})
+ggplot(data = coral_newtest_int, aes(x = Percent_Coral_Cover, y = Predicted_Coral_Richness)) +
+  geom_point(data = variables, size = 3, aes(x = Percent_Coral_Cover, y = Coral_Richness, color = True_Year_Factor)) +
+  geom_line(size = 2) +
+  geom_line(size = 2, linetype = "dashed", aes(x = Percent_Coral_Cover, y = LL)) +
+  geom_line(size = 2, linetype = "dashed", aes(x = Percent_Coral_Cover, y = UL)) +
+  scale_x_continuous(limits = c(0, 65)) +
+  scale_y_continuous(limits = c(0, 40)) +
+  scale_colour_viridis_d() +
+  labs(x = "Coral Cover (%)", y = "Coral Richness", color = "Year") +
+  theme(text = element_text(size = 18), 
+        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
+        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
+        panel.background = element_blank(), 
+        axis.line = element_line(colour = "black"))
+
+
 
 ########################################################################
 #######################SPONGE RICHNESS##################################
@@ -2045,6 +2071,40 @@ ggplot(data = sponge_cc_site_fig, aes(x = Percent_Coral_Cover, y = Predicted_Spo
         panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
         panel.background = element_blank(), 
         axis.line = element_line(colour = "black"))
+
+
+# Below is the updated code, but predicted values now need to be based on the model with year as trend and sites in panels
+sponge_cc_yr_site
+sponge_newtest <- data.frame(
+  Percent_Coral_Cover = rep(seq(from = min(variables$Percent_Coral_Cover), to = max(variables$Percent_Coral_Cover), length.out = 100), 216),
+  Year = rep(seq(from = min(variables$Year), to = max(variables$Year), length.out = 100), 216),
+  Site = factor(rep(1:8, each = 2700), levels = 1:8, labels = levels(sponge_complete$Site)))
+
+sponge_newtest <- cbind(sponge_newtest, predict(object = sponge_cc_yr_site, newdata = sponge_newtest, type = "link", se.fit = TRUE, na.action = na.omit))
+# 95% confidence intervals
+sponge_newtest <- within(sponge_newtest, {
+  Predicted_Sponge_Richness <- exp(fit)
+  LL <- exp(fit - 1.96 * se.fit)
+  UL <- exp(fit + 1.96 * se.fit)      
+})
+ggplot(data = sponge_newtest, aes(x = Percent_Coral_Cover, y = Predicted_Sponge_Richness)) +
+  geom_point(data = variables, size = 3, aes(x = Percent_Coral_Cover, y = Sponge_Richness, color = True_Year_Factor)) +
+  geom_line(size = 1) +
+  geom_line(size = 1, linetype = "dashed", aes(x = Percent_Coral_Cover, y = LL)) +
+  geom_line(size = 1, linetype = "dashed", aes(x = Percent_Coral_Cover, y = UL)) +
+  #scale_x_continuous(limits = c(0, 65)) +
+  #scale_y_continuous(limits = c(0, 40)) +
+  scale_colour_viridis_d() +
+  labs(x = "Coral Cover (%)", y = "Sponge Richness", color = "Year") +
+  theme(text = element_text(size = 18), 
+        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
+        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
+        panel.background = element_blank(), 
+        axis.line = element_line(colour = "black")) +
+  facet_wrap(facets = ~ Site)
+
+
+
 
 
 
@@ -2282,6 +2342,38 @@ ggplot(data = fish_r_site_fig, aes(x = Rugosity, y = Predicted_Fish_Richness, co
         panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
         panel.background = element_blank(), 
         axis.line = element_line(colour = "black"))
+
+
+
+# Below is the updated code, but predicted values now need to be based on the model with sites in panels
+fish_r_site
+fish_newtest <- data.frame(
+  Rugosity = rep(seq(from = min(variables$Rugosity), to = max(variables$Rugosity), length.out = 100), 216),
+  Site = factor(rep(1:8, each = 2700), levels = 1:8, labels = levels(variables$Site)))
+
+fish_newtest <- cbind(fish_newtest, predict(object = fish_r_site, newdata = fish_newtest, type = "link", se.fit = TRUE, na.action = na.omit))
+# 95% confidence intervals
+fish_newtest <- within(fish_newtest, {
+  Predicted_Fish_Richness <- exp(fit)
+  LL <- exp(fit - 1.96 * se.fit)
+  UL <- exp(fit + 1.96 * se.fit)      
+})
+ggplot(data = fish_newtest, aes(x = Rugosity, y = Predicted_Fish_Richness)) +
+  geom_point(data = variables, size = 3, aes(x = Rugosity, y = Fish_Richness)) +
+  geom_line(size = 1) +
+  geom_line(size = 1, linetype = "dashed", aes(x = Rugosity, y = LL)) +
+  geom_line(size = 1, linetype = "dashed", aes(x = Rugosity, y = UL)) +
+  #scale_x_continuous(limits = c(0, 65)) +
+  #scale_y_continuous(limits = c(0, 40)) +
+  #scale_colour_viridis_d() +
+  labs(x = "Rugosity", y = "Fish Richness") +
+  theme(text = element_text(size = 18), 
+        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
+        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
+        panel.background = element_blank(), 
+        axis.line = element_line(colour = "black")) +
+  facet_wrap(facets = ~ Site)
+
 
 
 
@@ -2540,6 +2632,41 @@ ggplot(data = combined_r_site_fig, aes(x = Rugosity, y = Predicted_Combined_Rich
         panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
         panel.background = element_blank(), 
         axis.line = element_line(colour = "black"))
+
+
+# Below is the updated code, but predicted values now need to be based on the model with year as trend and sites in panels
+combined_r_yr_site
+combined_newtest <- data.frame(
+  Rugosity = rep(seq(from = min(variables$Rugosity), to = max(variables$Rugosity), length.out = 100), 216),
+  Year = rep(seq(from = min(variables$Year), to = max(variables$Year), length.out = 100), 216),
+  Site = factor(rep(1:8, each = 2700), levels = 1:8, labels = levels(combined_complete$Site)))
+
+combined_newtest <- cbind(combined_newtest, predict(object = combined_r_yr_site, newdata = combined_newtest, type = "link", se.fit = TRUE, na.action = na.omit))
+# 95% confidence intervals
+combined_newtest <- within(combined_newtest, {
+  Predicted_Combined_Richness <- exp(fit)
+  LL <- exp(fit - 1.96 * se.fit)
+  UL <- exp(fit + 1.96 * se.fit)      
+})
+ggplot(data = combined_newtest, aes(x = Rugosity, y = Predicted_Combined_Richness)) +
+  geom_point(data = variables, size = 3, aes(x = Rugosity, y = Combined_Richness, color = True_Year_Factor)) +
+  geom_line(size = 1) +
+  geom_line(size = 1, linetype = "dashed", aes(x = Rugosity, y = LL)) +
+  geom_line(size = 1, linetype = "dashed", aes(x = Rugosity, y = UL)) +
+  #scale_x_continuous(limits = c(0, 65)) +
+  #scale_y_continuous(limits = c(0, 40)) +
+  scale_colour_viridis_d() +
+  labs(x = "Rugosity", y = "Combined Richness", color = "Year") +
+  theme(text = element_text(size = 18), 
+        panel.grid.major = element_line(colour = "light gray", size = (0.5)), 
+        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
+        panel.background = element_blank(), 
+        axis.line = element_line(colour = "black")) +
+  facet_wrap(facets = ~ Site)
+
+
+
+
 
 ########################################################################
 #######################COMBINED RICHNESS################################
