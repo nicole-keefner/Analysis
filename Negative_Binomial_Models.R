@@ -2914,7 +2914,8 @@ plot_1a <- ggplot(data = variables, aes(x = Coral_Richness, y = Fish_Richness)) 
               geom_point(data = variables, size = 3, aes(x = Coral_Richness, y = Fish_Richness)) +
               geom_smooth(method = "glm", se = TRUE) +
               labs(x = "Coral Richness", y = "Fish Richness") +
-              annotate(geom = "text", size = 10, x = 5, y = 4, label = "italic(R) ^ 2 == 0.23", parse = TRUE) +
+              annotate(geom = "text", size = 8, x = 5, y = 7, label = "italic(R) ^ 2 == 0.23", parse = TRUE) +
+              annotate(geom = "text", size = 8, x = 5, y = 3, label = "p = 5.27e-14", parse = FALSE) +
               scale_x_continuous(limits = c(0, 25)) +
               scale_y_continuous(limits = c(0, 40)) +
               theme(text = element_text(size = 18),
@@ -2930,7 +2931,8 @@ plot_1b <- ggplot(data = variables, aes(x = Sponge_Richness, y = Coral_Richness)
               geom_point(data = variables, size = 3, aes(x = Sponge_Richness, y = Coral_Richness)) +
               geom_smooth(method = "glm", se = TRUE) +
               labs(x = "Sponge Richness", y = "Coral Richness") +
-              annotate(geom = "text", size = 10, x = 10, y = 2, label = "italic(R) ^ 2 == 0.06", parse = TRUE) +
+              annotate(geom = "text", size = 8, x = 10, y = 5, label = "italic(R) ^ 2 == 0.06", parse = TRUE) +
+              annotate(geom = "text", size = 8, x = 10, y = 2, label = "p = 1.59e-3", parse = FALSE) +
               scale_x_continuous(limits = c(0, 40)) +
               scale_y_continuous(limits = c(0, 25)) +
               theme(text = element_text(size = 18),
@@ -2946,7 +2948,8 @@ plot_1c <- ggplot(data = variables, aes(x = Sponge_Richness, y = Fish_Richness))
               geom_point(data = variables, size = 3, aes(x = Sponge_Richness, y = Fish_Richness)) +
               geom_smooth(method = "glm", se = TRUE) +
               labs(x = "Sponge Richness", y = "Fish Richness") +
-              annotate(geom = "text", size = 10, x = 10, y = 4, label = "italic(R) ^ 2 == 0.10", parse = TRUE) +
+              annotate(geom = "text", size = 8, x = 10, y = 6, label = "italic(R) ^ 2 == 0.10", parse = TRUE) +
+              annotate(geom = "text", size = 8, x = 10, y = 2, label = "p = 2.37e-5", parse = FALSE) +
               scale_x_continuous(limits = c(0, 40)) +
               scale_y_continuous(limits = c(0, 40)) +
               theme(text = element_text(size = 18),
@@ -2966,7 +2969,8 @@ plot_2b <- ggplot(data = variables, aes(x = Percent_Sponge_Cover, y = Percent_Co
               geom_point(data = variables, size = 3, aes(x = Percent_Sponge_Cover, y = Percent_Coral_Cover)) +
               geom_smooth(method = "glm", se = TRUE) +
               labs(x = "Sponge Cover (%)", y = "Coral Cover (%)") +
-              annotate(geom = "text", size = 10, x = 25, y = 55, label = "italic(R) ^ 2 == 0.11", parse = TRUE) +
+              annotate(geom = "text", size = 8, x = 25, y = 55, label = "italic(R) ^ 2 == 0.11", parse = TRUE) +
+              annotate(geom = "text", size = 8, x = 25, y = 49, label = "p = 4.72e-7", parse = FALSE) +
               scale_x_continuous(limits = c(0, 30)) +
               scale_y_continuous(limits = c(0, 65)) +
               theme(text = element_text(size = 18),
@@ -2982,7 +2986,8 @@ plot_2a <- ggplot(data = variables, aes(x = Percent_Coral_Cover, y = Rugosity)) 
               geom_point(data = variables, size = 3, aes(x = Percent_Coral_Cover, y = Rugosity)) +
               geom_smooth(method = "glm", se = TRUE) +
               labs(x = "Coral Cover (%)", y = "Rugosity") +
-              annotate(geom = "text", size = 10, x = 50, y = 10, label = "italic(R) ^ 2 == 0.39", parse = TRUE) +
+              annotate(geom = "text", size = 8, x = 50, y = 13, label = "italic(R) ^ 2 == 0.39", parse = TRUE) +
+              annotate(geom = "text", size = 8, x = 50, y = 6, label = "p = < 2.2e-16", parse = FALSE) +
               scale_x_continuous(limits = c(0, 65)) +
               scale_y_continuous(limits = c(0, 80)) +
               theme(text = element_text(size = 18),
@@ -2998,7 +3003,8 @@ plot_2c <- ggplot(data = variables, aes(x = Percent_Sponge_Cover, y = Rugosity))
             geom_point(data = variables, size = 3, aes(x = Percent_Sponge_Cover, y = Rugosity)) +
             geom_smooth(method = "glm", se = TRUE) +
             labs(x = "Sponge Cover (%)", y = "Rugosity") +
-            annotate(geom = "text", size = 10, x = 25, y = 70, label = "italic(R) ^ 2 == 0.12", parse = TRUE) +
+            annotate(geom = "text", size = 8, x = 25, y = 70, label = "italic(R) ^ 2 == 0.12", parse = TRUE) +
+            annotate(geom = "text", size = 8, x = 25, y = 63, label = "p = 1.34e-7", parse = FALSE) +
             scale_x_continuous(limits = c(0, 30)) +
             scale_y_continuous(limits = c(0, 80)) +
             theme(text = element_text(size = 18),
@@ -3011,10 +3017,14 @@ plot_2c <- ggplot(data = variables, aes(x = Percent_Sponge_Cover, y = Rugosity))
 grid.arrange(plot_2a, plot_2b, plot_2c,
              ncol = 1, nrow = 3)
 
+# R-squared value for cc and time
+summary(lm(data = variables, formula = Percent_Coral_Cover ~ Year))$r.squared
 cc_time <- ggplot(data = variables, aes(x = Year, y = Percent_Coral_Cover)) +
               geom_point(data = variables, size = 3, aes(x = Year, y = Percent_Coral_Cover)) +
               geom_smooth(method = "glm", se = TRUE) +
               labs(x = "Year", y = "Coral Cover (%)") +
+              annotate(geom = "text", size = 8, x = 20, y = 55, label = "italic(R) ^ 2 == 0.08", parse = TRUE) +
+              annotate(geom = "text", size = 8, x = 20, y = 49, label = "p = 1.85e-5", parse = FALSE) +
               #scale_x_continuous(limits = c(0, 65)) +
               #scale_y_continuous(limits = c(0, 80)) +
               theme(text = element_text(size = 18),
@@ -3022,11 +3032,15 @@ cc_time <- ggplot(data = variables, aes(x = Year, y = Percent_Coral_Cover)) +
                     panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
                     panel.background = element_blank(),
                     axis.line = element_line(colour = "black"))
-            
+
+# R-squared value for coral richness and time
+summary(lm(data = variables, formula = Coral_Richness ~ Year))$r.squared            
 cr_time <- ggplot(data = variables, aes(x = Year, y = Coral_Richness)) +
               geom_point(data = variables, size = 3, aes(x = Year, y = Coral_Richness)) +
               geom_smooth(method = "glm", se = TRUE) +
               labs(x = "Year", y = "Coral Richness") +
+              annotate(geom = "text", size = 8, x = 15, y = 21, label = "italic(R) ^ 2 == 0.002", parse = TRUE) +
+              annotate(geom = "text", size = 8, x = 15, y = 19.5, label = "p = 0.46", parse = FALSE) +
               #scale_x_continuous(limits = c(0, 65)) +
               #scale_y_continuous(limits = c(0, 80)) +
               theme(text = element_text(size = 18),
@@ -3048,6 +3062,23 @@ summary(variables[which(variables$Site == "white"),])
 
 
 ## END OF SCRIPT
+
+# Standard deviations
+sd(variables$Percent_Coral_Cover)
+sd(variables$Percent_Sponge_Cover)
+sd(variables$Rugosity)
+sd(variables$Coral_Richness)
+sd(sponge_complete$Sponge_Richness)
+sd(variables$Fish_Richness)
+sd(combined_complete$Combined_Richness)
+#means
+mean(variables$Percent_Coral_Cover)
+mean(variables$Percent_Sponge_Cover)
+mean(variables$Rugosity)
+mean(variables$Coral_Richness)
+mean(sponge_complete$Sponge_Richness)
+mean(variables$Fish_Richness)
+mean(combined_complete$Combined_Richness)
 
 # thoughts for results
 # > ght<-variables[which(variables$True_Year>2007),]

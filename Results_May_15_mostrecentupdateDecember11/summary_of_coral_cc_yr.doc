@@ -1,0 +1,32 @@
+Top Model for Coral Richness
+
+Call:
+glm.nb(formula = Coral_Richness ~ Percent_Coral_Cover + Year, 
+    data = variables, init.theta = 523703.6138, link = log)
+
+Deviance Residuals: 
+    Min       1Q   Median       3Q      Max  
+-1.6927  -0.4684   0.0064   0.4643   1.8055  
+
+Coefficients:
+                    Estimate Std. Error z value Pr(>|z|)    
+(Intercept)         2.075133   0.057088  36.350  < 2e-16 ***
+Percent_Coral_Cover 0.015174   0.001346  11.275  < 2e-16 ***
+Year                0.010320   0.002573   4.012 6.03e-05 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+(Dispersion parameter for Negative Binomial(523703.6) family taken to be 1)
+
+    Null deviance: 216.539  on 215  degrees of freedom
+Residual deviance:  93.117  on 213  degrees of freedom
+AIC: 1044
+
+Number of Fisher Scoring iterations: 1
+
+
+              Theta:  523704 
+          Std. Err.:  5111324 
+Warning while fitting theta: iteration limit reached 
+
+ 2 x log-likelihood:  -1036.023 
