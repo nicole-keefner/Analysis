@@ -1876,7 +1876,7 @@ coral_newtest <- within(coral_newtest, {
   LL <- exp(fit - 1.96 * se.fit)
   UL <- exp(fit + 1.96 * se.fit)      
 })
-ggplot(data = coral_newtest, aes(x = Percent_Coral_Cover, y = Predicted_Coral_Richness)) +
+plot_coral_newtest <- ggplot(data = coral_newtest, aes(x = Percent_Coral_Cover, y = Predicted_Coral_Richness)) +
   geom_point(data = variables, size = 3, aes(x = Percent_Coral_Cover, y = Coral_Richness, color = True_Year_Factor)) +
   geom_line(size = 2) +
   geom_line(size = 2, linetype = "dashed", aes(x = Percent_Coral_Cover, y = LL)) +
@@ -1904,7 +1904,7 @@ coral_newtest_int <- within(coral_newtest_int, {
   LL <- exp(fit - 1.96 * se.fit)
   UL <- exp(fit + 1.96 * se.fit)      
 })
-ggplot(data = coral_newtest_int, aes(x = Percent_Coral_Cover, y = Predicted_Coral_Richness)) +
+plot_coral_newtest_int <- ggplot(data = coral_newtest_int, aes(x = Percent_Coral_Cover, y = Predicted_Coral_Richness)) +
   geom_point(data = variables, size = 3, aes(x = Percent_Coral_Cover, y = Coral_Richness, color = True_Year_Factor)) +
   geom_line(size = 2) +
   geom_line(size = 2, linetype = "dashed", aes(x = Percent_Coral_Cover, y = LL)) +
@@ -1919,7 +1919,9 @@ ggplot(data = coral_newtest_int, aes(x = Percent_Coral_Cover, y = Predicted_Cora
         panel.background = element_blank(), 
         axis.line = element_line(colour = "black"))
 
-
+# Organize coral figures into one window
+grid.arrange(plot_coral_newtest, plot_coral_newtest_int,
+             ncol = 1, nrow = 2)
 
 ########################################################################
 #######################SPONGE RICHNESS##################################
@@ -3017,39 +3019,121 @@ plot_2c <- ggplot(data = variables, aes(x = Percent_Sponge_Cover, y = Rugosity))
 grid.arrange(plot_2a, plot_2b, plot_2c,
              ncol = 1, nrow = 3)
 
+###############################################
+
+# These figures over time (with p-values) dimensions: 700w x 600h
+# These figures faceted by site (no p-values) dimensions: 1000w x 900h
 # R-squared value for cc and time
 summary(lm(data = variables, formula = Percent_Coral_Cover ~ Year))$r.squared
 cc_time <- ggplot(data = variables, aes(x = Year, y = Percent_Coral_Cover)) +
               geom_point(data = variables, size = 3, aes(x = Year, y = Percent_Coral_Cover)) +
-              geom_smooth(method = "glm", se = TRUE) +
+              geom_smooth(method = "glm", se = TRUE, color = "black", size = 1.4) +
               labs(x = "Year", y = "Coral Cover (%)") +
-              annotate(geom = "text", size = 8, x = 20, y = 55, label = "italic(R) ^ 2 == 0.08", parse = TRUE) +
-              annotate(geom = "text", size = 8, x = 20, y = 49, label = "p = 1.85e-5", parse = FALSE) +
-              #scale_x_continuous(limits = c(0, 65)) +
-              #scale_y_continuous(limits = c(0, 80)) +
+              #annotate(geom = "text", size = 8, x = 20, y = 55, label = "italic(R) ^ 2 == 0.08", parse = TRUE) +
+              #annotate(geom = "text", size = 8, x = 20, y = 49, label = "p = 1.85e-5", parse = FALSE) +
               theme(text = element_text(size = 18),
                     panel.grid.major = element_line(colour = "light gray", size = (0.5)),
                     panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
                     panel.background = element_blank(),
-                    axis.line = element_line(colour = "black"))
+                    axis.line = element_line(colour = "black")) +
+              facet_wrap(facets = ~ Site)
+
+# R-squared value for r and time
+summary(lm(data = variables, formula = Rugosity ~ Year))$r.squared
+r_time <- ggplot(data = variables, aes(x = Year, y = Rugosity)) +
+  geom_point(data = variables, size = 3, aes(x = Year, y = Rugosity)) +
+  geom_smooth(method = "glm", se = TRUE, color = "black", size = 1.4) +
+  labs(x = "Year", y = "Rugosity") +
+  #annotate(geom = "text", size = 8, x = 15, y = 10, label = "italic(R) ^ 2 == 0.08", parse = TRUE) +
+  #annotate(geom = "text", size = 8, x = 15, y = 3, label = "p = 3.08e-5", parse = FALSE) +
+  scale_y_continuous(limits = c(0, 80)) +
+  theme(text = element_text(size = 18),
+        panel.grid.major = element_line(colour = "light gray", size = (0.5)),
+        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
+        panel.background = element_blank(),
+        axis.line = element_line(colour = "black")) +
+  facet_wrap(facets = ~ Site)
+
+# R-squared value for sc and time
+summary(lm(data = variables, formula = Percent_Sponge_Cover ~ Year))$r.squared
+sc_time <- ggplot(data = variables, aes(x = Year, y = Percent_Sponge_Cover)) +
+  geom_point(data = variables, size = 3, aes(x = Year, y = Percent_Sponge_Cover)) +
+  geom_smooth(method = "glm", se = TRUE, color = "black", size = 1.4) +
+  labs(x = "Year", y = "Sponge Cover (%)") +
+  #annotate(geom = "text", size = 8, x = 20, y = 25, label = "italic(R) ^ 2 == 0.01", parse = TRUE) +
+  #annotate(geom = "text", size = 8, x = 20, y = 22.5, label = "p = 0.10", parse = FALSE) +
+  theme(text = element_text(size = 18),
+        panel.grid.major = element_line(colour = "light gray", size = (0.5)),
+        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
+        panel.background = element_blank(),
+        axis.line = element_line(colour = "black")) +
+  facet_wrap(facets = ~ Site)
 
 # R-squared value for coral richness and time
 summary(lm(data = variables, formula = Coral_Richness ~ Year))$r.squared            
 cr_time <- ggplot(data = variables, aes(x = Year, y = Coral_Richness)) +
               geom_point(data = variables, size = 3, aes(x = Year, y = Coral_Richness)) +
-              geom_smooth(method = "glm", se = TRUE) +
+              geom_smooth(method = "glm", se = TRUE, color = "black", size = 1.4) +
               labs(x = "Year", y = "Coral Richness") +
-              annotate(geom = "text", size = 8, x = 15, y = 21, label = "italic(R) ^ 2 == 0.002", parse = TRUE) +
-              annotate(geom = "text", size = 8, x = 15, y = 19.5, label = "p = 0.46", parse = FALSE) +
-              #scale_x_continuous(limits = c(0, 65)) +
-              #scale_y_continuous(limits = c(0, 80)) +
+              #annotate(geom = "text", size = 8, x = 15, y = 21, label = "italic(R) ^ 2 == 0.002", parse = TRUE) +
+              #annotate(geom = "text", size = 8, x = 15, y = 19.5, label = "p = 0.46", parse = FALSE) +
               theme(text = element_text(size = 18),
                     panel.grid.major = element_line(colour = "light gray", size = (0.5)),
                     panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
                     panel.background = element_blank(),
-                    axis.line = element_line(colour = "black"))
+                    axis.line = element_line(colour = "black")) +
+              facet_wrap(facets = ~ Site)
 
-# Organize these figures into one window
+# R-squared value for sponge richness and time
+summary(lm(data = variables, formula = Sponge_Richness ~ Year))$r.squared            
+sr_time <- ggplot(data = variables, aes(x = Year, y = Sponge_Richness)) +
+  geom_point(data = variables, size = 3, aes(x = Year, y = Sponge_Richness)) +
+  geom_smooth(method = "glm", se = TRUE, color = "black", size = 1.4) +
+  labs(x = "Year", y = "Sponge Richness") +
+  #annotate(geom = "text", size = 8, x = 5, y = 35, label = "italic(R) ^ 2 == 0.06", parse = TRUE) +
+  #annotate(geom = "text", size = 8, x = 5, y = 32, label = "p = 1.52e-3", parse = FALSE) +
+  theme(text = element_text(size = 18),
+        panel.grid.major = element_line(colour = "light gray", size = (0.5)),
+        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
+        panel.background = element_blank(),
+        axis.line = element_line(colour = "black")) +
+  facet_wrap(facets = ~ Site)
+
+# R-squared value for fish richness and time
+summary(lm(data = variables, formula = Fish_Richness ~ Year))$r.squared            
+fr_time <- ggplot(data = variables, aes(x = Year, y = Fish_Richness)) +
+  geom_point(data = variables, size = 3, aes(x = Year, y = Fish_Richness)) +
+  geom_smooth(method = "glm", se = TRUE, color = "black", size = 1.4) +
+  labs(x = "Year", y = "Fish Richness") +
+  #annotate(geom = "text", size = 8, x = 17, y = 10.5, label = "italic(R) ^ 2 == 0.003", parse = TRUE) +
+  #annotate(geom = "text", size = 8, x = 17, y = 8, label = "p = 0.45", parse = FALSE) +
+  theme(text = element_text(size = 18),
+        panel.grid.major = element_line(colour = "light gray", size = (0.5)),
+        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
+        panel.background = element_blank(),
+        axis.line = element_line(colour = "black")) +
+  facet_wrap(facets = ~ Site)
+
+# R-squared value for combined richness and time
+summary(lm(data = variables, formula = Combined_Richness ~ Year))$r.squared            
+comr_time <- ggplot(data = variables, aes(x = Year, y = Combined_Richness)) +
+  geom_point(data = variables, size = 3, aes(x = Year, y = Combined_Richness)) +
+  geom_smooth(method = "glm", se = TRUE, color = "black", size = 1.4) +
+  labs(x = "Year", y = "Combined Richness") +
+  #annotate(geom = "text", size = 8, x = 5, y = 38, label = "italic(R) ^ 2 == 0.03", parse = TRUE) +
+  #annotate(geom = "text", size = 8, x = 5, y = 34.5, label = "p = 0.04", parse = FALSE) +
+  theme(text = element_text(size = 18),
+        panel.grid.major = element_line(colour = "light gray", size = (0.5)),
+        panel.grid.minor = element_line(colour = "light gray", size = (0.5)),
+        panel.background = element_blank(),
+        axis.line = element_line(colour = "black")) +
+  facet_wrap(facets = ~ Site)
+
+
+
+
+
+# Organize coral figures into one window
 grid.arrange(cr_time, cc_time,
              ncol = 1, nrow = 2)
 

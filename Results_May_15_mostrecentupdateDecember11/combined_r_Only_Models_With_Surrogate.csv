@@ -1,7 +1,0 @@
-Model Names,K,AICc,Delta_AICc,ModelLik,AICcWt,LL,Cum.Wt
-rugosity + year + site,11,1079.73,0.00,1.00,0.96,-527.99,0.96
-rugosity + site,10,1086.48,6.75,0.03,0.03,-532.52,1.00
-rugosity + year,4,1092.84,13.11,0.00,0.00,-542.29,1.00
-rugosity + site + site*rugosity,17,1093.23,13.50,0.00,0.00,-527.52,1.00
-rugosity + year + year*rugosity,5,1094.83,15.10,0.00,0.00,-542.22,1.00
-rugosity,3,1106.76,27.03,0.00,0.00,-550.30,1.00

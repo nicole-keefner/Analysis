@@ -1,0 +1,40 @@
+Top Model for Combined Richness
+
+Call:
+glm.nb(formula = Combined_Richness ~ Rugosity + Year + Site, 
+    data = variables, init.theta = 1954589.094, link = log)
+
+Deviance Residuals: 
+    Min       1Q   Median       3Q      Max  
+-1.7734  -0.5671   0.0631   0.5433   1.9009  
+
+Coefficients:
+             Estimate Std. Error z value Pr(>|z|)    
+(Intercept)  3.866280   0.099077  39.023  < 2e-16 ***
+Rugosity     0.004280   0.001796   2.383 0.017150 *  
+Year         0.005173   0.001723   3.002 0.002678 ** 
+Sitecrab    -0.070582   0.041755  -1.690 0.090956 .  
+Sitegrand   -0.098587   0.059434  -1.659 0.097162 .  
+Siteiguana   0.001596   0.043399   0.037 0.970659    
+Sitemonkey  -0.027523   0.046863  -0.587 0.556993    
+SitemuskN   -0.031374   0.047442  -0.661 0.508411    
+Sitepelican -0.157317   0.056531  -2.783 0.005388 ** 
+Sitewhite   -0.142199   0.042252  -3.366 0.000764 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+(Dispersion parameter for Negative Binomial(1954589) family taken to be 1)
+
+    Null deviance: 180.712  on 163  degrees of freedom
+Residual deviance:  87.607  on 154  degrees of freedom
+  (52 observations deleted due to missingness)
+AIC: 1078
+
+Number of Fisher Scoring iterations: 1
+
+
+              Theta:  1954589 
+          Std. Err.:  22113634 
+Warning while fitting theta: iteration limit reached 
+
+ 2 x log-likelihood:  -1055.99 
